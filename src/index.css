@@ -1,0 +1,521 @@
+body {
+  margin: 0;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.title {
+  font-size: 32px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #94a3b8;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: #0f172a;
+  color: white;
+}
+
+.input-full {
+  font-size: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-full2 {
+  width: 90%;
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #334155;
+  color: white;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.01);
+}
+
+.btn.primary {
+  background: #22c55e;
+}
+
+.btn.danger {
+  background: #ef4444;
+}
+
+.studentCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0f172a;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.center {
+  text-align: center;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.option {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #334155;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.option:hover {
+  transform: scale(1.03);
+}
+
+.option.selected {
+  background: #22c55e;
+}
+
+.full {
+  width: 100%;
+  margin-top: 20px;
+}
+
+body {
+  margin: 0;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.title {
+  font-size: 32px;
+}
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 20px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.center {
+  text-align: center;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.option {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #334155;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.option:hover {
+  transform: scale(1.03);
+}
+
+.option.selected {
+  background: #22c55e;
+}
+
+.btn {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #334155;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.btn.primary {
+  background: #22c55e;
+}
+
+.full {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* 📊 PROGRESO */
+.progressContainer {
+  margin: 20px 0;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  color: #94a3b8;
+  font-size: 22px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 10px;
+  background: #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  transition: width 0.3s ease;
+}
+
+.progressContainer {
+  margin: 20px 0;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  color: #94a3b8;
+}
+
+.progressBar {
+  width: 100%;
+  height: 10px;
+  background: #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  transition: width 0.3s ease;
+}
+
+.rankingCard {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 10px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.rankingCard:hover {
+  transform: scale(1.02);
+}
+
+.gold {
+  border: 2px solid gold;
+}
+
+.silver {
+  border: 2px solid silver;
+}
+
+.bronze {
+  border: 2px solid #cd7f32;
+}
+
+.optionRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.selectBtn {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #334155;
+  color: white;
+  cursor: pointer;
+}
+
+.selectBtn.selected {
+  background: #22c55e;
+}
+
+.questionCard {
+  background: #0f172a;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.loginCard {
+  max-width: 400px;
+  width: 100%;
+}
+
+.error {
+  color: #ef4444;
+  margin: 10px 0;
+}
+
+.input:focus {
+  outline: 2px solid #22c55e;
+}
+
+/* 🌌 FONDO */
+.welcome {
+  height: 100vh;
+  background: linear-gradient(270deg, #0f172a, #1e293b, #020617);
+  background-size: 600% 600%;
+  animation: gradientMove 10s ease infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ✨ PARTÍCULAS */
+.particle {
+  position: absolute;
+  bottom: -10px;
+  width: 4px;
+  height: 4px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-100vh);
+  }
+}
+
+/* 🎯 CONTENIDO */
+.welcomeContent {
+  text-align: center;
+  z-index: 2;
+}
+
+.welcomeTitle {
+  font-size: 50px;
+  margin-bottom: 10px;
+  animation: fadeIn 1s ease;
+}
+
+.welcomeSubtitle {
+  color: #94a3b8;
+  margin-bottom: 30px;
+  animation: fadeIn 2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.big {
+  padding: 15px 30px;
+  font-size: 22px;
+}
+
+.big:hover {
+  transform: scale(1.1);
+}
+
+.page {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease;
+}
+
+.page.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 🌌 BASE */
+.waveBackground {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🌊 ONDAS */
+.waves {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+}
+
+.waves span {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 40%;
+  background: rgba(34, 197, 94, 0.08);
+  animation: waveMove 12s linear infinite;
+}
+
+/* distintas velocidades */
+.waves span:nth-child(2) {
+  animation-duration: 18s;
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.waves span:nth-child(3) {
+  animation-duration: 25s;
+  background: rgba(34, 197, 94, 0.03);
+}
+
+/* animación */
+@keyframes waveMove {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* contenido */
+.screenContent {
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* login */
+.loginCard {
+  max-width: 400px;
+  width: 100%;
+}
+
+.error {
+  color: #ef4444;
+  margin: 10px 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  background: #1e293b;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 24px;
+  font-weight: bolder;
+}
+
+.tab2 {
+  flex: 1;
+  padding: 12px;
+  background: #1e293b;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 18px;
+  font-weight: bolder;
+}
+
+.tab:hover, .tab2:hover {
+  background: #334155;
+}
+
+.tab.active {
+  background: #22c55e;
+}
+
+.tabContent {
+  margin-top: 20px;
+}
