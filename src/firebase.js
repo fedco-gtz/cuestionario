@@ -3,13 +3,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCpcTAo0hLwzssyE_vz-0f2LBYyjt0Q9-0",
-  authDomain: "quiz-matematica-ad04e.firebaseapp.com",
-  projectId: "quiz-matematica-ad04e",
-  storageBucket: "quiz-matematica-ad04e.firebasestorage.app",
-  messagingSenderId: "865257775335",
-  appId: "1:865257775335:web:deca1b45c0a777ffb0c242",
-  measurementId: "G-0FWEBWKS1F"
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID
 };
 
 
