@@ -51,7 +51,7 @@ function Quiz({ student }) {
       completed: true,
       score: result,
       total: questions.length,
-      date: today
+      date: today,
     });
 
     setScore(result);
@@ -62,28 +62,25 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
-  // 🔥 Detecta si es LaTeX
-  const isLatex = (text) => {
-    if (!text) return false;
+  // 🔥 FUNCIÓN CLAVE (NUEVA Y CORREGIDA)
+  const renderTextWithMath = (text) => {
+    if (!text) return null;
 
-    return /\\[a-zA-Z]+|\^|_|\{|\}/.test(text);
-  };
-
-  // 🔥 Render inteligente
-  const renderText = (text) => {
-    if (!text) return "";
-
-    // separa bloques latex
-    const parts = text.split(/(\\[a-zA-Z]+\{.*?\})/g);
+    const parts = text.split("$");
 
     return parts.map((part, i) => {
-      if (/\\[a-zA-Z]+\{.*?\}/.test(part)) {
-        try {
-          return <InlineMath key={i} math={part} />;
-        } catch {
-          return <span key={i}>{part}</span>;
-        }
+      // posiciones impares = matemática
+      if (i % 2 === 1) {
+        return (
+          <InlineMath
+            key={i}
+            math={part}
+            errorColor="#ff0000"
+          />
+        );
       }
+
+      // texto normal
       return <span key={i}>{part}</span>;
     });
   };
@@ -111,7 +108,9 @@ function Quiz({ student }) {
 
       <div className="progressContainer">
         <div className="progressInfo">
-          <span>Pregunta {current + 1} de {questions.length}</span>
+          <span>
+            Pregunta {current + 1} de {questions.length}
+          </span>
         </div>
 
         <div className="progressBar">
@@ -124,18 +123,19 @@ function Quiz({ student }) {
 
       <div className="card">
         <h2 className="questionText">
-          {renderText(q.question || "")}
+          {renderTextWithMath(q.question)}
         </h2>
 
         <div className="options">
           {q.options.map((opt, i) => (
             <button
               key={i}
-              className={`option ${answers[current] === i ? "selected" : ""
-                }`}
+              className={`option ${
+                answers[current] === i ? "selected" : ""
+              }`}
               onClick={() => handleAnswer(i)}
             >
-              {renderText(opt)}
+              {renderTextWithMath(opt)}
             </button>
           ))}
         </div>
