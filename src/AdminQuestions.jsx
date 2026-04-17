@@ -6,6 +6,8 @@ import {
     deleteDoc,
     doc
 } from "firebase/firestore";
+import { InlineMath } from "react-katex";
+import "katex/dist/katex.min.css";
 import { db } from "./firebase";
 
 function AdminQuestions() {
@@ -58,6 +60,19 @@ function AdminQuestions() {
         loadQuestions();
     };
 
+    const renderPreview = (text) => {
+        if (!text) return null;
+
+        const parts = text.split("$");
+
+        return parts.map((part, i) => {
+            if (i % 2 === 1) {
+                return <InlineMath key={i} math={part} />;
+            }
+            return <span key={i}>{part}</span>;
+        });
+    };
+
     return (
         <div className="container">
             <h1 className="title">❓ Crear Preguntas</h1>
@@ -73,6 +88,13 @@ function AdminQuestions() {
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                 />
+
+                <div className="previewBox">
+                    <p className="previewTitle">👀 Vista previa:</p>
+                    <div className="previewContent">
+                        {renderPreview(question)}
+                    </div>
+                </div>
 
                 <div className="options">
                     {options.map((opt, i) => (
