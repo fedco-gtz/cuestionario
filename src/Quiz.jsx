@@ -64,22 +64,28 @@ function Quiz({ student }) {
 
   // 🔥 Detecta si es LaTeX
   const isLatex = (text) => {
-    return /\\|frac|sqrt|\^|_/.test(text);
+    if (!text) return false;
+
+    return /\\[a-zA-Z]+|\^|_|\{|\}/.test(text);
   };
 
   // 🔥 Render inteligente
   const renderText = (text) => {
     if (!text) return "";
 
-    if (isLatex(text)) {
-      try {
-        return <InlineMath math={text} />;
-      } catch {
-        return <span>{text}</span>;
-      }
-    }
+    // separa bloques latex
+    const parts = text.split(/(\\[a-zA-Z]+\{.*?\})/g);
 
-    return <span>{text}</span>;
+    return parts.map((part, i) => {
+      if (/\\[a-zA-Z]+\{.*?\}/.test(part)) {
+        try {
+          return <InlineMath key={i} math={part} />;
+        } catch {
+          return <span key={i}>{part}</span>;
+        }
+      }
+      return <span key={i}>{part}</span>;
+    });
   };
 
   if (finished) {
@@ -125,9 +131,8 @@ function Quiz({ student }) {
           {q.options.map((opt, i) => (
             <button
               key={i}
-              className={`option ${
-                answers[current] === i ? "selected" : ""
-              }`}
+              className={`option ${answers[current] === i ? "selected" : ""
+                }`}
               onClick={() => handleAnswer(i)}
             >
               {renderText(opt)}
