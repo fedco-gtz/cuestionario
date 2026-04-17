@@ -124,7 +124,7 @@ function Quiz({ student }) {
 
       <div className="card">
         <h2 className="questionText">
-          {renderText(q.question)}
+          {renderText(q.question || "")}
         </h2>
 
         <div className="options">

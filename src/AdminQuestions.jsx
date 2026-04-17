@@ -99,7 +99,6 @@ function AdminQuestions() {
                 </button>
             </div>
 
-            {/* LISTA */}
             <div className="card">
                 <h3>Preguntas cargadas</h3>
 
@@ -111,7 +110,7 @@ function AdminQuestions() {
                             <h4>{q.question}</h4>
 
                             <ul>
-                                {q.options.map((opt, i) => (
+                                {q.options?.map((opt, i) => (
                                     <li key={i}>
                                         <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>{opt} {i === q.correct}</li>
                                     </li>
