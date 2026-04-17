@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import { InlineMath, BlockMath } from "react-katex";
+import { InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
 
 function Quiz({ student }) {
@@ -62,27 +62,24 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
-  const renderTextWithMath = (text) => {
-    const parts = text.split(/(\$\$.*?\$\$|\$.*?\$)/g);
+  // 🔥 Detecta si es LaTeX
+  const isLatex = (text) => {
+    return /\\|frac|sqrt|\^|_/.test(text);
+  };
 
-    return parts.map((part, i) => {
-      // bloque $$...$$
-      if (part.startsWith("$$") && part.endsWith("$$")) {
-        return (
-          <BlockMath key={i} math={part.slice(2, -2)} />
-        );
+  // 🔥 Render inteligente
+  const renderText = (text) => {
+    if (!text) return "";
+
+    if (isLatex(text)) {
+      try {
+        return <InlineMath math={text} />;
+      } catch {
+        return <span>{text}</span>;
       }
+    }
 
-      // inline $...$
-      if (part.startsWith("$") && part.endsWith("$")) {
-        return (
-          <InlineMath key={i} math={part.slice(1, -1)} />
-        );
-      }
-
-      // texto normal
-      return <span key={i}>{part}</span>;
-    });
+    return <span>{text}</span>;
   };
 
   if (finished) {
@@ -120,9 +117,8 @@ function Quiz({ student }) {
       </div>
 
       <div className="card">
-
         <h2 className="questionText">
-          {renderTextWithMath(q.question)}
+          {renderText(q.question)}
         </h2>
 
         <div className="options">
@@ -134,7 +130,7 @@ function Quiz({ student }) {
               }`}
               onClick={() => handleAnswer(i)}
             >
-              {renderTextWithMath(opt)}
+              {renderText(opt)}
             </button>
           ))}
         </div>
