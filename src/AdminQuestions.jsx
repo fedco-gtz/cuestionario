@@ -6,10 +6,9 @@ import {
     deleteDoc,
     doc
 } from "firebase/firestore";
-import { MathJaxContext, MathJax } from "better-react-mathjax"; // Nueva librería
+import { MathJaxContext, MathJax } from "better-react-mathjax";
 import { db } from "./firebase";
 
-// Configuración para que MathJax reconozca los $ y trabaje rápido
 const config = {
     loader: { load: ["input/tex", "output/chtml"] },
     tex: {
@@ -24,6 +23,18 @@ function AdminQuestions() {
     const [correct, setCorrect] = useState(0);
     const [questions, setQuestions] = useState([]);
 
+    // Lista de funciones rápidas para los botones
+    const mathTools = [
+        { label: "Fracción", syntax: "$\\frac{ }{ }$" },
+        { label: "Raíz", syntax: "$\\sqrt{ }$" },
+        { label: "Potencia", syntax: "$x^{ }$" },
+        { label: "Punto (·)", syntax: "$\\cdot$" },
+        { label: "Multiplicar (x)", syntax: "$\\times$" },
+        { label: "Pi (π)", syntax: "$\\pi$" },
+        { label: "Q (Racionales)", syntax: "$\\mathbb{Q}$" },
+        { label: "Z (Enteros)", syntax: "$\\mathbb{Z}$" },
+    ];
+
     useEffect(() => {
         loadQuestions();
     }, []);
@@ -35,6 +46,11 @@ function AdminQuestions() {
             data.push({ id: doc.id, ...doc.data() });
         });
         setQuestions(data);
+    };
+
+    // Función para insertar la sintaxis en el input
+    const insertSyntax = (syntax) => {
+        setQuestion(prev => prev + syntax);
     };
 
     const handleOptionChange = (value, index) => {
@@ -67,26 +83,46 @@ function AdminQuestions() {
     };
 
     return (
-        // Envolvemos todo en el Contexto
         <MathJaxContext config={config}>
             <div className="container">
                 <h1 className="title">Crear Preguntas</h1>
-                <p className="subtitle">Armá tu cuestionario (Usa $ para fórmulas, ej: $\frac{1}{2}$)</p>
+                <p className="subtitle">Armá tu cuestionario del Chiqui Coins</p>
 
                 <div className="card">
                     <h3>Nueva pregunta</h3>
+                    
+                    {/* Botonera de herramientas matemáticas */}
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                        {mathTools.map((tool, index) => (
+                            <button 
+                                key={index}
+                                onClick={() => insertSyntax(tool.syntax)}
+                                style={{
+                                    padding: '5px 10px',
+                                    fontSize: '12px',
+                                    backgroundColor: '#334155',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                {tool.label}
+                            </button>
+                        ))}
+                    </div>
+
                     <input
                         className="input"
-                        placeholder="Ej: ¿Cuánto es $\frac{x}{2}$?"
+                        placeholder="Escribí acá la pregunta..."
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                     />
 
                     <div className="previewBox">
                         <p className="previewTitle">👀 Vista previa:</p>
-                        <div className="previewContent">
-                            {/* MathJax detecta automáticamente el texto y el LaTeX dentro de $ */}
-                            <MathJax dynamic>{question || "Escribí algo..."}</MathJax>
+                        <div className="previewContent" style={{ minHeight: '60px', display: 'flex', alignItems: 'center' }}>
+                            <MathJax dynamic>{question || "Escribí algo para previsualizar..."}</MathJax>
                         </div>
                     </div>
 
@@ -121,7 +157,6 @@ function AdminQuestions() {
                     ) : (
                         questions.map((q) => (
                             <div key={q.id} className="questionCard">
-                                {/* Renderizamos la pregunta con MathJax */}
                                 <MathJax>
                                     <h4>{q.question}</h4>
                                 </MathJax>
