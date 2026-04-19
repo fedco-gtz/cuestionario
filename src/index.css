@@ -659,9 +659,13 @@ body {
 }
 
 .status.enabled {
-  color: #22c55e; /* verde */
+  color: #ffffff;
+  background-color: #22c55e;
+  font-size: 12px;
 }
 
 .status.disabled {
-  color: #eab308; /* amarillo */
+  color: #ffffff;
+  background-color: #eab308; /* amarillo */
+  font-size: 12px;
 }
