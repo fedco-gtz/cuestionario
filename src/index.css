@@ -539,3 +539,117 @@ body {
   display: flex;
   gap: 10px;
 }
+
+/* 📱 MOBILE FIRST AJUSTES */
+@media (max-width: 768px) {
+
+  .container {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .card {
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  /* INPUTS */
+  .input,
+  .input-full,
+  .input-full2 {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  /* BOTONES */
+  .btn {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .big {
+    font-size: 18px;
+    padding: 12px;
+  }
+
+  /* OPCIONES QUIZ */
+  .option {
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  /* PROGRESS */
+  .progressInfo {
+    font-size: 16px;
+  }
+
+  /* ADMIN STUDENTS */
+  .studentRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .studentActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .studentActions .btn {
+    width: 100%;
+  }
+
+  /* OPCIONES ADMIN */
+  .optionRow {
+    flex-direction: column;
+  }
+
+  .selectBtn {
+    width: 100%;
+  }
+
+  /* TABS */
+  .tabs {
+    flex-direction: column;
+  }
+
+  .tab,
+  .tab2 {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  /* LOGIN */
+  .loginCard {
+    width: 100%;
+  }
+
+  /* RANKING */
+  .rankingCard {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  /* BOTONES EN FILA → columna */
+  .row {
+    flex-direction: column;
+  }
+
+  /* TEXTOS GRANDES */
+  .welcomeTitle {
+    font-size: 32px;
+  }
+
+  .welcomeSubtitle {
+    font-size: 16px;
+  }
+}

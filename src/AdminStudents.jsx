@@ -156,7 +156,7 @@ function AdminStudents() {
                   {s.enabled ? "❎" : "✅"}
                 </button>
                 <button className="btn warning" onClick={() => resetStudent(s)}>🔄</button>
-                <button className="btn danger" onClick={() => deleteStudent(s.id)}>🗑️</button>
+                <button className="btn danger" onClick={() => deleteStudent(s.id)}>🚮</button>
               </div>
             </div>
           ))
