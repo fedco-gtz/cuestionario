@@ -46,12 +46,10 @@ function Quiz({ student }) {
       if (answers[index] === q.correct) result++;
     });
 
-    // 🎯 monedas (10 por respuesta correcta)
-    const earnedCoins = result * 10;
+    const earnedCoins = result * 2;
 
     const today = new Date().toISOString().split("T")[0];
 
-    // 🔥 obtener monedas actuales del alumno
     const studentRef = doc(db, "students", student.id);
     const studentSnap = await getDoc(studentRef);
 
@@ -79,7 +77,6 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
-  // ✅ Render matemático
   const renderTextWithMath = (text) => {
     if (!text) return null;
 

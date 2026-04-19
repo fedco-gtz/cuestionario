@@ -57,6 +57,25 @@ function AdminStudents() {
     loadStudents();
   };
 
+  // 🔥 NUEVO: RESET
+  const resetStudent = async (student) => {
+    const confirmReset = window.confirm(
+      `¿Seguro que querés resetear a ${student.name}?`
+    );
+
+    if (!confirmReset) return;
+
+    await updateDoc(doc(db, "students", student.id), {
+      completed: false,
+      score: 0,
+      total: 0,
+      coins: 0,
+      date: null
+    });
+
+    loadStudents();
+  };
+
   return (
     <div className="container">
       <div className="card">
@@ -107,6 +126,14 @@ function AdminStudents() {
                   onClick={() => toggleStudent(s)}
                 >
                   {s.enabled ? "Deshabilitar 🚫" : "Habilitar ✅"}
+                </button>
+
+                {/* 🔥 BOTÓN RESET */}
+                <button
+                  className="btn warning"
+                  onClick={() => resetStudent(s)}
+                >
+                  Resetear 🔄
                 </button>
 
                 <button
