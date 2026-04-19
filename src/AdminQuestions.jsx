@@ -37,11 +37,12 @@ function AdminQuestions() {
         { label: "I (Irracionales)", syntax: "$\\mathbb{I}$" },
         { label: "R (Reales)", syntax: "$\\mathbb{R}$" },
         { label: "C (Complejos)", syntax: "$\\mathbb{C}$" },
-        { label: "Límite", syntax: "$\\lim_{x \to \infty}( )$" },
+        { label: "Límite", syntax: "$\\lim_{x → }( )$" },
         { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
         { label: "Integral Indef.", syntax: "$\\int ( ) dx$" },
         { label: "Integral Def.", syntax: "$\\int_{a}^{b} ( ) dx$" },
         { label: "Valor Absoluto", syntax: "$| |$" },
+        { label: "Más Funciones", syntax: "$| |$" },
     ];
 
     useEffect(() => {
