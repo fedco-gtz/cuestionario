@@ -119,7 +119,7 @@ function AdminStudents() {
               checked={onlyCompleted}
               onChange={() => setOnlyCompleted(!onlyCompleted)}
             />
-            Mostrar solo completados ✅
+            Mostrar solo completados
           </label>
 
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
