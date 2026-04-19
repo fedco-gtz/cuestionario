@@ -31,8 +31,17 @@ function AdminQuestions() {
         { label: "Punto (·)", syntax: "$\\cdot$" },
         { label: "Multiplicar (x)", syntax: "$\\times$" },
         { label: "Pi (π)", syntax: "$\\pi$" },
-        { label: "Q (Racionales)", syntax: "$\\mathbb{Q}$" },
+        { label: "N (Naturales)", syntax: "$\\mathbb{N}$" },
         { label: "Z (Enteros)", syntax: "$\\mathbb{Z}$" },
+        { label: "Q (Racionales)", syntax: "$\\mathbb{Q}$" },
+        { label: "I (Irracionales)", syntax: "$\\mathbb{I}$" },
+        { label: "R (Reales)", syntax: "$\\mathbb{R}$" },
+        { label: "C (Complejos)", syntax: "$\\mathbb{C}$" },
+        { label: "Límite", syntax: "$\\lim_{x \to \infty}( )$" },
+        { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
+        { label: "Integral Indef.", syntax: "$\\int ( ) dx$" },
+        { label: "Integral Def.", syntax: "$\\int_{a}^{b} ( ) dx$" },
+        { label: "Valor Absoluto", syntax: "$| |$" },
     ];
 
     useEffect(() => {
@@ -90,11 +99,11 @@ function AdminQuestions() {
 
                 <div className="card">
                     <h3>Nueva pregunta</h3>
-                    
+
                     {/* Botonera de herramientas matemáticas */}
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
                         {mathTools.map((tool, index) => (
-                            <button 
+                            <button
                                 key={index}
                                 onClick={() => insertSyntax(tool.syntax)}
                                 style={{
