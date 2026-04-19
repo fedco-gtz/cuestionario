@@ -23,11 +23,9 @@ function AdminQuestions() {
     const loadQuestions = async () => {
         const querySnapshot = await getDocs(collection(db, "questions"));
         let data = [];
-
         querySnapshot.forEach((doc) => {
             data.push({ id: doc.id, ...doc.data() });
         });
-
         setQuestions(data);
     };
 
@@ -60,14 +58,23 @@ function AdminQuestions() {
         loadQuestions();
     };
 
-    const renderPreview = (text) => {
+    // Función reutilizable para renderizar texto con LaTeX mezclado
+    const renderMathText = (text) => {
         if (!text) return null;
-
+        
+        // Dividimos por el delimitador $
         const parts = text.split("$");
 
         return parts.map((part, i) => {
+            // Los índices impares son los que estaban entre $...$
             if (i % 2 === 1) {
-                return <InlineMath key={i} math={part} />;
+                return (
+                    <InlineMath 
+                        key={i} 
+                        math={part} 
+                        renderError={(error) => <span>[Error de sintaxis]</span>}
+                    />
+                );
             }
             return <span key={i}>{part}</span>;
         });
@@ -76,15 +83,13 @@ function AdminQuestions() {
     return (
         <div className="container">
             <h1 className="title">Crear Preguntas</h1>
-            <p className="subtitle">Armá tu cuestionario</p>
+            <p className="subtitle">Armá tu cuestionario (Usa $ para fórmulas, ej: $\frac{1}{2}$)</p>
 
-            {/* FORM */}
             <div className="card">
                 <h3>Nueva pregunta</h3>
-
                 <input
                     className="input"
-                    placeholder="Escribí la pregunta"
+                    placeholder="Ej: ¿Cuánto es $\frac{x}{2}$?"
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                 />
@@ -92,7 +97,7 @@ function AdminQuestions() {
                 <div className="previewBox">
                     <p className="previewTitle">👀 Vista previa:</p>
                     <div className="previewContent">
-                        {renderPreview(question)}
+                        {renderMathText(question)}
                     </div>
                 </div>
 
@@ -105,7 +110,6 @@ function AdminQuestions() {
                                 value={opt}
                                 onChange={(e) => handleOptionChange(e.target.value, i)}
                             />
-
                             <button
                                 className={`selectBtn ${correct === i ? "selected" : ""}`}
                                 onClick={() => setCorrect(i)}
@@ -123,26 +127,24 @@ function AdminQuestions() {
 
             <div className="card">
                 <h3>Preguntas cargadas</h3>
-
                 {questions.length === 0 ? (
                     <p>No hay preguntas</p>
                 ) : (
                     questions.map((q) => (
                         <div key={q.id} className="questionCard">
-                            <h4>{q.question}</h4>
+                            {/* Ahora la pregunta renderiza LaTeX si lo tiene */}
+                            <h4>{renderMathText(q.question)}</h4>
 
                             <ul>
                                 {q.options?.map((opt, i) => (
-                                    <li key={i}>
-                                        <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>{opt} {i === q.correct}</li>
+                                    <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white", marginBottom: '8px' }}>
+                                        {/* También renderizamos LaTeX en las opciones */}
+                                        {renderMathText(opt)} {i === q.correct && " (Correcta)"}
                                     </li>
                                 ))}
                             </ul>
 
-                            <button
-                                className="btn danger"
-                                onClick={() => deleteQuestion(q.id)}
-                            >
+                            <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
                                 Eliminar
                             </button>
                         </div>
