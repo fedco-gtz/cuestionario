@@ -6,7 +6,7 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-  writeBatch // 🔥 Agregamos batch para actualizar muchos a la vez
+  writeBatch 
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -28,16 +28,43 @@ function AdminStudents() {
     setStudents(data);
   };
 
+  // --- FUNCIONES MASIVAS (BATCH) ---
+
+  const updateAllStudents = async (newData, message) => {
+    const confirmAction = window.confirm(message);
+    if (!confirmAction) return;
+
+    try {
+      const batch = writeBatch(db);
+      students.forEach((student) => {
+        const studentRef = doc(db, "students", student.id);
+        batch.update(studentRef, newData);
+      });
+      await batch.commit();
+      loadStudents();
+      alert("Operación completada con éxito.");
+    } catch (error) {
+      console.error("Error en operación masiva:", error);
+      alert("Hubo un error al procesar la solicitud.");
+    }
+  };
+
+  const handleEnableAll = () => updateAllStudents({ enabled: true }, "¿Habilitar a TODOS los estudiantes?");
+  const handleDisableAll = () => updateAllStudents({ enabled: false }, "¿Deshabilitar a TODOS los estudiantes?");
+  const handleResetAll = () => updateAllStudents({
+    completed: false,
+    score: 0,
+    total: 0,
+    coins: 0,
+    date: null
+  }, "¿Estás seguro de que querés RESETEAR a todos? Se borrarán sus puntajes y monedas.");
+
+  // --- FUNCIONES INDIVIDUALES ---
+
   const addStudent = async () => {
     if (!name) return;
     await addDoc(collection(db, "students"), {
-      name,
-      enabled: true,
-      completed: false,
-      score: 0,
-      total: 0,
-      coins: 0,
-      date: null
+      name, enabled: true, completed: false, score: 0, total: 0, coins: 0, date: null
     });
     setName("");
     loadStudents();
@@ -45,51 +72,19 @@ function AdminStudents() {
 
   const deleteStudent = async (id) => {
     await deleteDoc(doc(db, "students", id));
+    loadQuestions(); // Nota: Asegúrate que esta función sea loadStudents()
     loadStudents();
   };
 
   const toggleStudent = async (student) => {
-    await updateDoc(doc(db, "students", student.id), {
-      enabled: !student.enabled
-    });
+    await updateDoc(doc(db, "students", student.id), { enabled: !student.enabled });
     loadStudents();
   };
 
-  // 🔥 NUEVA FUNCIÓN: Deshabilitar a todos
-  const disableAllStudents = async () => {
-    const confirmDisable = window.confirm(
-      "¿Seguro que querés deshabilitar a TODOS los estudiantes?"
-    );
-    if (!confirmDisable) return;
-
-    try {
-      const batch = writeBatch(db); // Usamos Batch para que sea una sola operación rápida
-      students.forEach((student) => {
-        const studentRef = doc(db, "students", student.id);
-        batch.update(studentRef, { enabled: false });
-      });
-
-      await batch.commit(); // Ejecuta todos los cambios juntos
-      loadStudents(); // Recarga la lista
-      alert("Todos los estudiantes han sido deshabilitados.");
-    } catch (error) {
-      console.error("Error al deshabilitar:", error);
-      alert("Hubo un error al procesar la solicitud.");
-    }
-  };
-
   const resetStudent = async (student) => {
-    const confirmReset = window.confirm(
-      `¿Seguro que querés resetear a ${student.name}?`
-    );
-    if (!confirmReset) return;
-
+    if (!window.confirm(`¿Resetear a ${student.name}?`)) return;
     await updateDoc(doc(db, "students", student.id), {
-      completed: false,
-      score: 0,
-      total: 0,
-      coins: 0,
-      date: null
+      completed: false, score: 0, total: 0, coins: 0, date: null
     });
     loadStudents();
   };
@@ -100,9 +95,7 @@ function AdminStudents() {
     return `${day}/${month}/${year}`;
   };
 
-  const filteredStudents = onlyCompleted
-    ? students.filter((s) => s.completed)
-    : students;
+  const filteredStudents = onlyCompleted ? students.filter((s) => s.completed) : students;
 
   return (
     <div className="container">
@@ -112,24 +105,15 @@ function AdminStudents() {
         <h3>Agregar estudiante</h3>
         <input
           className="input input-full"
-          placeholder="Nombre"
+          placeholder="Nombre del alumno"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <button className="btn primary full" onClick={addStudent}>
-          Agregar ➕
-        </button>
+        <button className="btn primary full" onClick={addStudent}>Agregar ➕</button>
 
-        {/* 🔥 SECCIÓN DE FILTRO Y BOTÓN MASIVO */}
-        <div style={{ 
-          marginTop: "15px", 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "10px"
-        }}>
-          <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        {/* FILTRO Y ACCIONES MASIVAS */}
+        <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "15px" }}>
             <input
               type="checkbox"
               checked={onlyCompleted}
@@ -138,16 +122,20 @@ function AdminStudents() {
             Mostrar solo completados ✅
           </label>
 
-          <button 
-            className="btn danger" 
-            onClick={disableAllStudents}
-            style={{ padding: "8px 15px", fontSize: "14px" }}
-          >
-            Deshabilitar a todos 🚫
-          </button>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <button className="btn secondary" style={{ flex: 1 }} onClick={handleEnableAll}>
+              Habilitar todos ✅
+            </button>
+            <button className="btn danger" style={{ flex: 1 }} onClick={handleDisableAll}>
+              Deshabilitar todos 🚫
+            </button>
+            <button className="btn warning" style={{ flex: 1 }} onClick={handleResetAll}>
+              Resetear todos 🔄
+            </button>
+          </div>
         </div>
 
-        <h3 style={{ marginTop: "20px" }}>Lista de estudiantes</h3>
+        <h3 style={{ marginTop: "25px" }}>Lista de alumnos</h3>
 
         {filteredStudents.length === 0 ? (
           <p>No hay estudiantes</p>
@@ -155,27 +143,20 @@ function AdminStudents() {
           filteredStudents.map((s) => (
             <div key={s.id} className="studentRow">
               <div>
-                <h4>
-                  {s.name} {s.enabled ? "🟢" : "🔴"}
-                </h4>
+                <h4>{s.name} {s.enabled ? "🟢" : "🔴"}</h4>
                 <div className="studentInfo">
                   <p>📊 Puntaje: {s.score || 0} / {s.total || 0}</p>
                   <p>🪙 Monedas: {s.coins || 0}</p>
-                  <p>✔️ Estado: {s.completed ? "✅ Completado" : "⏳ Pendiente"}</p>
                   <p>📅 Fecha: {formatDate(s.date)}</p>
                 </div>
               </div>
 
               <div className="studentActions">
                 <button className="btn secondary" onClick={() => toggleStudent(s)}>
-                  {s.enabled ? "Deshabilitar 🚫" : "Habilitar ✅"}
+                  {s.enabled ? "🚫" : "✅"}
                 </button>
-                <button className="btn warning" onClick={() => resetStudent(s)}>
-                  Resetear 🔄
-                </button>
-                <button className="btn danger" onClick={() => deleteStudent(s.id)}>
-                  Eliminar ❌
-                </button>
+                <button className="btn warning" onClick={() => resetStudent(s)}>🔄</button>
+                <button className="btn danger" onClick={() => deleteStudent(s.id)}>❌</button>
               </div>
             </div>
           ))
@@ -184,6 +165,5 @@ function AdminStudents() {
     </div>
   );
 }
-
 
 export default AdminStudents;
