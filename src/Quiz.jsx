@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
-// import { InlineMath } from "react-katex";
-// import "katex/dist/katex.min.css";
+import { MathJaxContext, MathJax } from "better-react-mathjax"; // Importamos la nueva librería
+
+// Configuración recomendada para carga rápida en móviles y web
+const mathJaxConfig = {
+  loader: { load: ["input/tex", "output/chtml"] },
+  tex: {
+    inlineMath: [["$", "$"]],
+    displayMath: [["$$", "$$"]]
+  }
+};
 
 function Quiz({ student }) {
   const [questions, setQuestions] = useState([]);
@@ -19,11 +27,9 @@ function Quiz({ student }) {
   const loadQuestions = async () => {
     const querySnapshot = await getDocs(collection(db, "questions"));
     const data = [];
-
     querySnapshot.forEach((doc) => {
       data.push({ id: doc.id, ...doc.data() });
     });
-
     setQuestions(data);
   };
 
@@ -41,13 +47,11 @@ function Quiz({ student }) {
 
   const handleSubmit = async () => {
     let result = 0;
-
     questions.forEach((q, index) => {
       if (answers[index] === q.correct) result++;
     });
 
     const earnedCoins = result * 2;
-
     const today = new Date().toISOString().split("T")[0];
 
     const studentRef = doc(db, "students", student.id);
@@ -77,22 +81,6 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
-  const renderTextWithMath = (text) => {
-    if (!text) return null;
-
-    const parts = text.split("$");
-
-    return parts.map((part, i) => {
-      if (i % 2 === 1) {
-        return (
-          <InlineMath key={i} math={part} errorColor="#ff0000" />
-        );
-      }
-
-      return <span key={i}>{part}</span>;
-    });
-  };
-
   // 🎉 Pantalla final
   if (finished) {
     return (
@@ -100,9 +88,7 @@ function Quiz({ student }) {
         <div className="card center">
           <h2>🎉 Cuestionario finalizado</h2>
           <h1>{score}/{questions.length}</h1>
-
           <p>💰 Monedas ganadas: <strong>{coins}</strong></p>
-
           <p>Excelente trabajo 💪</p>
         </div>
       </div>
@@ -114,55 +100,58 @@ function Quiz({ student }) {
   const q = questions[current];
 
   return (
-    <div className="container">
-      <h1 className="title">🧠 Cuestionario</h1>
-      <p className="subtitle">Estudiante: {student.name}</p>
+    <MathJaxContext config={mathJaxConfig}>
+      <div className="container">
+        <h1 className="title">🧠 Cuestionario</h1>
+        <p className="subtitle">Estudiante: {student.name}</p>
 
-      <div className="progressContainer">
-        <div className="progressInfo">
-          <span>
-            Pregunta {current + 1} de {questions.length}
-          </span>
+        <div className="progressContainer">
+          <div className="progressInfo">
+            <span>
+              Pregunta {current + 1} de {questions.length}
+            </span>
+          </div>
+          <div className="progressBar">
+            <div
+              className="progressFill"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
         </div>
 
-        <div className="progressBar">
-          <div
-            className="progressFill"
-            style={{ width: `${progress}%` }}
-          ></div>
+        <div className="card">
+          <h2 className="questionText">
+            {/* MathJax procesa la pregunta completa automáticamente */}
+            <MathJax>{q.question}</MathJax>
+          </h2>
+
+          <div className="options">
+            {q.options.map((opt, i) => (
+              <button
+                key={i}
+                className={`option ${answers[current] === i ? "selected" : ""}`}
+                onClick={() => handleAnswer(i)}
+              >
+                {/* MathJax procesa el texto de la opción */}
+                <MathJax>
+                  <span>{opt}</span>
+                </MathJax>
+              </button>
+            ))}
+          </div>
         </div>
+
+        <button
+          className="btn primary full"
+          onClick={nextQuestion}
+          disabled={answers[current] === undefined}
+        >
+          {current === questions.length - 1
+            ? "Finalizar 🚀"
+            : "Siguiente ➡️"}
+        </button>
       </div>
-
-      <div className="card">
-        <h2 className="questionText">
-          {renderTextWithMath(q.question)}
-        </h2>
-
-        <div className="options">
-          {q.options.map((opt, i) => (
-            <button
-              key={i}
-              className={`option ${
-                answers[current] === i ? "selected" : ""
-              }`}
-              onClick={() => handleAnswer(i)}
-            >
-              {renderTextWithMath(opt)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <button
-        className="btn primary full"
-        onClick={nextQuestion}
-        disabled={answers[current] === undefined}
-      >
-        {current === questions.length - 1
-          ? "Finalizar 🚀"
-          : "Siguiente ➡️"}
-      </button>
-    </div>
+    </MathJaxContext>
   );
 }
 
