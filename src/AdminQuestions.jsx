@@ -75,7 +75,7 @@ function AdminQuestions() {
 
     return (
         <div className="container">
-            <h1 className="title">❓ Crear Preguntas</h1>
+            <h1 className="title">Crear Preguntas</h1>
             <p className="subtitle">Armá tu cuestionario</p>
 
             {/* FORM */}

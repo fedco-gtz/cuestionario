@@ -84,7 +84,6 @@ function AdminStudents() {
     return `${day}/${month}/${year}`;
   };
 
-  // 🔥 FILTRO
   const filteredStudents = onlyCompleted
     ? students.filter((s) => s.completed)
     : students;
@@ -92,7 +91,7 @@ function AdminStudents() {
   return (
     <div className="container">
       <div className="card">
-        <h2 className="title">👨‍🎓 Gestión de Estudiantes</h2>
+        <h2 className="title">Gestión de Estudiantes</h2>
 
         {/* AGREGAR */}
         <h3>Agregar estudiante</h3>
@@ -141,7 +140,7 @@ function AdminStudents() {
                   <p>🪙 Monedas: {s.coins || 0}</p>
 
                   <p>
-                    Estado:{" "}
+                    ✔️ Estado:{" "}
                     {s.completed ? "✅ Completado" : "⏳ Pendiente"}
                   </p>
 

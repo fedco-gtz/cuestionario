@@ -41,7 +41,7 @@ function Ranking() {
 
   return (
     <div className="container">
-      <h1 className="title">🏆 Ranking en Vivo</h1>
+      <h1 className="title">Ranking en Vivo</h1>
 
       {students.map((s, index) => (
         <div
