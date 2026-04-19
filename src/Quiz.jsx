@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import { MathJaxContext, MathJax } from "better-react-mathjax"; // Importamos la nueva librería
+import { MathJaxContext, MathJax } from "better-react-mathjax";
 
-// Configuración recomendada para carga rápida en móviles y web
+// Configuración optimizada
 const mathJaxConfig = {
   loader: { load: ["input/tex", "output/chtml"] },
   tex: {
@@ -53,7 +53,6 @@ function Quiz({ student }) {
 
     const earnedCoins = result * 2;
     const today = new Date().toISOString().split("T")[0];
-
     const studentRef = doc(db, "students", student.id);
     const studentSnap = await getDoc(studentRef);
 
@@ -81,7 +80,6 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
-  // 🎉 Pantalla final
   if (finished) {
     return (
       <div className="container">
@@ -121,8 +119,12 @@ function Quiz({ student }) {
 
         <div className="card">
           <h2 className="questionText">
-            {/* MathJax procesa la pregunta completa automáticamente */}
-            <MathJax>{q.question}</MathJax>
+            {/* IMPORTANTE: key={current} obliga a MathJax a volver a 
+                procesar el texto cada vez que pasas de pregunta.
+            */}
+            <MathJax key={`q-${current}`} dynamic>
+              {q.question}
+            </MathJax>
           </h2>
 
           <div className="options">
@@ -132,8 +134,8 @@ function Quiz({ student }) {
                 className={`option ${answers[current] === i ? "selected" : ""}`}
                 onClick={() => handleAnswer(i)}
               >
-                {/* MathJax procesa el texto de la opción */}
-                <MathJax>
+                {/* También usamos key aquí para asegurar el renderizado de las opciones */}
+                <MathJax key={`opt-${current}-${i}`} dynamic>
                   <span>{opt}</span>
                 </MathJax>
               </button>
