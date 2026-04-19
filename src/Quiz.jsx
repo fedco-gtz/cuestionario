@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
@@ -10,6 +10,7 @@ function Quiz({ student }) {
   const [current, setCurrent] = useState(0);
   const [finished, setFinished] = useState(false);
   const [score, setScore] = useState(0);
+  const [coins, setCoins] = useState(0);
 
   useEffect(() => {
     loadQuestions();
@@ -45,16 +46,32 @@ function Quiz({ student }) {
       if (answers[index] === q.correct) result++;
     });
 
+    // 🎯 monedas (10 por respuesta correcta)
+    const earnedCoins = result * 10;
+
     const today = new Date().toISOString().split("T")[0];
 
-    await updateDoc(doc(db, "students", student.id), {
+    // 🔥 obtener monedas actuales del alumno
+    const studentRef = doc(db, "students", student.id);
+    const studentSnap = await getDoc(studentRef);
+
+    let currentCoins = 0;
+    if (studentSnap.exists()) {
+      currentCoins = studentSnap.data().coins || 0;
+    }
+
+    const totalCoins = currentCoins + earnedCoins;
+
+    await updateDoc(studentRef, {
       completed: true,
       score: result,
       total: questions.length,
       date: today,
+      coins: totalCoins
     });
 
     setScore(result);
+    setCoins(earnedCoins);
     setFinished(true);
   };
 
@@ -62,35 +79,33 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
-  // 🔥 FUNCIÓN CLAVE (NUEVA Y CORREGIDA)
+  // ✅ Render matemático
   const renderTextWithMath = (text) => {
     if (!text) return null;
 
     const parts = text.split("$");
 
     return parts.map((part, i) => {
-      // posiciones impares = matemática
       if (i % 2 === 1) {
         return (
-          <InlineMath
-            key={i}
-            math={part}
-            errorColor="#ff0000"
-          />
+          <InlineMath key={i} math={part} errorColor="#ff0000" />
         );
       }
 
-      // texto normal
       return <span key={i}>{part}</span>;
     });
   };
 
+  // 🎉 Pantalla final
   if (finished) {
     return (
       <div className="container">
         <div className="card center">
           <h2>🎉 Cuestionario finalizado</h2>
           <h1>{score}/{questions.length}</h1>
+
+          <p>💰 Monedas ganadas: <strong>{coins}</strong></p>
+
           <p>Excelente trabajo 💪</p>
         </div>
       </div>
