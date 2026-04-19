@@ -78,6 +78,14 @@ body {
   background: #ef4444;
 }
 
+.btn.warning {
+  background: #007BFF;
+}
+
+.btn.status {
+  background: #FFC107;
+}
+
 .studentCard {
   display: flex;
   justify-content: space-between;

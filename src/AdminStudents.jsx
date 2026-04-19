@@ -126,7 +126,7 @@ function AdminStudents() {
             <button className="btn secondary" style={{ flex: 1 }} onClick={handleEnableAll}>
               Habilitar todos
             </button>
-            <button className="btn danger" style={{ flex: 1 }} onClick={handleDisableAll}>
+            <button className="btn status" style={{ flex: 1 }} onClick={handleDisableAll}>
               Deshabilitar todos
             </button>
             <button className="btn warning" style={{ flex: 1 }} onClick={handleResetAll}>
@@ -157,7 +157,7 @@ function AdminStudents() {
               </div>
 
               <div className="studentActions">
-                <button className="btn secondary" onClick={() => toggleStudent(s)}>
+                <button className="btn status" onClick={() => toggleStudent(s)}>
                   {s.enabled ? "Deshabilitar" : "Habilitar"}
                 </button>
                 <button className="btn warning" onClick={() => resetStudent(s)}>Resetear</button>
