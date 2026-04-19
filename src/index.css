@@ -519,3 +519,23 @@ body {
 .tabContent {
   margin-top: 20px;
 }
+
+.studentRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #111;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+.studentInfo {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.studentActions {
+  display: flex;
+  gap: 10px;
+}
