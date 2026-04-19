@@ -656,16 +656,17 @@ body {
 
 .status {
   font-weight: bold;
+  font-size: 12px;
+  padding: 10px;
+  border: 5px;
 }
 
 .status.enabled {
   color: #ffffff;
   background-color: #22c55e;
-  font-size: 12px;
 }
 
 .status.disabled {
   color: #ffffff;
   background-color: #eab308; /* amarillo */
-  font-size: 12px;
 }
