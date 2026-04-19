@@ -5,7 +5,6 @@ import Admin from "./Admin";
 import AdminLogin from "./AdminLogin";
 import Welcome from "./Welcome";
 import AdminPanel from "./AdminPanel";
-import { MathJaxContext, MathJax } from "better-react-mathjax";
 
 function App() {
   const [started, setStarted] = useState(false);

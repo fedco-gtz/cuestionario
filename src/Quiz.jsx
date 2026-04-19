@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import { InlineMath } from "react-katex";
-import "katex/dist/katex.min.css";
+// import { InlineMath } from "react-katex";
+// import "katex/dist/katex.min.css";
 
 function Quiz({ student }) {
   const [questions, setQuestions] = useState([]);
