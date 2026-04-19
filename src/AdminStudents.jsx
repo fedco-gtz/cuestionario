@@ -6,7 +6,7 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-  writeBatch 
+  writeBatch
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -109,7 +109,7 @@ function AdminStudents() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <button className="btn primary full" onClick={addStudent}>Agregar ➕</button>
+        <button className="btn primary full" onClick={addStudent}>Agregar</button>
 
         {/* FILTRO Y ACCIONES MASIVAS */}
         <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}>
@@ -124,13 +124,13 @@ function AdminStudents() {
 
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <button className="btn secondary" style={{ flex: 1 }} onClick={handleEnableAll}>
-              Habilitar todos ✅
+              Habilitar todos
             </button>
             <button className="btn danger" style={{ flex: 1 }} onClick={handleDisableAll}>
-              Deshabilitar todos 🚫
+              Deshabilitar todos
             </button>
             <button className="btn warning" style={{ flex: 1 }} onClick={handleResetAll}>
-              Resetear todos 🔄
+              Resetear todos
             </button>
           </div>
         </div>
@@ -143,7 +143,12 @@ function AdminStudents() {
           filteredStudents.map((s) => (
             <div key={s.id} className="studentRow">
               <div>
-                <h4>{s.name} {s.enabled ? "🟢" : "🔴"}</h4>
+                <h4>
+                  {s.name}{" "}
+                  <span className={s.enabled ? "status enabled" : "status disabled"}>
+                    {s.enabled ? "Habilitado" : "Deshabilitado"}
+                  </span>
+                </h4>
                 <div className="studentInfo">
                   <p>📊 Puntaje: {s.score || 0} / {s.total || 0}</p>
                   <p>🪙 Monedas: {s.coins || 0}</p>
@@ -153,10 +158,10 @@ function AdminStudents() {
 
               <div className="studentActions">
                 <button className="btn secondary" onClick={() => toggleStudent(s)}>
-                  {s.enabled ? "❎" : "✅"}
+                  {s.enabled ? "Deshabilitar" : "Habilitar"}
                 </button>
-                <button className="btn warning" onClick={() => resetStudent(s)}>🔄</button>
-                <button className="btn danger" onClick={() => deleteStudent(s.id)}>🚮</button>
+                <button className="btn warning" onClick={() => resetStudent(s)}>Resetear</button>
+                <button className="btn danger" onClick={() => deleteStudent(s.id)}>Eliminar</button>
               </div>
             </div>
           ))
