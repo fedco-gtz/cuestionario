@@ -82,8 +82,12 @@ body {
   background: #007BFF;
 }
 
-.btn.status {
+.btn.status2 {
   background: #FFC107;
+}
+
+.btn.status2 {
+  background: #17A2B8;
 }
 
 .studentCard {

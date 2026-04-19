@@ -123,10 +123,10 @@ function AdminStudents() {
           </label>
 
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            <button className="btn secondary" style={{ flex: 1 }} onClick={handleEnableAll}>
+            <button className="btn status3" style={{ flex: 1 }} onClick={handleEnableAll}>
               Habilitar todos
             </button>
-            <button className="btn status" style={{ flex: 1 }} onClick={handleDisableAll}>
+            <button className="btn status2" style={{ flex: 1 }} onClick={handleDisableAll}>
               Deshabilitar todos
             </button>
             <button className="btn warning" style={{ flex: 1 }} onClick={handleResetAll}>
@@ -157,7 +157,10 @@ function AdminStudents() {
               </div>
 
               <div className="studentActions">
-                <button className="btn status" onClick={() => toggleStudent(s)}>
+                <button
+                  className={`btn ${s.enabled ? "status2" : "status3"}`}
+                  onClick={() => toggleStudent(s)}
+                >
                   {s.enabled ? "Deshabilitar" : "Habilitar"}
                 </button>
                 <button className="btn warning" onClick={() => resetStudent(s)}>Resetear</button>
