@@ -12,6 +12,7 @@ import { db } from "./firebase";
 function AdminStudents() {
   const [name, setName] = useState("");
   const [students, setStudents] = useState([]);
+  const [onlyCompleted, setOnlyCompleted] = useState(false); // 🔥 filtro
 
   useEffect(() => {
     loadStudents();
@@ -37,7 +38,8 @@ function AdminStudents() {
       completed: false,
       score: 0,
       total: 0,
-      coins: 0
+      coins: 0,
+      date: null
     });
 
     setName("");
@@ -57,7 +59,6 @@ function AdminStudents() {
     loadStudents();
   };
 
-  // 🔥 NUEVO: RESET
   const resetStudent = async (student) => {
     const confirmReset = window.confirm(
       `¿Seguro que querés resetear a ${student.name}?`
@@ -75,6 +76,18 @@ function AdminStudents() {
 
     loadStudents();
   };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "Sin realizar";
+
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+  };
+
+  // 🔥 FILTRO
+  const filteredStudents = onlyCompleted
+    ? students.filter((s) => s.completed)
+    : students;
 
   return (
     <div className="container">
@@ -95,13 +108,25 @@ function AdminStudents() {
           Agregar ➕
         </button>
 
+        {/* 🔥 FILTRO */}
+        <div style={{ marginTop: "15px" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <input
+              type="checkbox"
+              checked={onlyCompleted}
+              onChange={() => setOnlyCompleted(!onlyCompleted)}
+            />
+            Mostrar solo completados ✅
+          </label>
+        </div>
+
         {/* LISTA */}
         <h3 style={{ marginTop: "20px" }}>Lista de estudiantes</h3>
 
-        {students.length === 0 ? (
+        {filteredStudents.length === 0 ? (
           <p>No hay estudiantes</p>
         ) : (
-          students.map((s) => (
+          filteredStudents.map((s) => (
             <div key={s.id} className="studentRow">
               <div>
                 <h4>
@@ -112,10 +137,16 @@ function AdminStudents() {
                   <p>
                     📊 Puntaje: {s.score || 0} / {s.total || 0}
                   </p>
+
                   <p>🪙 Monedas: {s.coins || 0}</p>
+
                   <p>
                     Estado:{" "}
                     {s.completed ? "✅ Completado" : "⏳ Pendiente"}
+                  </p>
+
+                  <p>
+                    📅 Fecha: {formatDate(s.date)}
                   </p>
                 </div>
               </div>
@@ -128,7 +159,6 @@ function AdminStudents() {
                   {s.enabled ? "Deshabilitar 🚫" : "Habilitar ✅"}
                 </button>
 
-                {/* 🔥 BOTÓN RESET */}
                 <button
                   className="btn warning"
                   onClick={() => resetStudent(s)}
