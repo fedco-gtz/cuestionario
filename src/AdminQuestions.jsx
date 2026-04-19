@@ -1,46 +1,151 @@
-import React, { useState } from 'react';
-import { MathJaxContext, MathJax } from 'better-react-mathjax';
+import { useEffect, useState } from "react";
+import {
+    collection,
+    addDoc,
+    getDocs,
+    deleteDoc,
+    doc
+} from "firebase/firestore";
+import { MathJaxContext, MathJax } from "better-react-mathjax"; // Nueva librería
+import { db } from "./firebase";
 
-const EditorPregunta = () => {
-  // Nota: Si el usuario escribe \frac{1}{2} en el input, MathJax lo renderiza.
-  // Para que MathJax lo detecte automáticamente, es mejor rodearlo con $ si es texto mixto.
-  const [formula, setFormula] = useState("\\frac{1}{2}");
-
-  return (
-    <MathJaxContext>
-      <div className="p-4 bg-slate-900 text-white rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Nueva pregunta</h2>
-        
-        <input 
-          type="text"
-          value={formula}
-          onChange={(e) => setFormula(e.target.value)}
-          className="w-full p-2 bg-slate-800 rounded border border-slate-700 mb-4 font-mono text-white"
-          placeholder="Ej: \frac{a}{b} o \sqrt{x}"
-        />
-
-        <div className="mt-4">
-          <h3 className="text-sm text-slate-400 mb-2">👀 Vista previa:</h3>
-          <div className="p-4 bg-slate-800 rounded-md min-h-[80px] flex items-center justify-center text-xl">
-            {formula ? (
-              <MathJax hideUntilTypeset={"always"}>
-                {/* Envolvemos la fórmula con signos de pesos para que MathJax 
-                   sepa que debe procesarlo como LaTeX matemático 
-                */}
-                {`$${formula}$`}
-              </MathJax>
-            ) : (
-              <span className="text-slate-500 italic">Escribe una fórmula...</span>
-            )}
-          </div>
-        </div>
-        
-        <p className="mt-2 text-xs text-slate-500">
-          Tip: No hace falta que escribas los signos $, la vista previa los agrega por vos.
-        </p>
-      </div>
-    </MathJaxContext>
-  );
+// Configuración para que MathJax reconozca los $ y trabaje rápido
+const config = {
+    loader: { load: ["input/tex", "output/chtml"] },
+    tex: {
+        inlineMath: [["$", "$"]],
+        displayMath: [["$$", "$$"]]
+    }
 };
 
-export default EditorPregunta;
+function AdminQuestions() {
+    const [question, setQuestion] = useState("");
+    const [options, setOptions] = useState(["", "", "", ""]);
+    const [correct, setCorrect] = useState(0);
+    const [questions, setQuestions] = useState([]);
+
+    useEffect(() => {
+        loadQuestions();
+    }, []);
+
+    const loadQuestions = async () => {
+        const querySnapshot = await getDocs(collection(db, "questions"));
+        let data = [];
+        querySnapshot.forEach((doc) => {
+            data.push({ id: doc.id, ...doc.data() });
+        });
+        setQuestions(data);
+    };
+
+    const handleOptionChange = (value, index) => {
+        const newOptions = [...options];
+        newOptions[index] = value;
+        setOptions(newOptions);
+    };
+
+    const addQuestion = async () => {
+        if (!question || options.some(opt => opt === "")) {
+            alert("Completá todos los campos");
+            return;
+        }
+
+        await addDoc(collection(db, "questions"), {
+            question,
+            options,
+            correct
+        });
+
+        setQuestion("");
+        setOptions(["", "", "", ""]);
+        setCorrect(0);
+        loadQuestions();
+    };
+
+    const deleteQuestion = async (id) => {
+        await deleteDoc(doc(db, "questions", id));
+        loadQuestions();
+    };
+
+    return (
+        // Envolvemos todo en el Contexto
+        <MathJaxContext config={config}>
+            <div className="container">
+                <h1 className="title">Crear Preguntas</h1>
+                <p className="subtitle">Armá tu cuestionario (Usa $ para fórmulas, ej: $\frac{1}{2}$)</p>
+
+                <div className="card">
+                    <h3>Nueva pregunta</h3>
+                    <input
+                        className="input"
+                        placeholder="Ej: ¿Cuánto es $\frac{x}{2}$?"
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                    />
+
+                    <div className="previewBox">
+                        <p className="previewTitle">👀 Vista previa:</p>
+                        <div className="previewContent">
+                            {/* MathJax detecta automáticamente el texto y el LaTeX dentro de $ */}
+                            <MathJax dynamic>{question || "Escribí algo..."}</MathJax>
+                        </div>
+                    </div>
+
+                    <div className="options">
+                        {options.map((opt, i) => (
+                            <div key={i} className="optionRow">
+                                <input
+                                    className="input"
+                                    placeholder={`Opción ${i + 1}`}
+                                    value={opt}
+                                    onChange={(e) => handleOptionChange(e.target.value, i)}
+                                />
+                                <button
+                                    className={`selectBtn ${correct === i ? "selected" : ""}`}
+                                    onClick={() => setCorrect(i)}
+                                >
+                                    {correct === i ? "✔" : "Seleccionar"}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <button className="btn primary full" onClick={addQuestion}>
+                        Agregar pregunta ➕
+                    </button>
+                </div>
+
+                <div className="card">
+                    <h3>Preguntas cargadas</h3>
+                    {questions.length === 0 ? (
+                        <p>No hay preguntas</p>
+                    ) : (
+                        questions.map((q) => (
+                            <div key={q.id} className="questionCard">
+                                {/* Renderizamos la pregunta con MathJax */}
+                                <MathJax>
+                                    <h4>{q.question}</h4>
+                                </MathJax>
+
+                                <ul>
+                                    {q.options?.map((opt, i) => (
+                                        <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white", marginBottom: '8px' }}>
+                                            <MathJax>
+                                                <span>{opt} {i === q.correct && " (Correcta)"}</span>
+                                            </MathJax>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
+                                    Eliminar
+                                </button>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+        </MathJaxContext>
+    );
+}
+
+export default AdminQuestions;
