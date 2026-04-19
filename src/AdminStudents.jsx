@@ -4,7 +4,8 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  doc
+  doc,
+  updateDoc
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -20,8 +21,8 @@ function AdminStudents() {
     const querySnapshot = await getDocs(collection(db, "students"));
     let data = [];
 
-    querySnapshot.forEach((doc) => {
-      data.push({ id: doc.id, ...doc.data() });
+    querySnapshot.forEach((docu) => {
+      data.push({ id: docu.id, ...docu.data() });
     });
 
     setStudents(data);
@@ -33,7 +34,10 @@ function AdminStudents() {
     await addDoc(collection(db, "students"), {
       name,
       enabled: true,
-      completed: false
+      completed: false,
+      score: 0,
+      total: 0,
+      coins: 0
     });
 
     setName("");
@@ -45,30 +49,77 @@ function AdminStudents() {
     loadStudents();
   };
 
+  const toggleStudent = async (student) => {
+    await updateDoc(doc(db, "students", student.id), {
+      enabled: !student.enabled
+    });
+
+    loadStudents();
+  };
+
   return (
-    
-    <div className="card">
-      <h3>Agregar estudiante</h3>
+    <div className="container">
+      <div className="card">
+        <h2 className="title">👨‍🎓 Gestión de Estudiantes</h2>
 
-      <input
-        className="input input-full"
-        placeholder="Nombre"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+        {/* AGREGAR */}
+        <h3>Agregar estudiante</h3>
 
-      <button className="btn primary full" onClick={addStudent}>
-        Agregar
-      </button>
+        <input
+          className="input input-full"
+          placeholder="Nombre"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-      <h3 style={{ marginTop: "20px" }}>Lista</h3>
+        <button className="btn primary full" onClick={addStudent}>
+          Agregar ➕
+        </button>
 
-      {students.map((s) => (
-        <div key={s.id}>
-          {s.name}
-          <button onClick={() => deleteStudent(s.id)}>❌</button>
-        </div>
-      ))}
+        {/* LISTA */}
+        <h3 style={{ marginTop: "20px" }}>Lista de estudiantes</h3>
+
+        {students.length === 0 ? (
+          <p>No hay estudiantes</p>
+        ) : (
+          students.map((s) => (
+            <div key={s.id} className="studentRow">
+              <div>
+                <h4>
+                  {s.name} {s.enabled ? "🟢" : "🔴"}
+                </h4>
+
+                <div className="studentInfo">
+                  <p>
+                    📊 Puntaje: {s.score || 0} / {s.total || 0}
+                  </p>
+                  <p>🪙 Monedas: {s.coins || 0}</p>
+                  <p>
+                    Estado:{" "}
+                    {s.completed ? "✅ Completado" : "⏳ Pendiente"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="studentActions">
+                <button
+                  className="btn secondary"
+                  onClick={() => toggleStudent(s)}
+                >
+                  {s.enabled ? "Deshabilitar 🚫" : "Habilitar ✅"}
+                </button>
+
+                <button
+                  className="btn danger"
+                  onClick={() => deleteStudent(s.id)}
+                >
+                  Eliminar ❌
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
