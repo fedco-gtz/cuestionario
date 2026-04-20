@@ -20,59 +20,75 @@ function Quiz({ student }) {
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    loadQuestions();
-  }, []);
-
-  // 🔒 BLOQUEOS
-  useEffect(() => {
-    // 🚫 copiar / click derecho
     const preventCopy = (e) => e.preventDefault();
 
-    // ⌨️ bloquear teclas
     const handleKeyDown = (e) => {
       if (
         (e.ctrlKey && ["c", "u", "s", "p"].includes(e.key.toLowerCase())) ||
-        e.key === "F12" ||
-        e.key === "PrintScreen"
+        e.key === "F12"
       ) {
         e.preventDefault();
       }
     };
 
-    // 📸 intento screenshot
     const handleKeyUp = (e) => {
       if (e.key === "PrintScreen") {
-        document.body.style.filter = "blur(10px)";
+        document.body.style.filter = "blur(12px)";
         setTimeout(() => {
           document.body.style.filter = "none";
         }, 1000);
       }
     };
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        document.body.style.filter = "blur(12px)";
+      } else {
+        setTimeout(() => {
+          document.body.style.filter = "none";
+        }, 500);
+      }
+    };
+
+    const handleBlur = () => {
+      document.body.style.filter = "blur(12px)";
+    };
+
+    const handleFocus = () => {
+      document.body.style.filter = "none";
+    };
+
     document.addEventListener("copy", preventCopy);
     document.addEventListener("cut", preventCopy);
     document.addEventListener("contextmenu", preventCopy);
+
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    window.addEventListener("blur", handleBlur);
+    window.addEventListener("focus", handleFocus);
 
     return () => {
       document.removeEventListener("copy", preventCopy);
       document.removeEventListener("cut", preventCopy);
       document.removeEventListener("contextmenu", preventCopy);
+
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
+
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+      window.removeEventListener("blur", handleBlur);
+      window.removeEventListener("focus", handleFocus);
     };
   }, []);
 
-  // ⏱️ countdown
+  // 📦 CARGA + RANDOM 10
   useEffect(() => {
-    if (finished && countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (finished && countdown === 0) {
-      window.location.reload();
-    }
-  }, [finished, countdown]);
+    loadQuestions();
+  }, []);
 
   const loadQuestions = async () => {
     const querySnapshot = await getDocs(collection(db, "questions"));
@@ -82,7 +98,7 @@ function Quiz({ student }) {
       data.push({ id: doc.id, ...doc.data() });
     });
 
-    // 🎲 mezclar y tomar 10
+    // 🎲 Mezclar y tomar 10
     const shuffled = data.sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, 10);
 
@@ -101,6 +117,7 @@ function Quiz({ student }) {
     }
   };
 
+  // 🧠 CORRECCIÓN + MONEDAS
   const handleSubmit = async () => {
     let result = 0;
 
@@ -110,14 +127,9 @@ function Quiz({ student }) {
 
     const earnedCoins = result * 2;
 
-    const optionsDate = {
+    const dateBA = new Date().toLocaleDateString("en-CA", {
       timeZone: "America/Argentina/Buenos_Aires",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    };
-
-    const dateBA = new Date().toLocaleDateString("en-CA", optionsDate);
+    });
 
     const studentRef = doc(db, "students", student.id);
     const studentSnap = await getDoc(studentRef);
@@ -134,7 +146,7 @@ function Quiz({ student }) {
       score: result,
       total: questions.length,
       date: dateBA,
-      coins: totalCoins
+      coins: totalCoins,
     });
 
     setScore(result);
@@ -145,41 +157,57 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
+  // ⏳ COUNTDOWN FINAL
+  useEffect(() => {
+    if (finished && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (finished && countdown === 0) {
+      window.location.reload();
+    }
+  }, [finished, countdown]);
+
+  // 🎉 RESULTADO
   if (finished) {
     return (
       <div className="container">
         <div className="card center">
           <h2>🎉 Cuestionario finalizado</h2>
+
           <h1 style={{ fontSize: "3rem", margin: "20px 0" }}>
             {score}/{questions.length}
           </h1>
-          <p>Excelente trabajo 💪</p>
 
-          <div style={{ marginTop: "30px", color: "#94a3b8" }}>
-            <p>Volviendo al inicio en {countdown} segundos...</p>
+          <p>Ganaste 🪙 {score * 2} monedas</p>
+
+          <div style={{ marginTop: "20px", color: "#94a3b8" }}>
+            Volviendo al inicio en {countdown}s...
           </div>
         </div>
       </div>
     );
   }
 
-  if (questions.length === 0)
-    return <p className="center">Cargando cuestionario...</p>;
+  if (questions.length === 0) {
+    return <p className="center">Cargando...</p>;
+  }
 
   const q = questions[current];
 
   return (
     <MathJaxContext config={mathJaxConfig}>
       <div className="container">
-        <h1 className="title">Cuestionario</h1>
+        <h1 className="title">🧠 Cuestionario</h1>
         <p className="subtitle">Estudiante: {student.name}</p>
 
+        {/* 📊 PROGRESO */}
         <div className="progressContainer">
           <div className="progressInfo">
             <span>
               Pregunta {current + 1} de {questions.length}
             </span>
           </div>
+
           <div className="progressBar">
             <div
               className="progressFill"
@@ -188,11 +216,10 @@ function Quiz({ student }) {
           </div>
         </div>
 
+        {/* ❓ PREGUNTA */}
         <div className="card">
           <h2 className="questionText">
-            <MathJax key={`q-${current}`} dynamic>
-              {q.question}
-            </MathJax>
+            <MathJax dynamic>{q.question}</MathJax>
           </h2>
 
           <div className="options">
@@ -204,9 +231,7 @@ function Quiz({ student }) {
                 }`}
                 onClick={() => handleAnswer(i)}
               >
-                <MathJax key={`opt-${current}-${i}`} dynamic>
-                  <span>{opt}</span>
-                </MathJax>
+                <MathJax dynamic>{opt}</MathJax>
               </button>
             ))}
           </div>
@@ -218,8 +243,8 @@ function Quiz({ student }) {
           disabled={answers[current] === undefined}
         >
           {current === questions.length - 1
-            ? "Finalizar Cuestionario"
-            : "Siguiente Pregunta"}
+            ? "Finalizar 🚀"
+            : "Siguiente ➡️"}
         </button>
       </div>
     </MathJaxContext>
