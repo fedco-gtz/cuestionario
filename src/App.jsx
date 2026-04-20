@@ -4,8 +4,6 @@ import Quiz from "./Quiz";
 import AdminLogin from "./AdminLogin";
 import Welcome from "./Welcome";
 import AdminPanel from "./AdminPanel";
-
-// 🔥 TOASTIFY
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
