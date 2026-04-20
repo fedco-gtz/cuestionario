@@ -58,7 +58,7 @@ function AdminStudents() {
     total: 0,
     coins: 0,
     date: null,
-    status: false
+    status: false,
   }, "¿Estás seguro de que querés RESETEAR a todos? Se borrarán sus puntajes y monedas.");
 
    const addStudent = async () => {
@@ -95,7 +95,7 @@ function AdminStudents() {
   const resetStudent = async (student) => {
     if (!window.confirm(`¿Resetear a ${student.name}?`)) return;
     await updateDoc(doc(db, "students", student.id), {
-      completed: false, score: 0, total: 0, coins: 0, date: null, status: false
+      completed: false, score: 0, total: 0, coins: 0, date: null, status: false,
     });
     loadStudents();
   };
