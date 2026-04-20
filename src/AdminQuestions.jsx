@@ -58,7 +58,6 @@ function AdminQuestions() {
         setQuestions(data);
     };
 
-    // Función para insertar la sintaxis en el input
     const insertSyntax = (syntax) => {
         setQuestion(prev => prev + syntax);
     };
@@ -96,12 +95,11 @@ function AdminQuestions() {
         <MathJaxContext config={config}>
             <div className="container">
                 <h1 className="title">Crear Preguntas</h1>
-                <p className="subtitle">Armá tu cuestionario del Chiqui Coins</p>
+                <p className="subtitle">Armá tu cuestionario</p>
 
                 <div className="card">
                     <h3>Nueva pregunta</h3>
 
-                    {/* Botonera de herramientas matemáticas */}
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
                         {mathTools.map((tool, index) => (
                             <button
@@ -123,14 +121,14 @@ function AdminQuestions() {
                     </div>
 
                     <input
-                        className="input"
+                        className="input input-full"
                         placeholder="Escribí acá la pregunta..."
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                     />
 
                     <div className="previewBox">
-                        <p className="previewTitle">👀 Vista previa:</p>
+                        <p className="previewTitle">Vista previa:</p>
                         <div className="previewContent" style={{ minHeight: '60px', display: 'flex', alignItems: 'center' }}>
                             <MathJax dynamic>{question || "Escribí algo para previsualizar..."}</MathJax>
                         </div>
@@ -156,7 +154,7 @@ function AdminQuestions() {
                     </div>
 
                     <button className="btn primary full" onClick={addQuestion}>
-                        Agregar pregunta ➕
+                        Agregar pregunta
                     </button>
                 </div>
 

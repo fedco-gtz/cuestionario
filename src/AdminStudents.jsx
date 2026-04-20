@@ -105,7 +105,7 @@ function AdminStudents() {
         <h3>Agregar estudiante</h3>
         <input
           className="input input-full"
-          placeholder="Nombre del alumno"
+          placeholder="Nombre del estudiantes"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -135,7 +135,7 @@ function AdminStudents() {
           </div>
         </div>
 
-        <h3 style={{ marginTop: "25px" }}>Lista de alumnos</h3>
+        <h3 style={{ marginTop: "25px" }}>Lista de estudiantes</h3>
 
         {filteredStudents.length === 0 ? (
           <p>No hay estudiantes</p>
