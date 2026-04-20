@@ -52,7 +52,11 @@ function Quiz({ student }) {
     });
 
     const earnedCoins = result * 2;
-    const today = new Date().toISOString().split("T")[0];
+
+    // 🔥 FECHA CONFIGURADA PARA BUENOS AIRES (ISO YYYY-MM-DD)
+    const optionsDate = { timeZone: 'America/Argentina/Buenos_Aires', year: 'numeric', month: '2-digit', day: '2-digit' };
+    const dateBA = new Date().toLocaleDateString('en-CA', optionsDate); // 'en-CA' devuelve YYYY-MM-DD
+
     const studentRef = doc(db, "students", student.id);
     const studentSnap = await getDoc(studentRef);
 
@@ -67,7 +71,7 @@ function Quiz({ student }) {
       completed: true,
       score: result,
       total: questions.length,
-      date: today,
+      date: dateBA, // Se guarda como "2026-04-19" (ejemplo)
       coins: totalCoins
     });
 
@@ -100,7 +104,7 @@ function Quiz({ student }) {
   return (
     <MathJaxContext config={mathJaxConfig}>
       <div className="container">
-        <h1 className="title">🧠 Cuestionario</h1>
+        <h1 className="title">Cuestionario</h1>
         <p className="subtitle">Estudiante: {student.name}</p>
 
         <div className="progressContainer">
@@ -119,9 +123,6 @@ function Quiz({ student }) {
 
         <div className="card">
           <h2 className="questionText">
-            {/* IMPORTANTE: key={current} obliga a MathJax a volver a 
-                procesar el texto cada vez que pasas de pregunta.
-            */}
             <MathJax key={`q-${current}`} dynamic>
               {q.question}
             </MathJax>
@@ -134,7 +135,6 @@ function Quiz({ student }) {
                 className={`option ${answers[current] === i ? "selected" : ""}`}
                 onClick={() => handleAnswer(i)}
               >
-                {/* También usamos key aquí para asegurar el renderizado de las opciones */}
                 <MathJax key={`opt-${current}-${i}`} dynamic>
                   <span>{opt}</span>
                 </MathJax>
@@ -149,8 +149,8 @@ function Quiz({ student }) {
           disabled={answers[current] === undefined}
         >
           {current === questions.length - 1
-            ? "Finalizar 🚀"
-            : "Siguiente ➡️"}
+            ? "Finalizar Cuestionario"
+            : "Siguiente Pregunta"}
         </button>
       </div>
     </MathJaxContext>
