@@ -39,7 +39,7 @@ function Login({ setStudent }) {
     }
 
     if (found.status === true) {
-      setError("Ya hay una sesión activa con este nombre");
+      setError("Ya iniciaste sesión con este nombre");
       return;
     }
 

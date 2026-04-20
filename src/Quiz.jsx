@@ -3,7 +3,6 @@ import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore"
 import { db } from "./firebase";
 import { MathJaxContext, MathJax } from "better-react-mathjax";
 
-// Configuración de MathJax para procesar TeX correctamente
 const mathJaxConfig = {
   loader: { load: ["input/tex", "output/chtml"] },
   tex: {
@@ -24,7 +23,48 @@ function Quiz({ student }) {
     loadQuestions();
   }, []);
 
-  // Lógica del temporizador de redirección al finalizar
+  // 🔒 BLOQUEOS
+  useEffect(() => {
+    // 🚫 copiar / click derecho
+    const preventCopy = (e) => e.preventDefault();
+
+    // ⌨️ bloquear teclas
+    const handleKeyDown = (e) => {
+      if (
+        (e.ctrlKey && ["c", "u", "s", "p"].includes(e.key.toLowerCase())) ||
+        e.key === "F12" ||
+        e.key === "PrintScreen"
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    // 📸 intento screenshot
+    const handleKeyUp = (e) => {
+      if (e.key === "PrintScreen") {
+        document.body.style.filter = "blur(10px)";
+        setTimeout(() => {
+          document.body.style.filter = "none";
+        }, 1000);
+      }
+    };
+
+    document.addEventListener("copy", preventCopy);
+    document.addEventListener("cut", preventCopy);
+    document.addEventListener("contextmenu", preventCopy);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      document.removeEventListener("copy", preventCopy);
+      document.removeEventListener("cut", preventCopy);
+      document.removeEventListener("contextmenu", preventCopy);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
+
+  // ⏱️ countdown
   useEffect(() => {
     if (finished && countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -37,14 +77,15 @@ function Quiz({ student }) {
   const loadQuestions = async () => {
     const querySnapshot = await getDocs(collection(db, "questions"));
     let data = [];
+
     querySnapshot.forEach((doc) => {
       data.push({ id: doc.id, ...doc.data() });
     });
 
-    // 🔥 MEZCLAR Y SELECCIONAR 10 PREGUNTAS
-    const shuffled = data.sort(() => Math.random() - 0.5); // Mezcla aleatoria simple
-    const selected = shuffled.slice(0, 10); // Toma solo las primeras 10
-    
+    // 🎲 mezclar y tomar 10
+    const shuffled = data.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 10);
+
     setQuestions(selected);
   };
 
@@ -62,20 +103,21 @@ function Quiz({ student }) {
 
   const handleSubmit = async () => {
     let result = 0;
+
     questions.forEach((q, index) => {
       if (answers[index] === q.correct) result++;
     });
 
     const earnedCoins = result * 2;
 
-    // Fecha Buenos Aires
-    const optionsDate = { 
-      timeZone: 'America/Argentina/Buenos_Aires', 
-      year: 'numeric', 
-      month: '2-digit', 
-      day: '2-digit' 
+    const optionsDate = {
+      timeZone: "America/Argentina/Buenos_Aires",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
     };
-    const dateBA = new Date().toLocaleDateString('en-CA', optionsDate);
+
+    const dateBA = new Date().toLocaleDateString("en-CA", optionsDate);
 
     const studentRef = doc(db, "students", student.id);
     const studentSnap = await getDoc(studentRef);
@@ -108,10 +150,12 @@ function Quiz({ student }) {
       <div className="container">
         <div className="card center">
           <h2>🎉 Cuestionario finalizado</h2>
-          <h1 style={{ fontSize: '3rem', margin: '20px 0' }}>{score}/{questions.length}</h1>
+          <h1 style={{ fontSize: "3rem", margin: "20px 0" }}>
+            {score}/{questions.length}
+          </h1>
           <p>Excelente trabajo 💪</p>
-          
-          <div style={{ marginTop: '30px', color: '#94a3b8', fontSize: '0.9rem' }}>
+
+          <div style={{ marginTop: "30px", color: "#94a3b8" }}>
             <p>Volviendo al inicio en {countdown} segundos...</p>
           </div>
         </div>
@@ -119,7 +163,8 @@ function Quiz({ student }) {
     );
   }
 
-  if (questions.length === 0) return <p className="center">Cargando cuestionario...</p>;
+  if (questions.length === 0)
+    return <p className="center">Cargando cuestionario...</p>;
 
   const q = questions[current];
 
@@ -131,7 +176,9 @@ function Quiz({ student }) {
 
         <div className="progressContainer">
           <div className="progressInfo">
-            <span>Pregunta {current + 1} de {questions.length}</span>
+            <span>
+              Pregunta {current + 1} de {questions.length}
+            </span>
           </div>
           <div className="progressBar">
             <div
@@ -152,7 +199,9 @@ function Quiz({ student }) {
             {q.options.map((opt, i) => (
               <button
                 key={i}
-                className={`option ${answers[current] === i ? "selected" : ""}`}
+                className={`option ${
+                  answers[current] === i ? "selected" : ""
+                }`}
                 onClick={() => handleAnswer(i)}
               >
                 <MathJax key={`opt-${current}-${i}`} dynamic>
