@@ -5,6 +5,8 @@ import Admin from "./Admin";
 import AdminLogin from "./AdminLogin";
 import Welcome from "./Welcome";
 import AdminPanel from "./AdminPanel";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [started, setStarted] = useState(false);
@@ -13,29 +15,59 @@ function App() {
   const [admin, setAdmin] = useState(null);
 
   if (!started) {
-    return <Welcome onStart={() => setStarted(true)} />;
+    return (
+      <>
+        <Welcome onStart={() => setStarted(true)} />
+
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
+          theme="dark"
+        />
+      </>
+    );
   }
 
   if (view === "admin") {
-    if (!admin) return <AdminLogin setAdmin={setAdmin} setView={setView} />;
+    if (!admin)
+      return (
+        <>
+          <AdminLogin setAdmin={setAdmin} setView={setView} />
+          <ToastContainer position="top-right" autoClose={2000} theme="dark" />
+        </>
+      );
 
-    return <AdminPanel />;
+    return (
+      <>
+        <AdminPanel />
+        <ToastContainer position="top-right" autoClose={2000} theme="dark" />
+      </>
+    );
   }
 
   return (
-    <div>
-      <div style={{ margin: "10px" }}>
-        <button className="tab2" onClick={() => setView("admin")}>
-          Ingreso de Profesores
-        </button>
+    <>
+      <div>
+        <div style={{ margin: "10px" }}>
+          <button className="tab2" onClick={() => setView("admin")}>
+            Ingreso de Profesores
+          </button>
+        </div>
+
+        {!student ? (
+          <Login setStudent={setStudent} />
+        ) : (
+          <Quiz student={student} />
+        )}
       </div>
 
-      {!student ? (
-        <Login setStudent={setStudent} />
-      ) : (
-        <Quiz student={student} />
-      )}
-    </div>
+      {/* 🔥 Toast global */}
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        theme="dark"
+      />
+    </>
   );
 }
 

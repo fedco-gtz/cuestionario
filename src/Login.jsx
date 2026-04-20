@@ -38,7 +38,6 @@ function Login({ setStudent }) {
       return;
     }
 
-    // 4. 🔥 NUEVA VALIDACIÓN: Validar si ya está rindiendo (status)
     if (found.status === true) {
       setError("Ya hay una sesión activa con este nombre");
       return;
