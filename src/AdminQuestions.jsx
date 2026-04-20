@@ -137,7 +137,7 @@ function AdminQuestions() {
                         {options.map((opt, i) => (
                             <div key={i} className="optionRow">
                                 <input
-                                    className="input"
+                                    className="input input-full3"
                                     placeholder={`Opción ${i + 1}`}
                                     value={opt}
                                     onChange={(e) => handleOptionChange(e.target.value, i)}
