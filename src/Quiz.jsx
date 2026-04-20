@@ -30,18 +30,22 @@ function Quiz({ student }) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
     } else if (finished && countdown === 0) {
-      // Recarga la página para volver al inicio (Welcome)
       window.location.reload();
     }
   }, [finished, countdown]);
 
   const loadQuestions = async () => {
     const querySnapshot = await getDocs(collection(db, "questions"));
-    const data = [];
+    let data = [];
     querySnapshot.forEach((doc) => {
       data.push({ id: doc.id, ...doc.data() });
     });
-    setQuestions(data);
+
+    // 🔥 MEZCLAR Y SELECCIONAR 10 PREGUNTAS
+    const shuffled = data.sort(() => Math.random() - 0.5); // Mezcla aleatoria simple
+    const selected = shuffled.slice(0, 10); // Toma solo las primeras 10
+    
+    setQuestions(selected);
   };
 
   const handleAnswer = (optionIndex) => {
@@ -64,7 +68,7 @@ function Quiz({ student }) {
 
     const earnedCoins = result * 2;
 
-    // Configuración de fecha para Buenos Aires (formato YYYY-MM-DD)
+    // Fecha Buenos Aires
     const optionsDate = { 
       timeZone: 'America/Argentina/Buenos_Aires', 
       year: 'numeric', 
@@ -99,7 +103,6 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
-  // Pantalla de resultados con temporizador
   if (finished) {
     return (
       <div className="container">
