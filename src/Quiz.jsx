@@ -3,7 +3,6 @@ import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore"
 import { db } from "./firebase";
 import { MathJaxContext, MathJax } from "better-react-mathjax";
 
-// Configuración optimizada
 const mathJaxConfig = {
   loader: { load: ["input/tex", "output/chtml"] },
   tex: {
@@ -12,17 +11,29 @@ const mathJaxConfig = {
   }
 };
 
-function Quiz({ student }) {
+function Quiz({ student, onFinish }) { // Asumo que usas una prop para volver
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [current, setCurrent] = useState(0);
   const [finished, setFinished] = useState(false);
   const [score, setScore] = useState(0);
   const [coins, setCoins] = useState(0);
+  const [countdown, setCountdown] = useState(5); // Estado para el reloj
 
   useEffect(() => {
     loadQuestions();
   }, []);
+
+  // Lógica del temporizador de redirección
+  useEffect(() => {
+    if (finished && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (finished && countdown === 0) {
+      // Cuando llega a 0 (o podés poner 0 para que sea exacto) vuelve al Welcome
+      window.location.reload(); // O usar onFinish() si manejas estado de navegación
+    }
+  }, [finished, countdown]);
 
   const loadQuestions = async () => {
     const querySnapshot = await getDocs(collection(db, "questions"));
@@ -52,10 +63,8 @@ function Quiz({ student }) {
     });
 
     const earnedCoins = result * 2;
-
-    // 🔥 FECHA CONFIGURADA PARA BUENOS AIRES (ISO YYYY-MM-DD)
     const optionsDate = { timeZone: 'America/Argentina/Buenos_Aires', year: 'numeric', month: '2-digit', day: '2-digit' };
-    const dateBA = new Date().toLocaleDateString('en-CA', optionsDate); // 'en-CA' devuelve YYYY-MM-DD
+    const dateBA = new Date().toLocaleDateString('en-CA', optionsDate);
 
     const studentRef = doc(db, "students", student.id);
     const studentSnap = await getDoc(studentRef);
@@ -71,7 +80,7 @@ function Quiz({ student }) {
       completed: true,
       score: result,
       total: questions.length,
-      date: dateBA, // Se guarda como "2026-04-19" (ejemplo)
+      date: dateBA,
       coins: totalCoins
     });
 
@@ -84,14 +93,19 @@ function Quiz({ student }) {
     ? ((current + 1) / questions.length) * 100
     : 0;
 
+  // Pantalla final con temporizador
   if (finished) {
     return (
       <div className="container">
         <div className="card center">
           <h2>🎉 Cuestionario finalizado</h2>
           <h1>{score}/{questions.length}</h1>
-          <p>💰 Monedas ganadas: <strong>{coins}</strong></p>
+          <p>Ganaste 🪙 {coins} Chiqui Coins</p>
           <p>Excelente trabajo 💪</p>
+          
+          <div style={{ marginTop: '20px', color: '#94a3b8' }}>
+            <p>Redirigiendo en {countdown}...</p>
+          </div>
         </div>
       </div>
     );
@@ -109,23 +123,16 @@ function Quiz({ student }) {
 
         <div className="progressContainer">
           <div className="progressInfo">
-            <span>
-              Pregunta {current + 1} de {questions.length}
-            </span>
+            <span>Pregunta {current + 1} de {questions.length}</span>
           </div>
           <div className="progressBar">
-            <div
-              className="progressFill"
-              style={{ width: `${progress}%` }}
-            ></div>
+            <div className="progressFill" style={{ width: `${progress}%` }}></div>
           </div>
         </div>
 
         <div className="card">
           <h2 className="questionText">
-            <MathJax key={`q-${current}`} dynamic>
-              {q.question}
-            </MathJax>
+            <MathJax key={`q-${current}`} dynamic>{q.question}</MathJax>
           </h2>
 
           <div className="options">
@@ -148,9 +155,7 @@ function Quiz({ student }) {
           onClick={nextQuestion}
           disabled={answers[current] === undefined}
         >
-          {current === questions.length - 1
-            ? "Finalizar Cuestionario"
-            : "Siguiente Pregunta"}
+          {current === questions.length - 1 ? "Finalizar Cuestionario" : "Siguiente Pregunta"}
         </button>
       </div>
     </MathJaxContext>
