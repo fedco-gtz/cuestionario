@@ -1,10 +1,11 @@
 import { useState } from "react";
 import Login from "./Login";
 import Quiz from "./Quiz";
-import Admin from "./Admin";
 import AdminLogin from "./AdminLogin";
 import Welcome from "./Welcome";
 import AdminPanel from "./AdminPanel";
+
+// 🔥 TOASTIFY
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,39 +15,23 @@ function App() {
   const [student, setStudent] = useState(null);
   const [admin, setAdmin] = useState(null);
 
+  let content;
+
+  // 🎬 Pantalla inicial
   if (!started) {
-    return (
-      <>
-        <Welcome onStart={() => setStarted(true)} />
-
-        <ToastContainer
-          position="top-right"
-          autoClose={2000}
-          theme="dark"
-        />
-      </>
-    );
+    content = <Welcome onStart={() => setStarted(true)} />;
   }
-
-  if (view === "admin") {
-    if (!admin)
-      return (
-        <>
-          <AdminLogin setAdmin={setAdmin} setView={setView} />
-          <ToastContainer position="top-right" autoClose={2000} theme="dark" />
-        </>
-      );
-
-    return (
-      <>
-        <AdminPanel />
-        <ToastContainer position="top-right" autoClose={2000} theme="dark" />
-      </>
-    );
+  // 👨‍🏫 Panel admin
+  else if (view === "admin") {
+    if (!admin) {
+      content = <AdminLogin setAdmin={setAdmin} setView={setView} />;
+    } else {
+      content = <AdminPanel />;
+    }
   }
-
-  return (
-    <>
+  // 🎓 Flujo estudiante
+  else {
+    content = (
       <div>
         <div style={{ margin: "10px" }}>
           <button className="tab2" onClick={() => setView("admin")}>
@@ -60,12 +45,19 @@ function App() {
           <Quiz student={student} />
         )}
       </div>
+    );
+  }
 
-      {/* 🔥 Toast global */}
+  return (
+    <>
+      {content}
+
+      {/* 🔥 Toast GLOBAL (una sola vez, como debe ser) */}
       <ToastContainer
         position="top-right"
         autoClose={2000}
         theme="dark"
+        pauseOnHover
       />
     </>
   );
