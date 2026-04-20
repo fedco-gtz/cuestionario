@@ -57,7 +57,8 @@ function AdminStudents() {
     score: 0,
     total: 0,
     coins: 0,
-    date: null
+    date: null,
+    status: false
   }, "¿Estás seguro de que querés RESETEAR a todos? Se borrarán sus puntajes y monedas.");
 
   // --- FUNCIONES INDIVIDUALES ---
