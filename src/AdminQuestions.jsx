@@ -128,9 +128,8 @@ function AdminQuestions() {
                     />
 
                     <div className="previewBox">
-                        <p className="previewTitle">Vista previa:</p>
                         <div className="previewContent" style={{ minHeight: '60px', display: 'flex', alignItems: 'center' }}>
-                            <MathJax dynamic>{question || "Escribí algo para previsualizar..."}</MathJax>
+                            <MathJax dynamic>{question || "Vista previa de tu pregunta..."}</MathJax>
                         </div>
                     </div>
 
