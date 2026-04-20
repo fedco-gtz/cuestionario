@@ -94,10 +94,8 @@ function AdminQuestions() {
     return (
         <MathJaxContext config={config}>
             <div className="container">
-                <h1 className="title">Crear Preguntas</h1>
-                <p className="subtitle">Armá tu cuestionario</p>
-
                 <div className="card">
+                    <h2 className="title">Crear Preguntas</h2>
                     <h3>Nueva pregunta</h3>
 
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
