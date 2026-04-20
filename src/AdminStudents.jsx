@@ -71,9 +71,20 @@ function AdminStudents() {
   };
 
   const deleteStudent = async (id) => {
-    await deleteDoc(doc(db, "students", id));
-    loadQuestions(); // Nota: Asegúrate que esta función sea loadStudents()
-    loadStudents();
+    const confirmDelete = window.confirm("¿Eliminar este estudiante?");
+    if (!confirmDelete) return;
+
+    try {
+      await deleteDoc(doc(db, "students", id));
+
+      setStudents((prev) => prev.filter((s) => s.id !== id));
+
+      toast.success("Estudiante eliminado");
+
+    } catch (error) {
+      console.error("Error al eliminar:", error);
+      toast.error("Error al eliminar");
+    }
   };
 
   const toggleStudent = async (student) => {
