@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import { MathJaxContext, MathJax } from "better-react-mathjax";
 import { db } from "./firebase";
+import { toast } from "react-toastify";
 
 const config = {
   loader: { load: ["input/tex", "output/chtml"] },
@@ -23,37 +24,39 @@ function AdminQuestions() {
   const [correct, setCorrect] = useState(0);
   const [questions, setQuestions] = useState([]);
   const [archives, setArchives] = useState([]);
-  const [view, setView] = useState("questions");
+
+  // 🔢 BOTONES MATEMÁTICOS
+  const mathTools = [
+    { label: "Raíz", syntax: "$\\sqrt{ }$" },
+    { label: "Fracción", syntax: "$\\frac{ }{ }$" },
+    { label: "Potencia", syntax: "$x^{ }$" },
+    { label: "π", syntax: "$\\pi$" },
+    { label: "ℝ", syntax: "$\\mathbb{R}$" }
+  ];
 
   useEffect(() => {
     loadQuestions();
     loadArchives();
   }, []);
 
-  // 📥 Cargar preguntas
+  // 📥 CARGAR PREGUNTAS
   const loadQuestions = async () => {
-    const querySnapshot = await getDocs(collection(db, "questions"));
-    let data = [];
-    querySnapshot.forEach((doc) => {
-      data.push({ id: doc.id, ...doc.data() });
-    });
+    const snap = await getDocs(collection(db, "questions"));
+    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     setQuestions(data);
   };
 
-  // 📥 Cargar archivos
+  // 📥 CARGAR ARCHIVOS
   const loadArchives = async () => {
-    const querySnapshot = await getDocs(collection(db, "Archive"));
-    let data = [];
-    querySnapshot.forEach((doc) => {
-      data.push({ id: doc.id, ...doc.data() });
-    });
+    const snap = await getDocs(collection(db, "archives"));
+    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     setArchives(data);
   };
 
-  // ➕ Agregar pregunta
+  // ➕ AGREGAR PREGUNTA
   const addQuestion = async () => {
-    if (!question || options.some(opt => opt === "")) {
-      alert("Completá todos los campos");
+    if (!question || options.some(o => o === "")) {
+      toast.error("Completá todos los campos");
       return;
     }
 
@@ -67,37 +70,43 @@ function AdminQuestions() {
     setOptions(["", "", "", ""]);
     setCorrect(0);
     loadQuestions();
+    toast.success("Pregunta agregada");
   };
-  
+
+  // ❌ ELIMINAR PREGUNTA
   const deleteQuestion = async (id) => {
     await deleteDoc(doc(db, "questions", id));
     loadQuestions();
+    toast.success("Pregunta eliminada");
   };
 
-  // 📦 ARCHIVAR PREGUNTAS
+  // 🧠 INSERTAR SINTAXIS
+  const insertSyntax = (syntax) => {
+    setQuestion(prev => prev + syntax);
+  };
+
+  // 📦 ARCHIVAR
   const archiveQuestions = async () => {
     if (questions.length === 0) {
-      alert("No hay preguntas para archivar");
+      toast.error("No hay preguntas para archivar");
       return;
     }
 
     const name = prompt("Nombre del archivo:");
     if (!name) return;
 
-    await addDoc(collection(db, "Archive"), {
+    await addDoc(collection(db, "archives"), {
       name,
-      createdAt: new Date().toISOString(),
-      questions
+      questions,
+      createdAt: new Date().toISOString()
     });
 
-    alert("Preguntas archivadas ✅");
+    toast.success("Archivo creado");
     loadArchives();
   };
 
-  // ♻️ RESTAURAR
+  // 🔄 RESTAURAR
   const restoreArchive = async (archive) => {
-    if (!window.confirm(`¿Restaurar "${archive.name}"?`)) return;
-
     for (let q of archive.questions) {
       await addDoc(collection(db, "questions"), {
         question: q.question,
@@ -106,158 +115,130 @@ function AdminQuestions() {
       });
     }
 
-    alert("Preguntas restauradas ✅");
+    toast.success("Preguntas restauradas");
     loadQuestions();
   };
 
-  // 🗑️ ELIMINAR ARCHIVO
+  // ❌ ELIMINAR ARCHIVO
   const deleteArchive = async (id) => {
-    if (!window.confirm("¿Eliminar archivo?")) return;
-    await deleteDoc(doc(db, "Archive", id));
+    await deleteDoc(doc(db, "archives", id));
     loadArchives();
-  };
-
-  // 🎯 CAMBIO OPCIONES
-  const handleOptionChange = (value, index) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
+    toast.success("Archivo eliminado");
   };
 
   return (
     <MathJaxContext config={config}>
       <div className="container">
 
-        {/* 🔀 TABS */}
-        <div className="tabs">
-          <button className="tab" onClick={() => setView("questions")}>
-            Preguntas
-          </button>
-          <button className="tab" onClick={() => setView("archives")}>
-            Archivos
+        {/* 🔹 CREAR */}
+        <div className="card">
+          <h2 className="title">Crear Preguntas</h2>
+
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {mathTools.map((tool, i) => (
+              <button key={i} className="btn" onClick={() => insertSyntax(tool.syntax)}>
+                {tool.label}
+              </button>
+            ))}
+          </div>
+
+          <input
+            className="input input-full"
+            placeholder="Escribí la pregunta"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+          />
+
+          {/* 👀 PREVIEW */}
+          <div className="card" style={{ marginTop: 10 }}>
+            <MathJax dynamic>
+              {question || "Vista previa..."}
+            </MathJax>
+          </div>
+
+          {/* OPCIONES */}
+          {options.map((opt, i) => (
+            <div key={i} className="optionRow">
+              <input
+                className="input"
+                placeholder={`Opción ${i + 1}`}
+                value={opt}
+                onChange={(e) => {
+                  const newOpts = [...options];
+                  newOpts[i] = e.target.value;
+                  setOptions(newOpts);
+                }}
+              />
+              <button
+                className={`btn ${correct === i ? "primary" : ""}`}
+                onClick={() => setCorrect(i)}
+              >
+                ✔
+              </button>
+            </div>
+          ))}
+
+          <button className="btn primary full" onClick={addQuestion}>
+            Agregar pregunta
           </button>
         </div>
 
-        {/* ================== PREGUNTAS ================== */}
-        {view === "questions" && (
-          <>
-            <div className="card">
-              <h2>Crear Pregunta</h2>
+        {/* 🔹 LISTA */}
+        <div className="card">
+          <h3>Preguntas ({questions.length})</h3>
 
-              <input
-                className="input input-full"
-                placeholder="Pregunta"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-              />
+          <button className="btn warning full" onClick={archiveQuestions}>
+            Archivar ({questions.length}) preguntas
+          </button>
 
-              <div className="previewBox">
-                <MathJax dynamic>
-                  {question || "Vista previa..."}
-                </MathJax>
-              </div>
+          {questions.map(q => (
+            <div key={q.id} className="questionCard">
+              <MathJax>
+                <h4>{q.question}</h4>
+              </MathJax>
 
-              <div className="options">
-                {options.map((opt, i) => (
-                  <div key={i} className="optionRow">
-                    <input
-                      className="input"
-                      placeholder={`Opción ${i + 1}`}
-                      value={opt}
-                      onChange={(e) =>
-                        handleOptionChange(e.target.value, i)
-                      }
-                    />
-
-                    <button
-                      className={`selectBtn ${correct === i ? "selected" : ""}`}
-                      onClick={() => setCorrect(i)}
-                    >
-                      {correct === i ? "✔" : "Seleccionar"}
-                    </button>
-                  </div>
+              <ul>
+                {q.options.map((opt, i) => (
+                  <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
+                    <MathJax>{opt}</MathJax>
+                  </li>
                 ))}
-              </div>
+              </ul>
 
-              <button className="btn primary full" onClick={addQuestion}>
-                Agregar
-              </button>
-
-              <button
-                className="btn warning full"
-                onClick={archiveQuestions}
-              >
-                Archivar ({questions.length}) preguntas
+              <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
+                Eliminar
               </button>
             </div>
+          ))}
+        </div>
 
-            <div className="card">
-              <h3>Preguntas</h3>
+        {/* 📁 ARCHIVOS (tipo Drive) */}
+        <div className="card">
+          <h3>Archivos guardados</h3>
 
-              {questions.map((q) => (
-                <div key={q.id} className="questionCard">
-                  <MathJax>
-                    <h4>{q.question}</h4>
-                  </MathJax>
+          {archives.length === 0 ? (
+            <p>No hay archivos</p>
+          ) : (
+            archives.map(a => (
+              <div key={a.id} className="studentRow">
+                <div>
+                  <h4>📁 {a.name}</h4>
+                  <p>{a.questions.length} preguntas</p>
+                </div>
 
-                  <ul>
-                    {q.options.map((opt, i) => (
-                      <li key={i}
-                        style={{
-                          color: i === q.correct ? "#22c55e" : "white"
-                        }}>
-                        <MathJax>{opt}</MathJax>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    className="btn danger"
-                    onClick={() => deleteQuestion(q.id)}
-                  >
+                <div className="studentActions">
+                  <button className="btn primary" onClick={() => restoreArchive(a)}>
+                    Restaurar
+                  </button>
+                  <button className="btn danger" onClick={() => deleteArchive(a.id)}>
                     Eliminar
                   </button>
                 </div>
-              ))}
-            </div>
-          </>
-        )}
+              </div>
+            ))
+          )}
+        </div>
 
-        {/* ================== ARCHIVOS ================== */}
-        {view === "archives" && (
-          <div className="card">
-            <h2>📁 Archivos guardados</h2>
-
-            {archives.length === 0 ? (
-              <p>No hay archivos</p>
-            ) : (
-              archives.map((file) => (
-                <div key={file.id} className="studentRow">
-                  <div>
-                    <h4>📄 {file.name}</h4>
-                    <p>{file.questions.length} preguntas</p>
-                  </div>
-
-                  <div className="studentActions">
-                    <button
-                      className="btn primary"
-                      onClick={() => restoreArchive(file)}
-                    >
-                      Restaurar
-                    </button>
-
-                    <button
-                      className="btn danger"
-                      onClick={() => deleteArchive(file.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
       </div>
     </MathJaxContext>
   );
