@@ -233,11 +233,11 @@ function AdminQuestions() {
                     <button className="btn primary full" onClick={addQuestion}>
                         Agregar pregunta
                     </button>
+                    <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}>
+                    <button className="btn warning full" onClick={archiveQuestions}>
+                        Archivar {questions.length} preguntas
+                    </button>
                 </div>
-
-                <button className="btn warning full" onClick={archiveQuestions}>
-                    Archivar {questions.length} preguntas
-                </button>
 
                 <div className="card">
                     <h3>Preguntas ({questions.length})</h3>
