@@ -68,8 +68,7 @@ function AdminQuestions() {
     setCorrect(0);
     loadQuestions();
   };
-
-  // ❌ Eliminar pregunta
+  
   const deleteQuestion = async (id) => {
     await deleteDoc(doc(db, "questions", id));
     loadQuestions();
@@ -184,7 +183,6 @@ function AdminQuestions() {
                 Agregar
               </button>
 
-              {/* 📦 ARCHIVAR */}
               <button
                 className="btn warning full"
                 onClick={archiveQuestions}
