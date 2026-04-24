@@ -689,16 +689,12 @@ body {
 }
 
 .mathBtn {
-  padding: 4px 8px;
-  font-size: 12px;
+  padding: 4px;
+  font-size: 10px;
   border-radius: 6px;
   background: #334155;
   color: white;
   border: none;
   cursor: pointer;
   transition: 0.2s;
-}
-
-.mathBtn:hover {
-  background: #475569;
 }
