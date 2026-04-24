@@ -27,11 +27,24 @@ function AdminQuestions() {
     const [archives, setArchives] = useState([]);
 
     const mathTools = [
-        { label: "Raíz", syntax: "$\\sqrt{ }$" },
         { label: "Fracción", syntax: "$\\frac{ }{ }$" },
+        { label: "Raíz", syntax: "$\\sqrt{ }$" },
         { label: "Potencia", syntax: "$x^{ }$" },
-        { label: "π", syntax: "$\\pi$" },
-        { label: "ℝ", syntax: "$\\mathbb{R}$" }
+        { label: "Punto (·)", syntax: "$\\cdot$" },
+        { label: "Multiplicar (x)", syntax: "$\\times$" },
+        { label: "Pi (π)", syntax: "$\\pi$" },
+        { label: "N (Naturales)", syntax: "$\\mathbb{N}$" },
+        { label: "Z (Enteros)", syntax: "$\\mathbb{Z}$" },
+        { label: "Q (Racionales)", syntax: "$\\mathbb{Q}$" },
+        { label: "I (Irracionales)", syntax: "$\\mathbb{I}$" },
+        { label: "R (Reales)", syntax: "$\\mathbb{R}$" },
+        { label: "C (Complejos)", syntax: "$\\mathbb{C}$" },
+        { label: "Límite", syntax: "$\\lim_{x → }( )$" },
+        { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
+        { label: "Integral Indef.", syntax: "$\\int ( ) dx$" },
+        { label: "Integral Def.", syntax: "$\\int_{a}^{b} ( ) dx$" },
+        { label: "Valor Absoluto", syntax: "$| |$" },
+        { label: "Más Funciones", syntax: "$| |$" },
     ];
 
     useEffect(() => {
@@ -182,11 +195,10 @@ function AdminQuestions() {
         <MathJaxContext config={config}>
             <div className="container">
 
-                {/* CREAR */}
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
 
-                    <div className="tabs">
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
                         {mathTools.map((tool, i) => (
                             <button key={i} className="btn" onClick={() => insertSyntax(tool.syntax)}>
                                 {tool.label}
