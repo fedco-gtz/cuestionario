@@ -198,7 +198,7 @@ function AdminQuestions() {
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
 
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                    <div className="mathBtn">
                         {mathTools.map((tool, i) => (
                             <button key={i} className="btn" onClick={() => insertSyntax(tool.syntax)}>
                                 {tool.label}
