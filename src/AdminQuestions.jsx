@@ -4,7 +4,8 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  doc
+  doc,
+  writeBatch
 } from "firebase/firestore";
 import { MathJaxContext, MathJax } from "better-react-mathjax";
 import { db } from "./firebase";
@@ -25,7 +26,6 @@ function AdminQuestions() {
   const [questions, setQuestions] = useState([]);
   const [archives, setArchives] = useState([]);
 
-  // 🔢 BOTONES MATEMÁTICOS
   const mathTools = [
     { label: "Raíz", syntax: "$\\sqrt{ }$" },
     { label: "Fracción", syntax: "$\\frac{ }{ }$" },
@@ -41,43 +41,57 @@ function AdminQuestions() {
 
   // 📥 CARGAR PREGUNTAS
   const loadQuestions = async () => {
-    const snap = await getDocs(collection(db, "questions"));
-    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    setQuestions(data);
+    try {
+      const snap = await getDocs(collection(db, "questions"));
+      setQuestions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch {
+      toast.error("Error cargando preguntas");
+    }
   };
 
   // 📥 CARGAR ARCHIVOS
   const loadArchives = async () => {
-    const snap = await getDocs(collection(db, "archives"));
-    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    setArchives(data);
+    try {
+      const snap = await getDocs(collection(db, "archives"));
+      setArchives(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch {
+      toast.error("Error cargando archivos");
+    }
   };
 
-  // ➕ AGREGAR PREGUNTA
+  // ➕ AGREGAR
   const addQuestion = async () => {
     if (!question || options.some(o => o === "")) {
       toast.error("Completá todos los campos");
       return;
     }
 
-    await addDoc(collection(db, "questions"), {
-      question,
-      options,
-      correct
-    });
+    try {
+      await addDoc(collection(db, "questions"), {
+        question,
+        options,
+        correct
+      });
 
-    setQuestion("");
-    setOptions(["", "", "", ""]);
-    setCorrect(0);
-    loadQuestions();
-    toast.success("Pregunta agregada");
+      setQuestion("");
+      setOptions(["", "", "", ""]);
+      setCorrect(0);
+      loadQuestions();
+      toast.success("Pregunta agregada");
+    } catch {
+      toast.error("Error al agregar");
+    }
   };
 
-  // ❌ ELIMINAR PREGUNTA
+  // ❌ ELIMINAR
   const deleteQuestion = async (id) => {
-    await deleteDoc(doc(db, "questions", id));
-    loadQuestions();
-    toast.success("Pregunta eliminada");
+    try {
+      await deleteDoc(doc(db, "questions", id));
+      setQuestions(prev => prev.filter(q => q.id !== id));
+      toast.success("Pregunta eliminada");
+    } catch {
+      toast.error("Error al eliminar");
+    }
   };
 
   // 🧠 INSERTAR SINTAXIS
@@ -85,52 +99,91 @@ function AdminQuestions() {
     setQuestion(prev => prev + syntax);
   };
 
-  // 📦 ARCHIVAR
+  // 📦 ARCHIVAR + BORRAR
   const archiveQuestions = async () => {
     if (questions.length === 0) {
       toast.error("No hay preguntas para archivar");
       return;
     }
 
+    const confirmAction = window.confirm(
+      "Se van a archivar y borrar TODAS las preguntas. ¿Continuar?"
+    );
+    if (!confirmAction) return;
+
     const name = prompt("Nombre del archivo:");
     if (!name) return;
 
-    await addDoc(collection(db, "archives"), {
-      name,
-      questions,
-      createdAt: new Date().toISOString()
-    });
+    try {
+      // 1️⃣ Guardar archivo
+      await addDoc(collection(db, "archives"), {
+        name,
+        questions,
+        createdAt: new Date().toISOString()
+      });
 
-    toast.success("Archivo creado");
-    loadArchives();
+      // 2️⃣ Borrar preguntas (batch)
+      const batch = writeBatch(db);
+
+      questions.forEach((q) => {
+        const ref = doc(db, "questions", q.id);
+        batch.delete(ref);
+      });
+
+      await batch.commit();
+
+      // 3️⃣ Limpiar estado
+      setQuestions([]);
+      loadArchives();
+
+      toast.success("Preguntas archivadas y eliminadas");
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al archivar");
+    }
   };
 
   // 🔄 RESTAURAR
   const restoreArchive = async (archive) => {
-    for (let q of archive.questions) {
-      await addDoc(collection(db, "questions"), {
-        question: q.question,
-        options: q.options,
-        correct: q.correct
-      });
-    }
+    try {
+      const batch = writeBatch(db);
 
-    toast.success("Preguntas restauradas");
-    loadQuestions();
+      archive.questions.forEach((q) => {
+        const ref = doc(collection(db, "questions"));
+        batch.set(ref, {
+          question: q.question,
+          options: q.options,
+          correct: q.correct
+        });
+      });
+
+      await batch.commit();
+
+      loadQuestions();
+      toast.success("Preguntas restauradas");
+
+    } catch {
+      toast.error("Error al restaurar");
+    }
   };
 
   // ❌ ELIMINAR ARCHIVO
   const deleteArchive = async (id) => {
-    await deleteDoc(doc(db, "archives", id));
-    loadArchives();
-    toast.success("Archivo eliminado");
+    try {
+      await deleteDoc(doc(db, "archives", id));
+      setArchives(prev => prev.filter(a => a.id !== id));
+      toast.success("Archivo eliminado");
+    } catch {
+      toast.error("Error al eliminar archivo");
+    }
   };
 
   return (
     <MathJaxContext config={config}>
       <div className="container">
 
-        {/* 🔹 CREAR */}
+        {/* CREAR */}
         <div className="card">
           <h2 className="title">Crear Preguntas</h2>
 
@@ -183,7 +236,7 @@ function AdminQuestions() {
           </button>
         </div>
 
-        {/* 🔹 LISTA */}
+        {/* LISTA */}
         <div className="card">
           <h3>Preguntas ({questions.length})</h3>
 
@@ -212,7 +265,7 @@ function AdminQuestions() {
           ))}
         </div>
 
-        {/* 📁 ARCHIVOS (tipo Drive) */}
+        {/* ARCHIVOS */}
         <div className="card">
           <h3>Archivos guardados</h3>
 
@@ -223,7 +276,7 @@ function AdminQuestions() {
               <div key={a.id} className="studentRow">
                 <div>
                   <h4>📁 {a.name}</h4>
-                  <p>{a.questions.length} preguntas</p>
+                  <p>{a.questions?.length || 0} preguntas</p>
                 </div>
 
                 <div className="studentActions">
