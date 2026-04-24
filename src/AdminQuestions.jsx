@@ -186,7 +186,7 @@ function AdminQuestions() {
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
 
-                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    <div className="tabs">
                         {mathTools.map((tool, i) => (
                             <button key={i} className="btn" onClick={() => insertSyntax(tool.syntax)}>
                                 {tool.label}
@@ -201,7 +201,6 @@ function AdminQuestions() {
                         onChange={(e) => setQuestion(e.target.value)}
                     />
 
-                    {/* 👀 PREVIEW */}
                     <div className="card" style={{ marginTop: 10 }}>
                         <MathJax dynamic>
                             {question || "Vista previa..."}
