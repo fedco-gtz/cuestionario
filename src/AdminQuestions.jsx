@@ -240,11 +240,7 @@ function AdminQuestions() {
                 </div>
 
                 <div className="card">
-                    <h3>Preguntas ({questions.length})</h3>
-
-                    <button className="btn warning full" onClick={archiveQuestions}>
-                        Archivar {questions.length} preguntas
-                    </button>
+                    <h3>Preguntas Cargadas</h3>
 
                     {questions.map(q => (
                         <div key={q.id} className="questionCard">
