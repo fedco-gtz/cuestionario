@@ -28,12 +28,21 @@ function AdminQuestions() {
     const [questions, setQuestions] = useState([]);
     const [archives, setArchives] = useState([]);
 
+    // 🔥 MATH TOOLS (NO SE TOCA 😎)
     const mathTools = [
-        { label: "Raíz", syntax: "$\\sqrt{ }$" },
         { label: "Fracción", syntax: "$\\frac{ }{ }$" },
+        { label: "Raíz", syntax: "$\\sqrt{ }$" },
         { label: "Potencia", syntax: "$x^{ }$" },
+        { label: "Punto (·)", syntax: "$\\cdot$" },
+        { label: "×", syntax: "$\\times$" },
         { label: "π", syntax: "$\\pi$" },
-        { label: "ℝ", syntax: "$\\mathbb{R}$" }
+        { label: "ℕ", syntax: "$\\mathbb{N}$" },
+        { label: "ℤ", syntax: "$\\mathbb{Z}$" },
+        { label: "ℚ", syntax: "$\\mathbb{Q}$" },
+        { label: "ℝ", syntax: "$\\mathbb{R}$" },
+        { label: "Límite", syntax: "$\\lim_{x \\to }( )$" },
+        { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
+        { label: "∫", syntax: "$\\int ( ) dx$" }
     ];
 
     useEffect(() => {
@@ -42,21 +51,17 @@ function AdminQuestions() {
     }, []);
 
     const loadQuestions = async () => {
-        try {
-            const snap = await getDocs(collection(db, "questions"));
-            setQuestions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-        } catch {
-            toast.error("Error cargando preguntas");
-        }
+        const snap = await getDocs(collection(db, "questions"));
+        setQuestions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     };
 
     const loadArchives = async () => {
-        try {
-            const snap = await getDocs(collection(db, "archives"));
-            setArchives(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-        } catch {
-            toast.error("Error cargando archivos");
-        }
+        const snap = await getDocs(collection(db, "archives"));
+        setArchives(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    };
+
+    const insertSyntax = (syntax) => {
+        setQuestion(prev => prev + syntax);
     };
 
     const addQuestion = async () => {
@@ -65,35 +70,23 @@ function AdminQuestions() {
             return;
         }
 
-        try {
-            await addDoc(collection(db, "questions"), {
-                question,
-                options,
-                correct
-            });
+        await addDoc(collection(db, "questions"), {
+            question,
+            options,
+            correct
+        });
 
-            setQuestion("");
-            setOptions(["", "", "", ""]);
-            setCorrect(0);
-            loadQuestions();
-            toast.success("Pregunta agregada");
-        } catch {
-            toast.error("Error al agregar");
-        }
+        setQuestion("");
+        setOptions(["", "", "", ""]);
+        setCorrect(0);
+        loadQuestions();
+        toast.success("Pregunta agregada");
     };
 
     const deleteQuestion = async (id) => {
-        try {
-            await deleteDoc(doc(db, "questions", id));
-            setQuestions(prev => prev.filter(q => q.id !== id));
-            toast.success("Pregunta eliminada");
-        } catch {
-            toast.error("Error al eliminar");
-        }
-    };
-
-    const insertSyntax = (syntax) => {
-        setQuestion(prev => prev + syntax);
+        await deleteDoc(doc(db, "questions", id));
+        setQuestions(prev => prev.filter(q => q.id !== id));
+        toast.success("Pregunta eliminada");
     };
 
     // 📦 ARCHIVAR + BORRAR
@@ -108,66 +101,49 @@ function AdminQuestions() {
         const name = prompt("Nombre del archivo:");
         if (!name) return;
 
-        try {
-            await addDoc(collection(db, "archives"), {
-                name,
-                questions,
-                createdAt: new Date().toISOString()
-            });
+        await addDoc(collection(db, "archives"), {
+            name,
+            questions,
+            createdAt: new Date().toISOString()
+        });
 
-            const batch = writeBatch(db);
-            questions.forEach(q => {
-                batch.delete(doc(db, "questions", q.id));
-            });
+        const batch = writeBatch(db);
+        questions.forEach(q => {
+            batch.delete(doc(db, "questions", q.id));
+        });
 
-            await batch.commit();
+        await batch.commit();
 
-            setQuestions([]);
-            loadArchives();
-
-            toast.success("Archivo creado y preguntas eliminadas");
-
-        } catch (error) {
-            console.error(error);
-            toast.error("Error al archivar");
-        }
+        setQuestions([]);
+        loadArchives();
+        toast.success("Archivo creado y preguntas eliminadas");
     };
 
-    // 🔄 RESTAURAR
     const restoreArchive = async (archive) => {
-        try {
-            const batch = writeBatch(db);
+        const batch = writeBatch(db);
 
-            archive.questions.forEach(q => {
-                const ref = doc(collection(db, "questions"));
-                batch.set(ref, {
-                    question: q.question,
-                    options: q.options,
-                    correct: q.correct
-                });
+        archive.questions.forEach(q => {
+            const ref = doc(collection(db, "questions"));
+            batch.set(ref, {
+                question: q.question,
+                options: q.options,
+                correct: q.correct
             });
+        });
 
-            await batch.commit();
+        await batch.commit();
 
-            loadQuestions();
-            toast.success("Preguntas restauradas");
-
-        } catch {
-            toast.error("Error al restaurar");
-        }
+        loadQuestions();
+        toast.success("Preguntas restauradas");
     };
 
     const deleteArchive = async (id) => {
-        try {
-            await deleteDoc(doc(db, "archives", id));
-            setArchives(prev => prev.filter(a => a.id !== id));
-            toast.success("Archivo eliminado");
-        } catch {
-            toast.error("Error al eliminar archivo");
-        }
+        await deleteDoc(doc(db, "archives", id));
+        setArchives(prev => prev.filter(a => a.id !== id));
+        toast.success("Archivo eliminado");
     };
 
-    // 📄 PDF CON MATH REAL
+    // 📄 PDF MULTIPÁGINA
     const generatePDF = async (archive) => {
         const container = document.createElement("div");
 
@@ -195,7 +171,6 @@ function AdminQuestions() {
         container.innerHTML = html;
         document.body.appendChild(container);
 
-        // 🔥 renderizar MathJax
         if (window.MathJax) {
             await window.MathJax.typesetPromise([container]);
         }
@@ -205,15 +180,27 @@ function AdminQuestions() {
 
         const pdf = new jsPDF("p", "mm", "a4");
 
-        const imgWidth = 190;
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 10;
+
+        const imgWidth = pageWidth - margin * 2;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        let position = 10;
+        let heightLeft = imgHeight;
+        let position = margin;
 
-        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+            pdf.addPage();
+            position = heightLeft - imgHeight;
+            pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
 
         pdf.save(`${archive.name}.pdf`);
-
         document.body.removeChild(container);
     };
 
@@ -221,13 +208,17 @@ function AdminQuestions() {
         <MathJaxContext config={config}>
             <div className="container">
 
-                {/* CREAR */}
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
 
-                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                    {/* 🔥 BOTONES MATEMÁTICOS */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
                         {mathTools.map((tool, i) => (
-                            <button key={i} className="mathBtn" onClick={() => insertSyntax(tool.syntax)}>
+                            <button
+                                key={i}
+                                className="mathBtn"
+                                onClick={() => insertSyntax(tool.syntax)}
+                            >
                                 {tool.label}
                             </button>
                         ))}
@@ -239,10 +230,6 @@ function AdminQuestions() {
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                     />
-
-                    <div className="card" style={{ marginTop: 10 }}>
-                        {question || "Vista previa..."}
-                    </div>
 
                     {options.map((opt, i) => (
                         <div key={i} className="optionRow">
@@ -274,7 +261,6 @@ function AdminQuestions() {
                     </button>
                 </div>
 
-                {/* ARCHIVOS */}
                 <div className="card">
                     <h3>Archivos guardados</h3>
 
