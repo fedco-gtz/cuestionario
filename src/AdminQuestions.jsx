@@ -136,7 +136,7 @@ function AdminQuestions() {
     };
 
     // 📄 PDF con margen superior 2cm
-    const generatePDF = async (archive) => {
+const generatePDF = async (archive) => {
     const container = document.createElement("div");
 
     container.style.position = "absolute";
@@ -169,7 +169,7 @@ function AdminQuestions() {
     }
 
     const canvas = await html2canvas(container, { scale: 2 });
-    const imgData = canvas.toDataURL("image/png");
+    document.body.removeChild(container);
 
     const pdf = new jsPDF("p", "mm", "a4");
 
@@ -185,35 +185,51 @@ function AdminQuestions() {
     const imgWidth = pageWidth - marginX * 2;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    let positionY = marginTop;
-    let heightLeft = imgHeight;
+    const pxFullHeight = canvas.height;
+    const pxPageHeight = Math.floor((usableHeight * canvas.width) / imgWidth);
 
-    let pageCanvasPosition = 0;
+    let position = 0;
+    let page = 0;
 
-    while (heightLeft > 0) {
+    while (position < pxFullHeight) {
+        const pageCanvas = document.createElement("canvas");
+        const context = pageCanvas.getContext("2d");
+
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = Math.min(pxPageHeight, pxFullHeight - position);
+
+        context.drawImage(
+            canvas,
+            0,
+            position,
+            canvas.width,
+            pageCanvas.height,
+            0,
+            0,
+            canvas.width,
+            pageCanvas.height
+        );
+
+        const imgData = pageCanvas.toDataURL("image/png");
+
+        if (page > 0) pdf.addPage();
+
+        const finalHeight = (pageCanvas.height * imgWidth) / canvas.width;
+
         pdf.addImage(
             imgData,
             "PNG",
             marginX,
-            positionY,
+            marginTop,
             imgWidth,
-            imgHeight,
-            undefined,
-            "FAST",
-            0,
-            pageCanvasPosition
+            finalHeight
         );
 
-        heightLeft -= usableHeight;
-
-        if (heightLeft > 0) {
-            pdf.addPage();
-            pageCanvasPosition += usableHeight;
-        }
+        position += pxPageHeight;
+        page++;
     }
 
     pdf.save(`${archive.name}.pdf`);
-    document.body.removeChild(container);
 };
 
     return (
