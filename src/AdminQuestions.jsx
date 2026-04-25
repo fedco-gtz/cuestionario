@@ -32,6 +32,8 @@ function AdminQuestions() {
     const [view, setView] = useState(null);
 
     const mathTools = [
+        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{N}$" },
+
         { label: "Fracción", syntax: "$\\frac{a}{b}$" },
         { label: "Raíz", syntax: "$\\sqrt{a}$" },
         { label: "Potencia", syntax: "$x^{a}$" },
