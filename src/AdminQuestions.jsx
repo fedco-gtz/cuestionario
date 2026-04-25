@@ -296,8 +296,7 @@ function AdminQuestions() {
 
                     <hr style={{ marginTop: "20px", border: "none", borderTop: "1px solid #334155", paddingTop: "15px" }} />
 
-
-                    <button className="btn warning full" onClick={archiveQuestions}>
+                    <button className="btn warning full" style={{ marginTop: "15px" }} onClick={archiveQuestions}>
                         Archivar {questions.length} preguntas
                     </button>
 
