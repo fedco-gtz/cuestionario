@@ -294,7 +294,8 @@ function AdminQuestions() {
                         Agregar pregunta
                     </button>
 
-                    <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}></div>
+                    <hr style={{ marginTop: "20px", border: "none", borderTop: "1px solid #334155", paddingTop: "15px" }} />
+
 
                     <button className="btn warning full" onClick={archiveQuestions}>
                         Archivar {questions.length} preguntas
