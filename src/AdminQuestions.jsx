@@ -284,8 +284,7 @@ function AdminQuestions() {
                             </button>
                         </div>
                     ))}
-                    <h3>Vista previa</h3>
-                    <h4 style={{ marginBottom: "8px" }}>Opciones</h4>
+                    <h4 style={{ marginBottom: "8px" }}>Vista previa</h4>
                     <div className="card" style={{ marginTop: 10 }}>
                         <MathJax dynamic>
                             {question || "Pregunta"}
