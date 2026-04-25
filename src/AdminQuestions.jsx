@@ -137,67 +137,84 @@ function AdminQuestions() {
 
     // 📄 PDF con margen superior 2cm
     const generatePDF = async (archive) => {
-        const container = document.createElement("div");
+    const container = document.createElement("div");
 
-        container.style.position = "absolute";
-        container.style.left = "-9999px";
-        container.style.width = "800px";
-        container.style.padding = "20px";
-        container.style.background = "white";
-        container.style.color = "black";
+    container.style.position = "absolute";
+    container.style.left = "-9999px";
+    container.style.width = "800px";
+    container.style.padding = "20px";
+    container.style.background = "white";
+    container.style.color = "black";
 
-        let html = `<h2>${archive.name}</h2>`;
+    let html = `<h2>${archive.name}</h2>`;
 
-        archive.questions.forEach((q, index) => {
-            html += `<div style="margin-bottom:20px;">
-                        <p><b>${index + 1}) ${q.question}</b></p>`;
+    archive.questions.forEach((q, index) => {
+        html += `<div style="margin-bottom:20px;">
+                    <p><b>${index + 1}) ${q.question}</b></p>`;
 
-            q.options.forEach((opt, i) => {
-                const color = i === q.correct ? "green" : "black";
-                html += `<p style="color:${color}; margin-left:15px;">- ${opt}</p>`;
-            });
-
-            html += `</div>`;
+        q.options.forEach((opt, i) => {
+            const color = i === q.correct ? "green" : "black";
+            html += `<p style="color:${color}; margin-left:15px;">- ${opt}</p>`;
         });
 
-        container.innerHTML = html;
-        document.body.appendChild(container);
+        html += `</div>`;
+    });
 
-        if (window.MathJax) {
-            await window.MathJax.typesetPromise([container]);
-        }
+    container.innerHTML = html;
+    document.body.appendChild(container);
 
-        const canvas = await html2canvas(container, { scale: 2 });
-        const imgData = canvas.toDataURL("image/png");
+    // 🔥 Renderizar MathJax
+    if (window.MathJax) {
+        await window.MathJax.typesetPromise([container]);
+    }
 
-        const pdf = new jsPDF("p", "mm", "a4");
+    const canvas = await html2canvas(container, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
 
-        const pageWidth = 210;
-        const pageHeight = 297;
+    const pdf = new jsPDF("p", "mm", "a4");
 
-        const marginX = 10;
-        const marginTop = 15; // ✅ 2 cm
-        const marginBottom = 15; // ✅ 2 cm
+    const pageWidth = 210;
+    const pageHeight = 297;
 
-        const imgWidth = pageWidth - marginX * 2;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const marginX = 10;
+    const marginTop = 20;     // ✅ 2 cm
+    const marginBottom = 20;  // ✅ 2 cm
 
-        let heightLeft = imgHeight;
-        let position = marginTop;
+    const usableHeight = pageHeight - marginTop - marginBottom;
 
-        pdf.addImage(imgData, "PNG", marginX, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+    const imgWidth = pageWidth - marginX * 2;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        while (heightLeft > 0) {
+    let positionY = marginTop;
+    let heightLeft = imgHeight;
+
+    let pageCanvasPosition = 0;
+
+    while (heightLeft > 0) {
+        pdf.addImage(
+            imgData,
+            "PNG",
+            marginX,
+            positionY,
+            imgWidth,
+            imgHeight,
+            undefined,
+            "FAST",
+            0,
+            pageCanvasPosition
+        );
+
+        heightLeft -= usableHeight;
+
+        if (heightLeft > 0) {
             pdf.addPage();
-            position = heightLeft - imgHeight + marginTop + marginBottom;
-            pdf.addImage(imgData, "PNG", marginX, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+            pageCanvasPosition += usableHeight;
         }
+    }
 
-        pdf.save(`${archive.name}.pdf`);
-        document.body.removeChild(container);
-    };
+    pdf.save(`${archive.name}.pdf`);
+    document.body.removeChild(container);
+};
 
     return (
         <MathJaxContext config={config}>
