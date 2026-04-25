@@ -177,7 +177,7 @@ const generatePDF = async (archive) => {
     const pageHeight = 297;
 
     const marginX = 10;
-    const marginTop = 20;     // ✅ 2 cm
+    const marginTop = 10;     // ✅ 2 cm
     const marginBottom = 20;  // ✅ 2 cm
 
     const usableHeight = pageHeight - marginTop - marginBottom;
