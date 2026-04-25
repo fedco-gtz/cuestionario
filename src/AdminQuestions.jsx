@@ -310,9 +310,7 @@ function AdminQuestions() {
                     <button className="btn status2" style={{ flex: 1 }} onClick={() => setView("archives")}>
                         Archivos Guardados
                     </button>
-                </div>
-
-                {/* 📚 PREGUNTAS */}
+                    
                 {view === "questions" && (
                     <div className="card">
                         <h3>Preguntas Cargadas</h3>
@@ -337,7 +335,60 @@ function AdminQuestions() {
                     </div>
                 )}
 
-                {/* 📁 ARCHIVOS */}
+                                {view === "archives" && (
+                    <div className="card">
+                        <h3>Archivos guardados</h3>
+
+                        {archives.map(a => (
+                            <div key={a.id} className="studentRow">
+                                <div>
+                                    <h4>📁 {a.name}</h4>
+                                    <p>{a.questions?.length || 0} preguntas</p>
+                                </div>
+
+                                <div className="studentActions">
+                                    <button className="btn primary" onClick={() => restoreArchive(a)}>
+                                        Restaurar
+                                    </button>
+
+                                    <button className="btn status3" onClick={() => generatePDF(a)}>
+                                        PDF
+                                    </button>
+
+                                    <button className="btn danger" onClick={() => deleteArchive(a.id)}>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+                </div>
+
+                {view === "questions" && (
+                    <div className="card">
+                        <h3>Preguntas Cargadas</h3>
+
+                        {questions.map(q => (
+                            <div key={q.id} className="questionCard">
+                                <MathJax><h4>{q.question}</h4></MathJax>
+
+                                <ul>
+                                    {q.options.map((opt, i) => (
+                                        <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
+                                            <MathJax>{opt}</MathJax>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
+                                    Eliminar
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 {view === "archives" && (
                     <div className="card">
                         <h3>Archivos guardados</h3>
