@@ -319,6 +319,30 @@ function AdminQuestions() {
                 </div>
 
                 <div className="card">
+                    <h3>Preguntas Cargadas</h3>
+
+                    {questions.map(q => (
+                        <div key={q.id} className="questionCard">
+                            <MathJax>
+                                <h4>{q.question}</h4>
+                            </MathJax>
+
+                            <ul>
+                                {q.options.map((opt, i) => (
+                                    <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
+                                        <MathJax>{opt}</MathJax>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
+                                Eliminar
+                            </button>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="card">
                     <h3>Archivos guardados</h3>
 
                     {archives.map(a => (
@@ -341,30 +365,6 @@ function AdminQuestions() {
                                     Eliminar
                                 </button>
                             </div>
-                        </div>
-                    ))}
-                </div>
-
-                                <div className="card">
-                    <h3>Preguntas Cargadas</h3>
-
-                    {questions.map(q => (
-                        <div key={q.id} className="questionCard">
-                            <MathJax>
-                                <h4>{q.question}</h4>
-                            </MathJax>
-
-                            <ul>
-                                {q.options.map((opt, i) => (
-                                    <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
-                                        <MathJax>{opt}</MathJax>
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
-                                Eliminar
-                            </button>
                         </div>
                     ))}
                 </div>
