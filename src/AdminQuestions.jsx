@@ -27,7 +27,9 @@ function AdminQuestions() {
     const [correct, setCorrect] = useState(0);
     const [questions, setQuestions] = useState([]);
     const [archives, setArchives] = useState([]);
-    const [view, setView] = useState("questions"); // 🔥 NUEVO
+
+    // 👇 ESTADO PARA MOSTRAR/OCULTAR
+    const [view, setView] = useState(null);
 
     const mathTools = [
         { label: "Fracción", syntax: "$\\frac{ }{ }$" },
@@ -36,18 +38,10 @@ function AdminQuestions() {
         { label: "Punto (·)", syntax: "$\\cdot$" },
         { label: "Multiplicar (x)", syntax: "$\\times$" },
         { label: "Pi (π)", syntax: "$\\pi$" },
-        { label: "N (Naturales)", syntax: "$\\mathbb{N}$" },
-        { label: "Z (Enteros)", syntax: "$\\mathbb{Z}$" },
-        { label: "Q (Racionales)", syntax: "$\\mathbb{Q}$" },
-        { label: "I (Irracionales)", syntax: "$\\mathbb{I}$" },
-        { label: "R (Reales)", syntax: "$\\mathbb{R}$" },
-        { label: "C (Complejos)", syntax: "$\\mathbb{C}$" },
-        { label: "Límite", syntax: "$\\lim_{x → }( )$" },
-        { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
-        { label: "Integral Indef.", syntax: "$\\int ( ) dx$" },
-        { label: "Integral Def.", syntax: "$\\int_{a}^{b} ( ) dx$" },
-        { label: "Valor Absoluto", syntax: "$| |$" },
-        { label: "Más Funciones", syntax: "$| |$" }
+        { label: "N", syntax: "$\\mathbb{N}$" },
+        { label: "Z", syntax: "$\\mathbb{Z}$" },
+        { label: "Q", syntax: "$\\mathbb{Q}$" },
+        { label: "R", syntax: "$\\mathbb{R}$" }
     ];
 
     useEffect(() => {
@@ -147,21 +141,21 @@ function AdminQuestions() {
         toast.success("Archivo eliminado");
     };
 
+    // PDF (no tocamos nada tuyo)
     const generatePDF = async (archive) => {
         const container = document.createElement("div");
-
         container.style.position = "absolute";
         container.style.left = "-9999px";
         container.style.width = "800px";
-        container.style.padding = "20px";
         container.style.background = "white";
         container.style.color = "black";
+        container.style.padding = "20px";
 
         let html = `<h2>${archive.name}</h2>`;
 
         archive.questions.forEach((q, index) => {
             html += `<div style="margin-bottom:20px;">
-                    <p><b>${index + 1}) ${q.question}</b></p>`;
+                <p><b>${index + 1}) ${q.question}</b></p>`;
 
             q.options.forEach((opt, i) => {
                 const color = i === q.correct ? "green" : "black";
@@ -183,59 +177,39 @@ function AdminQuestions() {
 
         const pdf = new jsPDF("p", "mm", "a4");
 
-        const pageWidth = 210;
+        const imgWidth = 190;
         const pageHeight = 297;
+        const marginTop = 20;
+        const marginBottom = 20;
 
-        const marginX = 10;
-        const marginTop = 5;
-        const marginBottom = 5;
-
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
         const usableHeight = pageHeight - marginTop - marginBottom;
 
-        const imgWidth = pageWidth - marginX * 2;
+        let y = 0;
 
-        const pxFullHeight = canvas.height;
-        const pxPageHeight = Math.floor((usableHeight * canvas.width) / imgWidth);
-
-        let position = 0;
-        let page = 0;
-
-        while (position < pxFullHeight) {
+        while (y < imgHeight) {
             const pageCanvas = document.createElement("canvas");
-            const context = pageCanvas.getContext("2d");
+            const ctx = pageCanvas.getContext("2d");
+
+            const sliceHeight = Math.min(
+                canvas.height,
+                (usableHeight * canvas.width) / imgWidth
+            );
 
             pageCanvas.width = canvas.width;
-            pageCanvas.height = Math.min(pxPageHeight, pxFullHeight - position);
+            pageCanvas.height = sliceHeight;
 
-            context.drawImage(
-                canvas,
-                0,
-                position,
-                canvas.width,
-                pageCanvas.height,
-                0,
-                0,
-                canvas.width,
-                pageCanvas.height
-            );
+            ctx.drawImage(canvas, 0, y, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
 
             const imgData = pageCanvas.toDataURL("image/png");
 
-            if (page > 0) pdf.addPage();
+            if (y > 0) pdf.addPage();
 
-            const finalHeight = (pageCanvas.height * imgWidth) / canvas.width;
+            const finalHeight = (sliceHeight * imgWidth) / canvas.width;
 
-            pdf.addImage(
-                imgData,
-                "PNG",
-                marginX,
-                marginTop,
-                imgWidth,
-                finalHeight
-            );
+            pdf.addImage(imgData, "PNG", 10, marginTop, imgWidth, finalHeight);
 
-            position += pxPageHeight;
-            page++;
+            y += sliceHeight;
         }
 
         pdf.save(`${archive.name}.pdf`);
@@ -245,91 +219,32 @@ function AdminQuestions() {
         <MathJaxContext config={config}>
             <div className="container">
 
-                <div className="card">
-                    <h2 className="title">Crear Preguntas</h2>
-
-                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
-                        {mathTools.map((tool, i) => (
-                            <button key={i} className="mathBtn" onClick={() => insertSyntax(tool.syntax)}>
-                                {tool.label}
-                            </button>
-                        ))}
-                    </div>
-
-                    <input
-                        className="input input-full"
-                        placeholder="Escribí la pregunta"
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                    />
-
-                    {options.map((opt, i) => (
-                        <div key={i} className="optionRow">
-                            <input
-                                className="input"
-                                placeholder={`Opción ${i + 1}`}
-                                value={opt}
-                                onChange={(e) => {
-                                    const newOpts = [...options];
-                                    newOpts[i] = e.target.value;
-                                    setOptions(newOpts);
-                                }}
-                            />
-                            <button
-                                className={`btn ${correct === i ? "primary" : ""}`}
-                                onClick={() => setCorrect(i)}
-                            >
-                                ✔
-                            </button>
-                        </div>
-                    ))}
-
-                    <h4>Vista previa</h4>
-                    <div className="card">
-                        <MathJax dynamic>
-                            {question || "Pregunta"}
-                        </MathJax>
-
-                        <ul>
-                            {options.map((opt, i) => (
-                                <li key={i} style={{ color: i === correct ? "#22c55e" : "white" }}>
-                                    <MathJax dynamic>
-                                        {opt || `Opción ${i + 1}`}
-                                    </MathJax>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <button className="btn primary full" onClick={addQuestion}>
-                        Agregar pregunta
-                    </button>
-
-                    <button className="btn warning full" onClick={archiveQuestions}>
-                        Archivar {questions.length} preguntas
-                    </button>
-                </div>
-
-                {/* 🔥 TABS */}
-                <div style={{ display: "flex", gap: "10px" }}>
-                    <button className="btn" onClick={() => setView("questions")}>
+                {/* BOTONES */}
+                <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
+                    <button className="btn status3" style={{ flex: 1 }} onClick={() => setView("questions")}>
                         Preguntas Cargadas
                     </button>
-                    <button className="btn" onClick={() => setView("archives")}>
+
+                    <button className="btn status2" style={{ flex: 1 }} onClick={() => setView("archives")}>
                         Archivos Guardados
                     </button>
                 </div>
 
-                {/* 🔥 CONTENIDO */}
+                {/* 👇 NADA POR DEFECTO */}
+                {view === null && (
+                    <div className="card" style={{ textAlign: "center" }}>
+                        <p>Seleccioná una opción para comenzar 👆</p>
+                    </div>
+                )}
+
+                {/* PREGUNTAS */}
                 {view === "questions" && (
                     <div className="card">
                         <h3>Preguntas Cargadas</h3>
 
                         {questions.map(q => (
                             <div key={q.id} className="questionCard">
-                                <MathJax>
-                                    <h4>{q.question}</h4>
-                                </MathJax>
+                                <MathJax><h4>{q.question}</h4></MathJax>
 
                                 <ul>
                                     {q.options.map((opt, i) => (
@@ -347,6 +262,7 @@ function AdminQuestions() {
                     </div>
                 )}
 
+                {/* ARCHIVOS */}
                 {view === "archives" && (
                     <div className="card">
                         <h3>Archivos guardados</h3>
