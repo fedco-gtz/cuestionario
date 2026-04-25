@@ -32,26 +32,39 @@ function AdminQuestions() {
     const [view, setView] = useState(null);
 
     const mathTools = [
+        { label: "$+$", syntax: "$+$" },
+        { label: "$-$", syntax: "$-$" },
+        { label: "$\\times$", syntax: "$\\times$" },
+        { label: "$\\div$", syntax: "$\\div$" },
         { label: "$\\mathbb{N}$", syntax: "$\\mathbb{N}$" },
+        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{Z}$" },
+        { label: "$\\mathbb{Q}$", syntax: "$\\mathbb{Q}$" },
+        { label: "$\\mathbb{I}$", syntax: "$\\mathbb{I}$" },
+        { label: "$\\mathbb{R}$", syntax: "$\\mathbb{R}$" },
+        { label: "$\\mathbb{C}$", syntax: "$\\mathbb{C}$" },
+        { label: "$\\mathbb{Im}$", syntax: "$\\mathbb{C}=a+bi$" },
+        { label: "$\\frac{a}{b}$", syntax: "$\\frac{a}{b}$" },
+        { label: "$\\sqrt{a}$", syntax: "$\\sqrt{a}$" },
+        { label: "$\\sqrt{a}$", syntax: "$\\sqrt{a}$" },
+        { label: "$\\sqrt[3]{a}$", syntax: "$\\sqrt[3]{a}$" },
+        { label: "$\\sqrt[b]{a}$", syntax: "$\\sqrt[b]{a}$" },
+        { label: "$a^{2}$", syntax: "$a^{2}$" },
+        { label: "$a^{3}$", syntax: "$a^{3}$" },
+        { label: "$a^{b}$", syntax: "$a^{b}$" },
+        { label: "$\\pi$", syntax: "$\\pi$" },
+        
 
-        { label: "Fracción", syntax: "$\\frac{a}{b}$" },
-        { label: "Raíz", syntax: "$\\sqrt{a}$" },
-        { label: "Potencia", syntax: "$x^{a}$" },
         { label: "Punto (·)", syntax: "$\\cdot$" },
         { label: "Multiplicar (x)", syntax: "$\\times$" },
-        { label: "Pi (π)", syntax: "$\\pi$" },
-        { label: "N (Naturales)", syntax: "$\\mathbb{N}$" },
-        { label: "Z (Enteros)", syntax: "$\\mathbb{Z}$" },
-        { label: "Q (Racionales)", syntax: "$\\mathbb{Q}$" },
-        { label: "I (Irracionales)", syntax: "$\\mathbb{I}$" },
-        { label: "R (Reales)", syntax: "$\\mathbb{R}$" },
-        { label: "C (Complejos)", syntax: "$\\mathbb{C}$" },
+
+
+
         { label: "Límite", syntax: "$\\lim_{x →a}(f)$" },
         { label: "Derivada", syntax: "$\\frac{d}{dx}(f)$" },
         { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
         { label: "Integral Def.", syntax: "$\\int_{a}^{b} (f) dx$" },
         { label: "Valor Absoluto", syntax: "$|f|$" },
-        { label: "Más Funciones"}
+        { label: "Más Funciones" }
     ];
 
     useEffect(() => {
