@@ -342,6 +342,15 @@ function AdminQuestions() {
                     ))}
                 </div>
 
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                    <button className="btn status3" style={{ flex: 1 }} onClick={handleEnableAll}>
+                        Preguntas Cargadas
+                    </button>
+                    <button className="btn status2" style={{ flex: 1 }} onClick={handleDisableAll}>
+                        Archivos Guardados
+                    </button>
+                </div>
+
                 <div className="card">
                     <h3>Archivos guardados</h3>
 
