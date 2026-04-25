@@ -122,7 +122,6 @@ function AdminStudents() {
         />
         <button className="btn primary full" onClick={addStudent}>Agregar</button>
 
-        {/* FILTRO Y ACCIONES MASIVAS */}
         <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}>
           <label style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "15px" }}>
             <input
