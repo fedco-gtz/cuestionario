@@ -289,6 +289,23 @@ function AdminQuestions() {
                         <MathJax dynamic>
                             {question || "Pregunta"}
                         </MathJax>
+                        <ul style={{ paddingLeft: "15px" }}>
+                            {options.map((opt, i) => (
+                                <li
+                                    key={i}
+                                    style={{
+                                        marginBottom: "6px",
+                                        color: i === correct ? "#22c55e" : "white",
+                                        fontWeight: i === correct ? "bold" : "normal"
+                                    }}
+                                >
+                                    <MathJax dynamic>
+                                        {opt || `Opción ${i + 1}`}
+                                    </MathJax>
+                                    {i === correct}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
 
                     <div className="card" style={{ marginTop: 10 }}>
