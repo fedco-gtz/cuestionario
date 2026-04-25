@@ -237,8 +237,7 @@ function AdminQuestions() {
     return (
         <MathJaxContext config={config}>
             <div className="container">
-
-                {/* 🔹 CREAR PREGUNTA */}
+                
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
 
@@ -278,7 +277,6 @@ function AdminQuestions() {
                         </div>
                     ))}
 
-                    {/* 👀 PREVIEW */}
                     <div className="card" style={{ marginTop: 10 }}>
                         <MathJax dynamic>{question || "Vista previa..."}</MathJax>
                         <ul>
@@ -297,8 +295,6 @@ function AdminQuestions() {
                     <button className="btn warning full" onClick={archiveQuestions}>
                         Archivar {questions.length} preguntas
                     </button>
-
-                    <hr style={{ marginTop: "20px", border: "none", borderTop: "1px solid #334155", paddingTop: "15px" }} />
 
                     <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
                         <button className="btn status3" style={{ flex: 1 }} onClick={() => setView("questions")}>
