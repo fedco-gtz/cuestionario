@@ -269,27 +269,7 @@ function AdminQuestions() {
                             {question || "Vista previa de la pregunta"}
                         </MathJax>
                     </div>
-                    <div className="card" style={{ marginTop: 10 }}>
-    <h4 style={{ marginBottom: "8px" }}>Vista previa de opciones</h4>
 
-    <ul style={{ paddingLeft: "15px" }}>
-        {options.map((opt, i) => (
-            <li
-                key={i}
-                style={{
-                    marginBottom: "6px",
-                    color: i === correct ? "#22c55e" : "white",
-                    fontWeight: i === correct ? "bold" : "normal"
-                }}
-            >
-                <MathJax dynamic>
-                    {opt || `Opción ${i + 1}`}
-                </MathJax>
-                {i === correct && " ✔"}
-            </li>
-        ))}
-    </ul>
-</div>
 
                     {options.map((opt, i) => (
                         <div key={i} className="optionRow">
@@ -311,6 +291,33 @@ function AdminQuestions() {
                             </button>
                         </div>
                     ))}
+
+                    <div className="card" style={{ marginTop: 10 }}>
+                        <MathJax dynamic>
+                            {question || "Vista previa de la pregunta"}
+                        </MathJax>
+                    </div>
+                    <div className="card" style={{ marginTop: 10 }}>
+    <h4 style={{ marginBottom: "8px" }}>Vista previa de opciones</h4>
+
+    <ul style={{ paddingLeft: "15px" }}>
+        {options.map((opt, i) => (
+            <li
+                key={i}
+                style={{
+                    marginBottom: "6px",
+                    color: i === correct ? "#22c55e" : "white",
+                    fontWeight: i === correct ? "bold" : "normal"
+                }}
+            >
+                <MathJax dynamic>
+                    {opt || `Opción ${i + 1}`}
+                </MathJax>
+                {i === correct && " ✔"}
+            </li>
+        ))}
+    </ul>
+</div>
 
                     <button className="btn primary full" onClick={addQuestion}>
                         Agregar pregunta
