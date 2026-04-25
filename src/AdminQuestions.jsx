@@ -27,8 +27,8 @@ function AdminQuestions() {
     const [correct, setCorrect] = useState(0);
     const [questions, setQuestions] = useState([]);
     const [archives, setArchives] = useState([]);
+    const [view, setView] = useState("questions"); // 🔥 NUEVO
 
-    // 🔥 MATH TOOLS
     const mathTools = [
         { label: "Fracción", syntax: "$\\frac{ }{ }$" },
         { label: "Raíz", syntax: "$\\sqrt{ }$" },
@@ -174,7 +174,6 @@ function AdminQuestions() {
         container.innerHTML = html;
         document.body.appendChild(container);
 
-        // 🔥 Renderizar MathJax
         if (window.MathJax) {
             await window.MathJax.typesetPromise([container]);
         }
@@ -194,7 +193,6 @@ function AdminQuestions() {
         const usableHeight = pageHeight - marginTop - marginBottom;
 
         const imgWidth = pageWidth - marginX * 2;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
         const pxFullHeight = canvas.height;
         const pxPageHeight = Math.floor((usableHeight * canvas.width) / imgWidth);
@@ -249,6 +247,7 @@ function AdminQuestions() {
 
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
+
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
                         {mathTools.map((tool, i) => (
                             <button key={i} className="mathBtn" onClick={() => insertSyntax(tool.syntax)}>
@@ -284,26 +283,19 @@ function AdminQuestions() {
                             </button>
                         </div>
                     ))}
-                    <h4 style={{ marginBottom: "8px" }}>Vista previa</h4>
-                    <div className="card" style={{ marginTop: 10 }}>
+
+                    <h4>Vista previa</h4>
+                    <div className="card">
                         <MathJax dynamic>
                             {question || "Pregunta"}
                         </MathJax>
 
-                        <ul style={{ paddingLeft: "15px" }}>
+                        <ul>
                             {options.map((opt, i) => (
-                                <li
-                                    key={i}
-                                    style={{
-                                        marginBottom: "6px",
-                                        color: i === correct ? "#22c55e" : "white",
-                                        fontWeight: i === correct ? "bold" : "normal"
-                                    }}
-                                >
+                                <li key={i} style={{ color: i === correct ? "#22c55e" : "white" }}>
                                     <MathJax dynamic>
                                         {opt || `Opción ${i + 1}`}
                                     </MathJax>
-                                    {i === correct}
                                 </li>
                             ))}
                         </ul>
@@ -318,65 +310,71 @@ function AdminQuestions() {
                     </button>
                 </div>
 
-                <div className="card">
-                    <h3>Preguntas Cargadas</h3>
-
-                    {questions.map(q => (
-                        <div key={q.id} className="questionCard">
-                            <MathJax>
-                                <h4>{q.question}</h4>
-                            </MathJax>
-
-                            <ul>
-                                {q.options.map((opt, i) => (
-                                    <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
-                                        <MathJax>{opt}</MathJax>
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
-                                Eliminar
-                            </button>
-                        </div>
-                    ))}
-                </div>
-
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                    <button className="btn status3" style={{ flex: 1 }} onClick={}>
+                {/* 🔥 TABS */}
+                <div style={{ display: "flex", gap: "10px" }}>
+                    <button className="btn" onClick={() => setView("questions")}>
                         Preguntas Cargadas
                     </button>
-                    <button className="btn status2" style={{ flex: 1 }} onClick={}>
+                    <button className="btn" onClick={() => setView("archives")}>
                         Archivos Guardados
                     </button>
                 </div>
 
-                <div className="card">
-                    <h3>Archivos guardados</h3>
+                {/* 🔥 CONTENIDO */}
+                {view === "questions" && (
+                    <div className="card">
+                        <h3>Preguntas Cargadas</h3>
 
-                    {archives.map(a => (
-                        <div key={a.id} className="studentRow">
-                            <div>
-                                <h4>📁 {a.name}</h4>
-                                <p>{a.questions?.length || 0} preguntas</p>
-                            </div>
+                        {questions.map(q => (
+                            <div key={q.id} className="questionCard">
+                                <MathJax>
+                                    <h4>{q.question}</h4>
+                                </MathJax>
 
-                            <div className="studentActions">
-                                <button className="btn primary" onClick={() => restoreArchive(a)}>
-                                    Restaurar
-                                </button>
+                                <ul>
+                                    {q.options.map((opt, i) => (
+                                        <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
+                                            <MathJax>{opt}</MathJax>
+                                        </li>
+                                    ))}
+                                </ul>
 
-                                <button className="btn status3" onClick={() => generatePDF(a)}>
-                                    PDF
-                                </button>
-
-                                <button className="btn danger" onClick={() => deleteArchive(a.id)}>
+                                <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
                                     Eliminar
                                 </button>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
+
+                {view === "archives" && (
+                    <div className="card">
+                        <h3>Archivos guardados</h3>
+
+                        {archives.map(a => (
+                            <div key={a.id} className="studentRow">
+                                <div>
+                                    <h4>📁 {a.name}</h4>
+                                    <p>{a.questions?.length || 0} preguntas</p>
+                                </div>
+
+                                <div className="studentActions">
+                                    <button className="btn primary" onClick={() => restoreArchive(a)}>
+                                        Restaurar
+                                    </button>
+
+                                    <button className="btn status3" onClick={() => generatePDF(a)}>
+                                        PDF
+                                    </button>
+
+                                    <button className="btn danger" onClick={() => deleteArchive(a.id)}>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
 
             </div>
         </MathJaxContext>
