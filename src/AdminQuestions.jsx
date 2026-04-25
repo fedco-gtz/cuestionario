@@ -286,13 +286,15 @@ function AdminQuestions() {
                     ))}
 
                     <div className="card" style={{ marginTop: 10 }}>
+                        <h3>Vista previa</h3>
+                        <h4 style={{ marginBottom: "8px" }}>Pregunta</h4>
                         <MathJax dynamic>
-                            {question || "Vista previa de la pregunta"}
+                            {question || "Pregunta"}
                         </MathJax>
                     </div>
 
                     <div className="card" style={{ marginTop: 10 }}>
-                        <h4 style={{ marginBottom: "8px" }}>Vista previa de opciones</h4>
+                        <h4 style={{ marginBottom: "8px" }}>Opciones</h4>
 
                         <ul style={{ paddingLeft: "15px" }}>
                             {options.map((opt, i) => (
