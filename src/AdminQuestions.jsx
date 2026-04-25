@@ -7,10 +7,11 @@ import {
     doc,
     writeBatch
 } from "firebase/firestore";
-import { MathJaxContext, MathJax } from "better-react-mathjax";
+import { MathJaxContext } from "better-react-mathjax";
 import { db } from "./firebase";
 import { toast } from "react-toastify";
 import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const config = {
     loader: { load: ["input/tex", "output/chtml"] },
@@ -28,8 +29,8 @@ function AdminQuestions() {
     const [archives, setArchives] = useState([]);
 
     const mathTools = [
-        { label: "Fracción", syntax: "$\\frac{ }{ }$" },
         { label: "Raíz", syntax: "$\\sqrt{ }$" },
+        { label: "Fracción", syntax: "$\\frac{ }{ }$" },
         { label: "Potencia", syntax: "$x^{ }$" },
         { label: "π", syntax: "$\\pi$" },
         { label: "ℝ", syntax: "$\\mathbb{R}$" }
@@ -166,52 +167,54 @@ function AdminQuestions() {
         }
     };
 
-    // 📄 GENERAR PDF
-    const generatePDF = (archive) => {
-        const docPDF = new jsPDF();
-        let y = 10;
+    // 📄 PDF CON MATH REAL
+    const generatePDF = async (archive) => {
+        const container = document.createElement("div");
 
-        docPDF.setFont("Times", "Bold");
-        docPDF.setFontSize(16);
-        docPDF.text(`Archivo: ${archive.name}`, 10, y);
+        container.style.position = "absolute";
+        container.style.left = "-9999px";
+        container.style.width = "800px";
+        container.style.padding = "20px";
+        container.style.background = "white";
+        container.style.color = "black";
 
-        y += 10;
-
-        docPDF.setFont("Times", "Normal");
-        docPDF.setFontSize(12);
+        let html = `<h2>${archive.name}</h2>`;
 
         archive.questions.forEach((q, index) => {
-            docPDF.setTextColor(0, 0, 0);
-
-            const questionText = `${index + 1}) ${q.question.replace(/\$/g, "")}`;
-            const splitQ = docPDF.splitTextToSize(questionText, 180);
-
-            docPDF.text(splitQ, 10, y);
-            y += splitQ.length * 6;
+            html += `<div style="margin-bottom:20px;">
+                        <p><b>${index + 1}) ${q.question}</b></p>`;
 
             q.options.forEach((opt, i) => {
-                if (i === q.correct) {
-                    docPDF.setTextColor(0, 150, 0); // verde
-                } else {
-                    docPDF.setTextColor(0, 0, 0);
-                }
-
-                const optionText = `- ${opt.replace(/\$/g, "")}`;
-                const splitOpt = docPDF.splitTextToSize(optionText, 170);
-
-                docPDF.text(splitOpt, 15, y);
-                y += splitOpt.length * 6;
+                const color = i === q.correct ? "green" : "black";
+                html += `<p style="color:${color}; margin-left:15px;">- ${opt}</p>`;
             });
 
-            y += 5;
-
-            if (y > 270) {
-                docPDF.addPage();
-                y = 10;
-            }
+            html += `</div>`;
         });
 
-        docPDF.save(`${archive.name}.pdf`);
+        container.innerHTML = html;
+        document.body.appendChild(container);
+
+        // 🔥 renderizar MathJax
+        if (window.MathJax) {
+            await window.MathJax.typesetPromise([container]);
+        }
+
+        const canvas = await html2canvas(container, { scale: 2 });
+        const imgData = canvas.toDataURL("image/png");
+
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const imgWidth = 190;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let position = 10;
+
+        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+
+        pdf.save(`${archive.name}.pdf`);
+
+        document.body.removeChild(container);
     };
 
     return (
@@ -222,7 +225,7 @@ function AdminQuestions() {
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
 
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                         {mathTools.map((tool, i) => (
                             <button key={i} className="mathBtn" onClick={() => insertSyntax(tool.syntax)}>
                                 {tool.label}
@@ -238,9 +241,7 @@ function AdminQuestions() {
                     />
 
                     <div className="card" style={{ marginTop: 10 }}>
-                        <MathJax dynamic>
-                            {question || "Vista previa..."}
-                        </MathJax>
+                        {question || "Vista previa..."}
                     </div>
 
                     {options.map((opt, i) => (
@@ -273,59 +274,32 @@ function AdminQuestions() {
                     </button>
                 </div>
 
-                {/* LISTA */}
-                <div className="card">
-                    <h3>Preguntas</h3>
-
-                    {questions.map(q => (
-                        <div key={q.id} className="questionCard">
-                            <MathJax><h4>{q.question}</h4></MathJax>
-
-                            <ul>
-                                {q.options.map((opt, i) => (
-                                    <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
-                                        <MathJax>{opt}</MathJax>
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
-                                Eliminar
-                            </button>
-                        </div>
-                    ))}
-                </div>
-
                 {/* ARCHIVOS */}
                 <div className="card">
                     <h3>Archivos guardados</h3>
 
-                    {archives.length === 0 ? (
-                        <p>No hay archivos</p>
-                    ) : (
-                        archives.map(a => (
-                            <div key={a.id} className="studentRow">
-                                <div>
-                                    <h4>📁 {a.name}</h4>
-                                    <p>{a.questions?.length || 0} preguntas</p>
-                                </div>
-
-                                <div className="studentActions">
-                                    <button className="btn primary" onClick={() => restoreArchive(a)}>
-                                        Restaurar
-                                    </button>
-
-                                    <button className="btn status3" onClick={() => generatePDF(a)}>
-                                        PDF
-                                    </button>
-
-                                    <button className="btn danger" onClick={() => deleteArchive(a.id)}>
-                                        Eliminar
-                                    </button>
-                                </div>
+                    {archives.map(a => (
+                        <div key={a.id} className="studentRow">
+                            <div>
+                                <h4>📁 {a.name}</h4>
+                                <p>{a.questions?.length || 0} preguntas</p>
                             </div>
-                        ))
-                    )}
+
+                            <div className="studentActions">
+                                <button className="btn primary" onClick={() => restoreArchive(a)}>
+                                    Restaurar
+                                </button>
+
+                                <button className="btn status3" onClick={() => generatePDF(a)}>
+                                    PDF
+                                </button>
+
+                                <button className="btn danger" onClick={() => deleteArchive(a.id)}>
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
 
             </div>
