@@ -289,26 +289,7 @@ function AdminQuestions() {
                         <MathJax dynamic>
                             {question || "Pregunta"}
                         </MathJax>
-                        <ul style={{ paddingLeft: "15px" }}>
-                            {options.map((opt, i) => (
-                                <li
-                                    key={i}
-                                    style={{
-                                        marginBottom: "6px",
-                                        color: i === correct ? "#22c55e" : "white",
-                                        fontWeight: i === correct ? "bold" : "normal"
-                                    }}
-                                >
-                                    <MathJax dynamic>
-                                        {opt || `Opción ${i + 1}`}
-                                    </MathJax>
-                                    {i === correct}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
 
-                    <div className="card" style={{ marginTop: 10 }}>
                         <ul style={{ paddingLeft: "15px" }}>
                             {options.map((opt, i) => (
                                 <li
@@ -360,6 +341,30 @@ function AdminQuestions() {
                                     Eliminar
                                 </button>
                             </div>
+                        </div>
+                    ))}
+                </div>
+
+                                <div className="card">
+                    <h3>Preguntas Cargadas</h3>
+
+                    {questions.map(q => (
+                        <div key={q.id} className="questionCard">
+                            <MathJax>
+                                <h4>{q.question}</h4>
+                            </MathJax>
+
+                            <ul>
+                                {q.options.map((opt, i) => (
+                                    <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
+                                        <MathJax>{opt}</MathJax>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
+                                Eliminar
+                            </button>
                         </div>
                     ))}
                 </div>
