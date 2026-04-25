@@ -296,20 +296,21 @@ function AdminQuestions() {
                         Agregar pregunta
                     </button>
 
-                    <button className="btn warning full" onClick={archiveQuestions}>
-                        Archivar {questions.length} preguntas
-                    </button>
+                    <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}>
 
-                    <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}></div>
-                    
-                    <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-                        <button className="btn status3" style={{ flex: 1 }} onClick={() => setView("questions")}>
-                            Preguntas Cargadas
+                        <button className="btn warning full" onClick={archiveQuestions}>
+                            Archivar {questions.length} preguntas
                         </button>
 
-                        <button className="btn status2" style={{ flex: 1 }} onClick={() => setView("archives")}>
-                            Archivos Guardados
-                        </button>
+                        <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+                            <button className="btn status3" style={{ flex: 1 }} onClick={() => setView("questions")}>
+                                Preguntas Cargadas
+                            </button>
+
+                            <button className="btn status2" style={{ flex: 1 }} onClick={() => setView("archives")}>
+                                Archivos Guardados
+                            </button>
+                        </div>
                     </div>
                 </div>
 
