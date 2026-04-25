@@ -28,13 +28,12 @@ function AdminQuestions() {
     const [questions, setQuestions] = useState([]);
     const [archives, setArchives] = useState([]);
 
-    // 🔥 CONTROL DE VISTA
     const [view, setView] = useState(null);
 
     const mathTools = [
-        { label: "Fracción", syntax: "$\\frac{ }{ }$" },
-        { label: "Raíz", syntax: "$\\sqrt{ }$" },
-        { label: "Potencia", syntax: "$x^{ }$" },
+        { label: "Fracción", syntax: "$\\frac{a}{b}$" },
+        { label: "Raíz", syntax: "$\\sqrt{a}$" },
+        { label: "Potencia", syntax: "$x^{a}$" },
         { label: "Punto (·)", syntax: "$\\cdot$" },
         { label: "Multiplicar (x)", syntax: "$\\times$" },
         { label: "Pi (π)", syntax: "$\\pi$" },
@@ -44,11 +43,11 @@ function AdminQuestions() {
         { label: "I (Irracionales)", syntax: "$\\mathbb{I}$" },
         { label: "R (Reales)", syntax: "$\\mathbb{R}$" },
         { label: "C (Complejos)", syntax: "$\\mathbb{C}$" },
-        { label: "Límite", syntax: "$\\lim_{x → }( )$" },
-        { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
-        { label: "Integral Indef.", syntax: "$\\int ( ) dx$" },
-        { label: "Integral Def.", syntax: "$\\int_{a}^{b} ( ) dx$" },
-        { label: "Valor Absoluto", syntax: "$| |$" },
+        { label: "Límite", syntax: "$\\lim_{x →a}(f)$" },
+        { label: "Derivada", syntax: "$\\frac{d}{dx}(f)$" },
+        { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
+        { label: "Integral Def.", syntax: "$\\int_{a}^{b} (f) dx$" },
+        { label: "Valor Absoluto", syntax: "$|f|$" },
         { label: "Más Funciones", syntax: "$| |$" }
     ];
 
@@ -143,7 +142,6 @@ function AdminQuestions() {
         setArchives(prev => prev.filter(a => a.id !== id));
     };
 
-    // 📄 PDF
     const generatePDF = async (archive) => {
         const container = document.createElement("div");
 
@@ -296,7 +294,7 @@ function AdminQuestions() {
                         Agregar pregunta
                     </button>
 
-                    <br style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}></br>
+                    <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}></div>
 
                     <button className="btn warning full" onClick={archiveQuestions}>
                         Archivar {questions.length} preguntas
