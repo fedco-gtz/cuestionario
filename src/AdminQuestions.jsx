@@ -27,6 +27,7 @@ function AdminQuestions() {
     const [correct, setCorrect] = useState(0);
     const [questions, setQuestions] = useState([]);
     const [archives, setArchives] = useState([]);
+    const [showMoreMath, setShowMoreMath] = useState(false);
 
     const [view, setView] = useState(null);
 
@@ -48,7 +49,7 @@ function AdminQuestions() {
         { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
         { label: "Integral Def.", syntax: "$\\int_{a}^{b} (f) dx$" },
         { label: "Valor Absoluto", syntax: "$|f|$" },
-        { label: "Más Funciones", syntax: "$| |$" }
+        { label: "Más Funciones"}
     ];
 
     useEffect(() => {
@@ -237,13 +238,23 @@ function AdminQuestions() {
     return (
         <MathJaxContext config={config}>
             <div className="container">
-                
+
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
 
                     <div className="mathTools">
                         {mathTools.map((tool, i) => (
-                            <button key={i} className="mathBtn" onClick={() => insertSyntax(tool.syntax)}>
+                            <button
+                                key={i}
+                                className="mathBtn"
+                                onClick={() => {
+                                    if (tool.label === "Más Funciones") {
+                                        setShowMoreMath(true);
+                                    } else {
+                                        insertSyntax(tool.syntax);
+                                    }
+                                }}
+                            >
                                 {tool.label}
                             </button>
                         ))}
@@ -360,6 +371,49 @@ function AdminQuestions() {
                     </div>
                 )}
 
+
+                {showMoreMath && (
+                    <div className="modalOverlay">
+                        <div className="modalContent">
+
+                            <h3>Funciones Matemáticas</h3>
+
+                            <div className="mathTools">
+                                {[
+                                    { label: "Seno", syntax: "$\\sin(x)$" },
+                                    { label: "Coseno", syntax: "$\\cos(x)$" },
+                                    { label: "Tangente", syntax: "$\\tan(x)$" },
+                                    { label: "Log", syntax: "$\\log(x)$" },
+                                    { label: "Ln", syntax: "$\\ln(x)$" },
+                                    { label: "Exponencial", syntax: "$e^{x}$" },
+                                    { label: "Sumatoria", syntax: "$\\sum_{i=1}^{n} x_i$" },
+                                    { label: "Productoria", syntax: "$\\prod_{i=1}^{n} x_i$" },
+                                    { label: "Límite → ∞", syntax: "$\\lim_{x \\to \\infty} f(x)$" }
+                                ].map((tool, i) => (
+                                    <button
+                                        key={i}
+                                        className="mathBtn"
+                                        onClick={() => {
+                                            insertSyntax(tool.syntax);
+                                            setShowMoreMath(false);
+                                        }}
+                                    >
+                                        {tool.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button
+                                className="btn danger"
+                                onClick={() => setShowMoreMath(false)}
+                                style={{ marginTop: "15px" }}
+                            >
+                                Cerrar
+                            </button>
+
+                        </div>
+                    </div>
+                )}
             </div>
         </MathJaxContext>
     );
