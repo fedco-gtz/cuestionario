@@ -33,8 +33,21 @@ function AdminQuestions() {
         { label: "Fracción", syntax: "$\\frac{ }{ }$" },
         { label: "Raíz", syntax: "$\\sqrt{ }$" },
         { label: "Potencia", syntax: "$x^{ }$" },
-        { label: "π", syntax: "$\\pi$" },
-        { label: "ℝ", syntax: "$\\mathbb{R}$" }
+        { label: "Punto (·)", syntax: "$\\cdot$" },
+        { label: "Multiplicar (x)", syntax: "$\\times$" },
+        { label: "Pi (π)", syntax: "$\\pi$" },
+        { label: "N (Naturales)", syntax: "$\\mathbb{N}$" },
+        { label: "Z (Enteros)", syntax: "$\\mathbb{Z}$" },
+        { label: "Q (Racionales)", syntax: "$\\mathbb{Q}$" },
+        { label: "I (Irracionales)", syntax: "$\\mathbb{I}$" },
+        { label: "R (Reales)", syntax: "$\\mathbb{R}$" },
+        { label: "C (Complejos)", syntax: "$\\mathbb{C}$" },
+        { label: "Límite", syntax: "$\\lim_{x → }( )$" },
+        { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
+        { label: "Integral Indef.", syntax: "$\\int ( ) dx$" },
+        { label: "Integral Def.", syntax: "$\\int_{a}^{b} ( ) dx$" },
+        { label: "Valor Absoluto", syntax: "$| |$" },
+        { label: "Más Funciones", syntax: "$| |$" }
     ];
 
     useEffect(() => {
@@ -81,7 +94,6 @@ function AdminQuestions() {
         toast.success("Pregunta eliminada");
     };
 
-    // 📦 ARCHIVAR + BORRAR
     const archiveQuestions = async () => {
         if (questions.length === 0) {
             toast.error("No hay preguntas");
@@ -135,102 +147,101 @@ function AdminQuestions() {
         toast.success("Archivo eliminado");
     };
 
-    // 📄 PDF con margen superior 2cm
-const generatePDF = async (archive) => {
-    const container = document.createElement("div");
+    const generatePDF = async (archive) => {
+        const container = document.createElement("div");
 
-    container.style.position = "absolute";
-    container.style.left = "-9999px";
-    container.style.width = "800px";
-    container.style.padding = "20px";
-    container.style.background = "white";
-    container.style.color = "black";
+        container.style.position = "absolute";
+        container.style.left = "-9999px";
+        container.style.width = "800px";
+        container.style.padding = "20px";
+        container.style.background = "white";
+        container.style.color = "black";
 
-    let html = `<h2>${archive.name}</h2>`;
+        let html = `<h2>${archive.name}</h2>`;
 
-    archive.questions.forEach((q, index) => {
-        html += `<div style="margin-bottom:20px;">
+        archive.questions.forEach((q, index) => {
+            html += `<div style="margin-bottom:20px;">
                     <p><b>${index + 1}) ${q.question}</b></p>`;
 
-        q.options.forEach((opt, i) => {
-            const color = i === q.correct ? "green" : "black";
-            html += `<p style="color:${color}; margin-left:15px;">- ${opt}</p>`;
+            q.options.forEach((opt, i) => {
+                const color = i === q.correct ? "green" : "black";
+                html += `<p style="color:${color}; margin-left:15px;">- ${opt}</p>`;
+            });
+
+            html += `</div>`;
         });
 
-        html += `</div>`;
-    });
+        container.innerHTML = html;
+        document.body.appendChild(container);
 
-    container.innerHTML = html;
-    document.body.appendChild(container);
+        // 🔥 Renderizar MathJax
+        if (window.MathJax) {
+            await window.MathJax.typesetPromise([container]);
+        }
 
-    // 🔥 Renderizar MathJax
-    if (window.MathJax) {
-        await window.MathJax.typesetPromise([container]);
-    }
+        const canvas = await html2canvas(container, { scale: 2 });
+        document.body.removeChild(container);
 
-    const canvas = await html2canvas(container, { scale: 2 });
-    document.body.removeChild(container);
+        const pdf = new jsPDF("p", "mm", "a4");
 
-    const pdf = new jsPDF("p", "mm", "a4");
+        const pageWidth = 210;
+        const pageHeight = 297;
 
-    const pageWidth = 210;
-    const pageHeight = 297;
+        const marginX = 10;
+        const marginTop = 5;
+        const marginBottom = 5;
 
-    const marginX = 10;
-    const marginTop = 10;     // ✅ 2 cm
-    const marginBottom = 20;  // ✅ 2 cm
+        const usableHeight = pageHeight - marginTop - marginBottom;
 
-    const usableHeight = pageHeight - marginTop - marginBottom;
+        const imgWidth = pageWidth - marginX * 2;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-    const imgWidth = pageWidth - marginX * 2;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const pxFullHeight = canvas.height;
+        const pxPageHeight = Math.floor((usableHeight * canvas.width) / imgWidth);
 
-    const pxFullHeight = canvas.height;
-    const pxPageHeight = Math.floor((usableHeight * canvas.width) / imgWidth);
+        let position = 0;
+        let page = 0;
 
-    let position = 0;
-    let page = 0;
+        while (position < pxFullHeight) {
+            const pageCanvas = document.createElement("canvas");
+            const context = pageCanvas.getContext("2d");
 
-    while (position < pxFullHeight) {
-        const pageCanvas = document.createElement("canvas");
-        const context = pageCanvas.getContext("2d");
+            pageCanvas.width = canvas.width;
+            pageCanvas.height = Math.min(pxPageHeight, pxFullHeight - position);
 
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = Math.min(pxPageHeight, pxFullHeight - position);
+            context.drawImage(
+                canvas,
+                0,
+                position,
+                canvas.width,
+                pageCanvas.height,
+                0,
+                0,
+                canvas.width,
+                pageCanvas.height
+            );
 
-        context.drawImage(
-            canvas,
-            0,
-            position,
-            canvas.width,
-            pageCanvas.height,
-            0,
-            0,
-            canvas.width,
-            pageCanvas.height
-        );
+            const imgData = pageCanvas.toDataURL("image/png");
 
-        const imgData = pageCanvas.toDataURL("image/png");
+            if (page > 0) pdf.addPage();
 
-        if (page > 0) pdf.addPage();
+            const finalHeight = (pageCanvas.height * imgWidth) / canvas.width;
 
-        const finalHeight = (pageCanvas.height * imgWidth) / canvas.width;
+            pdf.addImage(
+                imgData,
+                "PNG",
+                marginX,
+                marginTop,
+                imgWidth,
+                finalHeight
+            );
 
-        pdf.addImage(
-            imgData,
-            "PNG",
-            marginX,
-            marginTop,
-            imgWidth,
-            finalHeight
-        );
+            position += pxPageHeight;
+            page++;
+        }
 
-        position += pxPageHeight;
-        page++;
-    }
-
-    pdf.save(`${archive.name}.pdf`);
-};
+        pdf.save(`${archive.name}.pdf`);
+    };
 
     return (
         <MathJaxContext config={config}>
@@ -238,8 +249,6 @@ const generatePDF = async (archive) => {
 
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
-
-                    {/* 🔥 BOTONES MATEMÁTICOS */}
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
                         {mathTools.map((tool, i) => (
                             <button key={i} className="mathBtn" onClick={() => insertSyntax(tool.syntax)}>
@@ -255,12 +264,32 @@ const generatePDF = async (archive) => {
                         onChange={(e) => setQuestion(e.target.value)}
                     />
 
-                    {/* 👀 VISTA PREVIA */}
                     <div className="card" style={{ marginTop: 10 }}>
                         <MathJax dynamic>
-                            {question || "Vista previa..."}
+                            {question || "Vista previa de la pregunta"}
                         </MathJax>
                     </div>
+                    <div className="card" style={{ marginTop: 10 }}>
+    <h4 style={{ marginBottom: "8px" }}>Vista previa de opciones</h4>
+
+    <ul style={{ paddingLeft: "15px" }}>
+        {options.map((opt, i) => (
+            <li
+                key={i}
+                style={{
+                    marginBottom: "6px",
+                    color: i === correct ? "#22c55e" : "white",
+                    fontWeight: i === correct ? "bold" : "normal"
+                }}
+            >
+                <MathJax dynamic>
+                    {opt || `Opción ${i + 1}`}
+                </MathJax>
+                {i === correct && " ✔"}
+            </li>
+        ))}
+    </ul>
+</div>
 
                     {options.map((opt, i) => (
                         <div key={i} className="optionRow">
@@ -292,7 +321,6 @@ const generatePDF = async (archive) => {
                     </button>
                 </div>
 
-                {/* 📁 ARCHIVOS */}
                 <div className="card">
                     <h3>Archivos guardados</h3>
 
