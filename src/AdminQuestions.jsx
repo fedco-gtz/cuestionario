@@ -7,7 +7,7 @@ import {
     doc,
     writeBatch
 } from "firebase/firestore";
-import { MathJaxContext } from "better-react-mathjax";
+import { MathJaxContext, MathJax } from "better-react-mathjax";
 import { db } from "./firebase";
 import { toast } from "react-toastify";
 import jsPDF from "jspdf";
@@ -28,21 +28,13 @@ function AdminQuestions() {
     const [questions, setQuestions] = useState([]);
     const [archives, setArchives] = useState([]);
 
-    // 🔥 MATH TOOLS (NO SE TOCA 😎)
+    // 🔥 MATH TOOLS
     const mathTools = [
         { label: "Fracción", syntax: "$\\frac{ }{ }$" },
         { label: "Raíz", syntax: "$\\sqrt{ }$" },
         { label: "Potencia", syntax: "$x^{ }$" },
-        { label: "Punto (·)", syntax: "$\\cdot$" },
-        { label: "×", syntax: "$\\times$" },
         { label: "π", syntax: "$\\pi$" },
-        { label: "ℕ", syntax: "$\\mathbb{N}$" },
-        { label: "ℤ", syntax: "$\\mathbb{Z}$" },
-        { label: "ℚ", syntax: "$\\mathbb{Q}$" },
-        { label: "ℝ", syntax: "$\\mathbb{R}$" },
-        { label: "Límite", syntax: "$\\lim_{x \\to }( )$" },
-        { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
-        { label: "∫", syntax: "$\\int ( ) dx$" }
+        { label: "ℝ", syntax: "$\\mathbb{R}$" }
     ];
 
     useEffect(() => {
@@ -143,7 +135,7 @@ function AdminQuestions() {
         toast.success("Archivo eliminado");
     };
 
-    // 📄 PDF MULTIPÁGINA
+    // 📄 PDF con margen superior 2cm
     const generatePDF = async (archive) => {
         const container = document.createElement("div");
 
@@ -182,21 +174,23 @@ function AdminQuestions() {
 
         const pageWidth = 210;
         const pageHeight = 297;
-        const margin = 10;
 
-        const imgWidth = pageWidth - margin * 2;
+        const marginX = 10;
+        const marginTop = 20; // ✅ 2 cm
+
+        const imgWidth = pageWidth - marginX * 2;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
         let heightLeft = imgHeight;
-        let position = margin;
+        let position = marginTop;
 
-        pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+        pdf.addImage(imgData, "PNG", marginX, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
 
         while (heightLeft > 0) {
             pdf.addPage();
-            position = heightLeft - imgHeight;
-            pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
+            position = heightLeft - imgHeight + marginTop;
+            pdf.addImage(imgData, "PNG", marginX, position, imgWidth, imgHeight);
             heightLeft -= pageHeight;
         }
 
@@ -212,13 +206,9 @@ function AdminQuestions() {
                     <h2 className="title">Crear Preguntas</h2>
 
                     {/* 🔥 BOTONES MATEMÁTICOS */}
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
+                    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
                         {mathTools.map((tool, i) => (
-                            <button
-                                key={i}
-                                className="mathBtn"
-                                onClick={() => insertSyntax(tool.syntax)}
-                            >
+                            <button key={i} className="mathBtn" onClick={() => insertSyntax(tool.syntax)}>
                                 {tool.label}
                             </button>
                         ))}
@@ -230,6 +220,13 @@ function AdminQuestions() {
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
                     />
+
+                    {/* 👀 VISTA PREVIA */}
+                    <div className="card" style={{ marginTop: 10 }}>
+                        <MathJax dynamic>
+                            {question || "Vista previa..."}
+                        </MathJax>
+                    </div>
 
                     {options.map((opt, i) => (
                         <div key={i} className="optionRow">
@@ -261,6 +258,7 @@ function AdminQuestions() {
                     </button>
                 </div>
 
+                {/* 📁 ARCHIVOS */}
                 <div className="card">
                     <h3>Archivos guardados</h3>
 
