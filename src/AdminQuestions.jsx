@@ -10,6 +10,7 @@ import {
 import { MathJaxContext, MathJax } from "better-react-mathjax";
 import { db } from "./firebase";
 import { toast } from "react-toastify";
+import jsPDF from "jspdf";
 
 const config = {
     loader: { load: ["input/tex", "output/chtml"] },
@@ -30,21 +31,8 @@ function AdminQuestions() {
         { label: "Fracción", syntax: "$\\frac{ }{ }$" },
         { label: "Raíz", syntax: "$\\sqrt{ }$" },
         { label: "Potencia", syntax: "$x^{ }$" },
-        { label: "Punto (·)", syntax: "$\\cdot$" },
-        { label: "Multiplicar (x)", syntax: "$\\times$" },
-        { label: "Pi (π)", syntax: "$\\pi$" },
-        { label: "N (Naturales)", syntax: "$\\mathbb{N}$" },
-        { label: "Z (Enteros)", syntax: "$\\mathbb{Z}$" },
-        { label: "Q (Racionales)", syntax: "$\\mathbb{Q}$" },
-        { label: "I (Irracionales)", syntax: "$\\mathbb{I}$" },
-        { label: "R (Reales)", syntax: "$\\mathbb{R}$" },
-        { label: "C (Complejos)", syntax: "$\\mathbb{C}$" },
-        { label: "Límite", syntax: "$\\lim_{x → }( )$" },
-        { label: "Derivada", syntax: "$\\frac{d}{dx}( )$" },
-        { label: "Integral Indef.", syntax: "$\\int ( ) dx$" },
-        { label: "Integral Def.", syntax: "$\\int_{a}^{b} ( ) dx$" },
-        { label: "Valor Absoluto", syntax: "$| |$" },
-        { label: "Más Funciones", syntax: "$| |$" },
+        { label: "π", syntax: "$\\pi$" },
+        { label: "ℝ", syntax: "$\\mathbb{R}$" }
     ];
 
     useEffect(() => {
@@ -52,7 +40,6 @@ function AdminQuestions() {
         loadArchives();
     }, []);
 
-    // 📥 CARGAR PREGUNTAS
     const loadQuestions = async () => {
         try {
             const snap = await getDocs(collection(db, "questions"));
@@ -62,7 +49,6 @@ function AdminQuestions() {
         }
     };
 
-    // 📥 CARGAR ARCHIVOS
     const loadArchives = async () => {
         try {
             const snap = await getDocs(collection(db, "archives"));
@@ -95,7 +81,6 @@ function AdminQuestions() {
         }
     };
 
-    // ❌ ELIMINAR
     const deleteQuestion = async (id) => {
         try {
             await deleteDoc(doc(db, "questions", id));
@@ -106,7 +91,6 @@ function AdminQuestions() {
         }
     };
 
-    // 🧠 INSERTAR SINTAXIS
     const insertSyntax = (syntax) => {
         setQuestion(prev => prev + syntax);
     };
@@ -114,41 +98,33 @@ function AdminQuestions() {
     // 📦 ARCHIVAR + BORRAR
     const archiveQuestions = async () => {
         if (questions.length === 0) {
-            toast.error("No hay preguntas para archivar");
+            toast.error("No hay preguntas");
             return;
         }
 
-        const confirmAction = window.confirm(
-            "Se van a archivar y borrar TODAS las preguntas. ¿Continuar?"
-        );
-        if (!confirmAction) return;
+        if (!window.confirm("Se archivarán y eliminarán todas las preguntas")) return;
 
         const name = prompt("Nombre del archivo:");
         if (!name) return;
 
         try {
-            // 1️⃣ Guardar archivo
             await addDoc(collection(db, "archives"), {
                 name,
                 questions,
                 createdAt: new Date().toISOString()
             });
 
-            // 2️⃣ Borrar preguntas (batch)
             const batch = writeBatch(db);
-
-            questions.forEach((q) => {
-                const ref = doc(db, "questions", q.id);
-                batch.delete(ref);
+            questions.forEach(q => {
+                batch.delete(doc(db, "questions", q.id));
             });
 
             await batch.commit();
 
-            // 3️⃣ Limpiar estado
             setQuestions([]);
             loadArchives();
 
-            toast.success("Preguntas archivadas y eliminadas");
+            toast.success("Archivo creado y preguntas eliminadas");
 
         } catch (error) {
             console.error(error);
@@ -161,7 +137,7 @@ function AdminQuestions() {
         try {
             const batch = writeBatch(db);
 
-            archive.questions.forEach((q) => {
+            archive.questions.forEach(q => {
                 const ref = doc(collection(db, "questions"));
                 batch.set(ref, {
                     question: q.question,
@@ -180,7 +156,6 @@ function AdminQuestions() {
         }
     };
 
-    // ❌ ELIMINAR ARCHIVO
     const deleteArchive = async (id) => {
         try {
             await deleteDoc(doc(db, "archives", id));
@@ -191,14 +166,63 @@ function AdminQuestions() {
         }
     };
 
+    // 📄 GENERAR PDF
+    const generatePDF = (archive) => {
+        const docPDF = new jsPDF();
+        let y = 10;
+
+        docPDF.setFont("Times", "Bold");
+        docPDF.setFontSize(16);
+        docPDF.text(`Archivo: ${archive.name}`, 10, y);
+
+        y += 10;
+
+        docPDF.setFont("Times", "Normal");
+        docPDF.setFontSize(12);
+
+        archive.questions.forEach((q, index) => {
+            docPDF.setTextColor(0, 0, 0);
+
+            const questionText = `${index + 1}) ${q.question.replace(/\$/g, "")}`;
+            const splitQ = docPDF.splitTextToSize(questionText, 180);
+
+            docPDF.text(splitQ, 10, y);
+            y += splitQ.length * 6;
+
+            q.options.forEach((opt, i) => {
+                if (i === q.correct) {
+                    docPDF.setTextColor(0, 150, 0); // verde
+                } else {
+                    docPDF.setTextColor(0, 0, 0);
+                }
+
+                const optionText = `- ${opt.replace(/\$/g, "")}`;
+                const splitOpt = docPDF.splitTextToSize(optionText, 170);
+
+                docPDF.text(splitOpt, 15, y);
+                y += splitOpt.length * 6;
+            });
+
+            y += 5;
+
+            if (y > 270) {
+                docPDF.addPage();
+                y = 10;
+            }
+        });
+
+        docPDF.save(`${archive.name}.pdf`);
+    };
+
     return (
         <MathJaxContext config={config}>
             <div className="container">
 
+                {/* CREAR */}
                 <div className="card">
                     <h2 className="title">Crear Preguntas</h2>
 
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         {mathTools.map((tool, i) => (
                             <button key={i} className="mathBtn" onClick={() => insertSyntax(tool.syntax)}>
                                 {tool.label}
@@ -219,7 +243,6 @@ function AdminQuestions() {
                         </MathJax>
                     </div>
 
-                    {/* OPCIONES */}
                     {options.map((opt, i) => (
                         <div key={i} className="optionRow">
                             <input
@@ -244,20 +267,19 @@ function AdminQuestions() {
                     <button className="btn primary full" onClick={addQuestion}>
                         Agregar pregunta
                     </button>
-                    <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}> </div>
+
                     <button className="btn warning full" onClick={archiveQuestions}>
                         Archivar {questions.length} preguntas
                     </button>
                 </div>
 
+                {/* LISTA */}
                 <div className="card">
-                    <h3>Preguntas Cargadas</h3>
+                    <h3>Preguntas</h3>
 
                     {questions.map(q => (
                         <div key={q.id} className="questionCard">
-                            <MathJax>
-                                <h4>{q.question}</h4>
-                            </MathJax>
+                            <MathJax><h4>{q.question}</h4></MathJax>
 
                             <ul>
                                 {q.options.map((opt, i) => (
@@ -292,6 +314,11 @@ function AdminQuestions() {
                                     <button className="btn primary" onClick={() => restoreArchive(a)}>
                                         Restaurar
                                     </button>
+
+                                    <button className="btn status3" onClick={() => generatePDF(a)}>
+                                        PDF
+                                    </button>
+
                                     <button className="btn danger" onClick={() => deleteArchive(a.id)}>
                                         Eliminar
                                     </button>
