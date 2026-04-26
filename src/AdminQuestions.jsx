@@ -53,18 +53,6 @@ function AdminQuestions() {
         { label: "$a^{b}$", syntax: "$a^{b}$" },
         { label: "$\\pi$", syntax: "$\\pi$" },
         { label: "Más Funciones" },
-
-
-        { label: "Punto (·)", syntax: "$\\cdot$" },
-
-
-
-
-        { label: "Límite", syntax: "$\\lim_{x →a}(f)$" },
-        { label: "Derivada", syntax: "$\\frac{d}{dx}(f)$" },
-        { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
-        { label: "Integral Def.", syntax: "$\\int_{a}^{b} (f) dx$" },
-        { label: "Valor Absoluto", syntax: "$|f|$" },
     ];
 
     useEffect(() => {
@@ -389,71 +377,80 @@ function AdminQuestions() {
 
 
                 {showMoreMath && (
-    <div className="modalOverlay">
-        <div className="modalContent">
+                    <div className="modalOverlay">
+                        <div className="modalContent">
 
-            <h3>Funciones Matemáticas</h3>
+                            <h3>Funciones Matemáticas</h3>
 
-            {/* 🔘 BOTONES */}
-            <div className="mathTools">
-                {[
-                    { label: "Seno", syntax: "$\\sin(x)$" },
-                    { label: "Coseno", syntax: "$\\cos(x)$" },
-                    { label: "Tangente", syntax: "$\\tan(x)$" },
-                    { label: "Log", syntax: "$\\log(x)$" },
-                    { label: "Ln", syntax: "$\\ln(x)$" },
-                    { label: "Exponencial", syntax: "$e^{x}$" },
-                    { label: "Sumatoria", syntax: "$\\sum_{i=1}^{n} x_i$" },
-                    { label: "Productoria", syntax: "$\\prod_{i=1}^{n} x_i$" },
-                    { label: "Límite → ∞", syntax: "$\\lim_{x \\to \\infty} f(x)$" }
-                ].map((tool, i) => (
-                    <button
-                        key={i}
-                        className="mathBtn"
-                        onClick={() => setPreviewMath(tool.syntax)}
-                    >
-                        {tool.label}
-                    </button>
-                ))}
-            </div>
+                            <div className="mathTools">
+                                {[
+                                    <h4>Fede</h4>,
+                                    { label: "Seno", syntax: "$\\sin(x)$" },
+                                    { label: "Coseno", syntax: "$\\cos(x)$" },
+                                    { label: "Tangente", syntax: "$\\tan(x)$" },
+                                    { label: "Log", syntax: "$\\log(x)$" },
+                                    { label: "Ln", syntax: "$\\ln(x)$" },
+                                    { label: "Exponencial", syntax: "$e^{x}$" },
+                                    { label: "Sumatoria", syntax: "$\\sum_{i=1}^{n} x_i$" },
+                                    { label: "Productoria", syntax: "$\\prod_{i=1}^{n} x_i$" },
+                                    { label: "Límite → ∞", syntax: "$\\lim_{x \\to \\infty} f(x)$" },
 
-            {/* 👀 PREVIEW EN VIVO */}
-            <div className="previewBox" style={{ marginTop: "15px" }}>
-                <MathJax dynamic>
-                    {previewMath || "Seleccioná una función..."}
-                </MathJax>
-            </div>
 
-            {/* 🔘 ACCIONES */}
-            <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-                <button
-                    className="btn primary"
-                    style={{ flex: 1 }}
-                    onClick={() => {
-                        if (!previewMath) return;
-                        insertSyntax(previewMath);
-                        setShowMoreMath(false);
-                        setPreviewMath("");
-                    }}
-                >
-                    Insertar
-                </button>
 
-                <button
-                    className="btn danger"
-                    style={{ flex: 1 }}
-                    onClick={() => {
-                        setShowMoreMath(false);
-                        setPreviewMath("");
-                    }}
-                >
-                    Cerrar
-                </button>
-            </div>
+                                    { label: "Punto (·)", syntax: "$\\cdot$" },
+                                    { label: "Límite", syntax: "$\\lim_{x →a}(f)$" },
+                                    { label: "Derivada", syntax: "$\\frac{d}{dx}(f)$" },
+                                    { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
+                                    { label: "Integral Def.", syntax: "$\\int_{a}^{b} (f) dx$" },
+                                    { label: "Valor Absoluto", syntax: "$|f|$" },
+                                ].map((tool, i) => (
+                                    <button
+                                        key={i}
+                                        className="mathBtn"
+                                        onClick={() => setPreviewMath(tool.syntax)}
+                                    >
+                                        {tool.label}
+                                    </button>
+                                ))}
+                            </div>
 
-        </div>
-    </div>
-)}
+                            {/* 👀 PREVIEW EN VIVO */}
+                            <div className="previewBox" style={{ marginTop: "15px" }}>
+                                <MathJax dynamic>
+                                    {previewMath || "Seleccioná una función..."}
+                                </MathJax>
+                            </div>
+
+                            {/* 🔘 ACCIONES */}
+                            <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+                                <button
+                                    className="btn primary"
+                                    style={{ flex: 1 }}
+                                    onClick={() => {
+                                        if (!previewMath) return;
+                                        insertSyntax(previewMath);
+                                        setShowMoreMath(false);
+                                        setPreviewMath("");
+                                    }}
+                                >
+                                    Insertar
+                                </button>
+
+                                <button
+                                    className="btn danger"
+                                    style={{ flex: 1 }}
+                                    onClick={() => {
+                                        setShowMoreMath(false);
+                                        setPreviewMath("");
+                                    }}
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                )}
             </div>
         </MathJaxContext>
     );
