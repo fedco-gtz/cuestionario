@@ -407,7 +407,21 @@ function AdminQuestions() {
                                     { label: "⟶", syntax: "$\\longrightarrow$" },
                                     { label: "⟹", syntax: "$\\Longrightarrow$" },
                                     { label: "⟺", syntax: "$\\Longleftrightarrow$" },
-                                    
+                                    { label: "∈", syntax: "$\\in$" },
+                                    { label: "∋", syntax: "$\\ni$" },
+                                    { label: "∉", syntax: "$\\notin$" },
+                                    { label: "∃", syntax: "$\\exists$" },
+                                    { label: "∄", syntax: "$\\nexists$" },
+                                    { label: "∀", syntax: "$\\forall$" },
+                                    { label: "(", syntax: "$($" },
+                                    { label: ")", syntax: "$)" },
+                                    { label: "(a,b)", syntax: "$(a,b)$" },
+                                    { label: "[", syntax: "$[$" },
+                                    { label: "]", syntax: "$]$" },
+                                    { label: "[a,b]", syntax: "$[a,b]$" },
+                                    { label: "{", syntax: "$\\{$" },
+                                    { label: "}", syntax: "$\\}$" },
+                                    { label: "{a,b}", syntax: "$\\{a,b\}" },
 
 
 
