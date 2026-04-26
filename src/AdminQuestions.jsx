@@ -397,8 +397,8 @@ function AdminQuestions() {
                                     { label: "∧", syntax: "$\\wedge$" },
                                     { label: "⊻", syntax: "$\\veebar$" },
                                     { label: "⊼", syntax: "$\\barwedge$" },
-                                    { label: "<", syntax: "$\\<$" },
-                                    { label: ">", syntax: "$\\>$" },
+                                    { label: "<", syntax: "$<$" },
+                                    { label: ">", syntax: "$>$" },
                                     { label: "≤", syntax: "$\\leq$" },
                                     { label: "≥", syntax: "$\\geq$" },
                                     
