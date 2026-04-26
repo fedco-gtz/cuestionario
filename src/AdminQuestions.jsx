@@ -431,12 +431,8 @@ function AdminQuestions() {
                                     { label: "senh(x)", syntax: "$\\sinh(x)$" },
                                     { label: "cosh(x)", syntax: "$\\cosh(x)$" },
                                     { label: "tanh(x)", syntax: "$\\tanh(x)$" },
-                                    { label: "arcsenh(x)", syntax: "$\\arcsinh(x)$" },
-                                    { label: "arccosh(x)", syntax: "$\\arccosh(x)$" },
-                                    { label: "arctanh(x)", syntax: "$\\arctanh(x)$" },
-
-
                                     { label: "Log", syntax: "$\\log(x)$" },
+                                    { label: "Log", syntax: "$\\log_a(x)$" },
                                     { label: "Ln", syntax: "$\\ln(x)$" },
                                     { label: "Exponencial", syntax: "$e^{x}$" },
                                     { label: "Sumatoria", syntax: "$\\sum_{i=1}^{n} x_i$" },
