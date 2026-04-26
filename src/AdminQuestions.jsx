@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
     collection,
     addDoc,
@@ -29,30 +29,53 @@ function AdminQuestions() {
     const [archives, setArchives] = useState([]);
     const [showMoreMath, setShowMoreMath] = useState(false);
     const [previewMath, setPreviewMath] = useState("");
-
     const [view, setView] = useState(null);
 
+    const inputRef = useRef(null);
+
+    // 🔥 INSERTAR EN CURSOR
+    const insertAtCursor = (syntax) => {
+        const input = inputRef.current;
+
+        const clean = syntax.replace(/\$/g, "");
+
+        if (!input) {
+            setQuestion(prev => prev + clean);
+            return;
+        }
+
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+
+        const newText =
+            question.substring(0, start) +
+            clean +
+            question.substring(end);
+
+        setQuestion(newText);
+
+        setTimeout(() => {
+            input.focus();
+            const pos = start + clean.length;
+            input.setSelectionRange(pos, pos);
+        }, 0);
+    };
+
+    // 🔧 TOOLS
     const mathTools = [
         { label: "$+$", syntax: "$+$" },
         { label: "$-$", syntax: "$-$" },
         { label: "$\\times$", syntax: "$\\times$" },
         { label: "$\\div$", syntax: "$\\div$" },
         { label: "$\\mathbb{N}$", syntax: "$\\mathbb{N}$" },
-        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{Z}$" },
+        { label: "$\\mathbb{Z}$", syntax: "$\\mathbb{Z}$" },
         { label: "$\\mathbb{Q}$", syntax: "$\\mathbb{Q}$" },
-        { label: "$\\mathbb{I}$", syntax: "$\\mathbb{I}$" },
         { label: "$\\mathbb{R}$", syntax: "$\\mathbb{R}$" },
-        { label: "$\\mathbb{C}$", syntax: "$\\mathbb{C}$" },
-        { label: "$\\mathbb{Im}$", syntax: "$\\z=a+bi$" },
         { label: "$\\frac{a}{b}$", syntax: "$\\frac{a}{b}$" },
         { label: "$\\sqrt{a}$", syntax: "$\\sqrt{a}$" },
-        { label: "$\\sqrt[3]{a}$", syntax: "$\\sqrt[3]{a}$" },
-        { label: "$\\sqrt[b]{a}$", syntax: "$\\sqrt[b]{a}$" },
         { label: "$a^{2}$", syntax: "$a^{2}$" },
-        { label: "$a^{3}$", syntax: "$a^{3}$" },
-        { label: "$a^{b}$", syntax: "$a^{b}$" },
         { label: "$\\pi$", syntax: "$\\pi$" },
-        { label: "Más Funciones" },
+        { label: "Más Funciones" }
     ];
 
     useEffect(() => {
@@ -70,13 +93,9 @@ function AdminQuestions() {
         setArchives(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     };
 
-    const insertSyntax = (syntax) => {
-        setQuestion(prev => prev + syntax);
-    };
-
     const addQuestion = async () => {
         if (!question || options.some(o => o === "")) {
-            toast.error("Completá todos los campos");
+            toast.error("Completá todo");
             return;
         }
 
@@ -90,13 +109,11 @@ function AdminQuestions() {
         setOptions(["", "", "", ""]);
         setCorrect(0);
         loadQuestions();
-        toast.success("Pregunta agregada");
     };
 
     const deleteQuestion = async (id) => {
         await deleteDoc(doc(db, "questions", id));
         setQuestions(prev => prev.filter(q => q.id !== id));
-        toast.success("Pregunta eliminada");
     };
 
     const archiveQuestions = async () => {
@@ -107,8 +124,7 @@ function AdminQuestions() {
 
         await addDoc(collection(db, "archives"), {
             name,
-            questions,
-            createdAt: new Date().toISOString()
+            questions
         });
 
         const batch = writeBatch(db);
@@ -120,7 +136,6 @@ function AdminQuestions() {
 
         setQuestions([]);
         loadArchives();
-        toast.success("Archivo creado");
     };
 
     const restoreArchive = async (archive) => {
@@ -128,17 +143,11 @@ function AdminQuestions() {
 
         archive.questions.forEach(q => {
             const ref = doc(collection(db, "questions"));
-            batch.set(ref, {
-                question: q.question,
-                options: q.options,
-                correct: q.correct
-            });
+            batch.set(ref, q);
         });
 
         await batch.commit();
-
         loadQuestions();
-        toast.success("Restaurado");
     };
 
     const deleteArchive = async (id) => {
@@ -146,93 +155,44 @@ function AdminQuestions() {
         setArchives(prev => prev.filter(a => a.id !== id));
     };
 
+    // 📄 PDF PRO
     const generatePDF = async (archive) => {
-        const container = document.createElement("div");
-
-        container.style.position = "absolute";
-        container.style.left = "-9999px";
-        container.style.width = "800px";
-        container.style.padding = "20px";
-        container.style.background = "white";
-        container.style.color = "black";
-
-        let html = `<h2>${archive.name}</h2>`;
-
-        archive.questions.forEach((q, index) => {
-            html += `<div style="margin-bottom:20px;">
-                <p><b>${index + 1}) ${q.question}</b></p>`;
-
-            q.options.forEach((opt, i) => {
-                const color = i === q.correct ? "green" : "black";
-                html += `<p style="color:${color}; margin-left:15px;">- ${opt}</p>`;
-            });
-
-            html += `</div>`;
-        });
-
-        container.innerHTML = html;
-        document.body.appendChild(container);
-
-        if (window.MathJax) {
-            await window.MathJax.typesetPromise([container]);
-        }
-
-        const canvas = await html2canvas(container, { scale: 2 });
-        document.body.removeChild(container);
-
         const pdf = new jsPDF("p", "mm", "a4");
 
-        const pageWidth = 210;
-        const pageHeight = 297;
-        const marginX = 10;
-        const marginTop = 20;
-        const marginBottom = 20;
+        let y = 20;
 
-        const usableHeight = pageHeight - marginTop - marginBottom;
-        const imgWidth = pageWidth - marginX * 2;
+        for (let i = 0; i < archive.questions.length; i++) {
+            const q = archive.questions[i];
 
-        const pxFullHeight = canvas.height;
-        const pxPageHeight = Math.floor((usableHeight * canvas.width) / imgWidth);
+            const div = document.createElement("div");
+            div.style.width = "700px";
+            div.innerHTML = `
+                <p><b>${i + 1}) ${q.question}</b></p>
+                ${q.options.map((opt, idx) =>
+                `<p style="color:${idx === q.correct ? "green" : "black"}">- ${opt}</p>`
+            ).join("")}
+            `;
 
-        let position = 0;
-        let page = 0;
+            document.body.appendChild(div);
 
-        while (position < pxFullHeight) {
-            const pageCanvas = document.createElement("canvas");
-            const context = pageCanvas.getContext("2d");
+            if (window.MathJax) {
+                await window.MathJax.typesetPromise([div]);
+            }
 
-            pageCanvas.width = canvas.width;
-            pageCanvas.height = Math.min(pxPageHeight, pxFullHeight - position);
+            const canvas = await html2canvas(div);
+            const img = canvas.toDataURL("image/png");
 
-            context.drawImage(
-                canvas,
-                0,
-                position,
-                canvas.width,
-                pageCanvas.height,
-                0,
-                0,
-                canvas.width,
-                pageCanvas.height
-            );
+            const height = (canvas.height * 180) / canvas.width;
 
-            const imgData = pageCanvas.toDataURL("image/png");
+            if (y + height > 280) {
+                pdf.addPage();
+                y = 20;
+            }
 
-            if (page > 0) pdf.addPage();
+            pdf.addImage(img, "PNG", 15, y, 180, height);
+            y += height + 5;
 
-            const finalHeight = (pageCanvas.height * imgWidth) / canvas.width;
-
-            pdf.addImage(
-                imgData,
-                "PNG",
-                marginX,
-                marginTop,
-                imgWidth,
-                finalHeight
-            );
-
-            position += pxPageHeight;
-            page++;
+            document.body.removeChild(div);
         }
 
         pdf.save(`${archive.name}.pdf`);
@@ -243,7 +203,7 @@ function AdminQuestions() {
             <div className="container">
 
                 <div className="card">
-                    <h2 className="title">Crear Preguntas</h2>
+                    <h2>Crear Preguntas</h2>
 
                     <div className="mathTools">
                         {mathTools.map((tool, i) => (
@@ -253,9 +213,8 @@ function AdminQuestions() {
                                 onClick={() => {
                                     if (tool.label === "Más Funciones") {
                                         setShowMoreMath(true);
-                                        setPreviewMath("");
                                     } else {
-                                        insertSyntax(tool.syntax);
+                                        insertAtCursor(tool.syntax);
                                     }
                                 }}
                             >
@@ -265,17 +224,27 @@ function AdminQuestions() {
                     </div>
 
                     <input
-                        className="input input-full"
-                        placeholder="Escribí la pregunta"
+                        ref={inputRef}
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
+                        className="input"
                     />
 
+                    {/* PREVIEW */}
+                    <div className="card">
+                        <MathJax dynamic>{question || "Vista previa..."}</MathJax>
+                        <ul>
+                            {options.map((opt, i) => (
+                                <li key={i} style={{ color: i === correct ? "green" : "white" }}>
+                                    <MathJax>{opt || `Opción ${i + 1}`}</MathJax>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
                     {options.map((opt, i) => (
-                        <div key={i} className="optionRow">
+                        <div key={i}>
                             <input
-                                className="input"
-                                placeholder={`Opción ${i + 1}`}
                                 value={opt}
                                 onChange={(e) => {
                                     const newOpts = [...options];
@@ -283,64 +252,25 @@ function AdminQuestions() {
                                     setOptions(newOpts);
                                 }}
                             />
-                            <button
-                                className={`btn ${correct === i ? "primary" : ""}`}
-                                onClick={() => setCorrect(i)}
-                            >
-                                ✔
-                            </button>
+                            <button onClick={() => setCorrect(i)}>✔</button>
                         </div>
                     ))}
 
-                    <div className="card" style={{ marginTop: 10 }}>
-                        <MathJax dynamic>{question || "Vista previa..."}</MathJax>
-                        <ul>
-                            {options.map((opt, i) => (
-                                <li key={i} style={{ color: i === correct ? "#22c55e" : "white" }}>
-                                    <MathJax>{opt || `Opción ${i + 1}`}</MathJax>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    <button onClick={addQuestion}>Agregar</button>
+                    <button onClick={archiveQuestions}>Archivar</button>
 
-                    <button className="btn primary full" onClick={addQuestion}>
-                        Agregar pregunta
-                    </button>
-
-                    <button className="btn warning full" onClick={archiveQuestions}>
-                        Archivar {questions.length} preguntas
-                    </button>
-
-                    <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-                        <button className="btn status3" style={{ flex: 1 }} onClick={() => setView("questions")}>
-                            Preguntas Cargadas
-                        </button>
-
-                        <button className="btn status2" style={{ flex: 1 }} onClick={() => setView("archives")}>
-                            Archivos Guardados
-                        </button>
+                    <div>
+                        <button onClick={() => setView("questions")}>Preguntas</button>
+                        <button onClick={() => setView("archives")}>Archivos</button>
                     </div>
                 </div>
 
                 {view === "questions" && (
                     <div className="card">
-                        <h3>Preguntas Cargadas</h3>
-
                         {questions.map(q => (
-                            <div key={q.id} className="questionCard">
-                                <MathJax><h4>{q.question}</h4></MathJax>
-
-                                <ul>
-                                    {q.options.map((opt, i) => (
-                                        <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
-                                            <MathJax>{opt}</MathJax>
-                                        </li>
-                                    ))}
-                                </ul>
-
-                                <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
-                                    Eliminar
-                                </button>
+                            <div key={q.id}>
+                                <MathJax>{q.question}</MathJax>
+                                <button onClick={() => deleteQuestion(q.id)}>Eliminar</button>
                             </div>
                         ))}
                     </div>
@@ -348,148 +278,44 @@ function AdminQuestions() {
 
                 {view === "archives" && (
                     <div className="card">
-                        <h3>Archivos guardados</h3>
-
                         {archives.map(a => (
-                            <div key={a.id} className="studentRow">
-                                <div>
-                                    <h4>📁 {a.name}</h4>
-                                    <p>{a.questions?.length || 0} preguntas</p>
-                                </div>
+                            <div key={a.id}>
+                                <h4>{a.name}</h4>
 
-                                <div className="studentActions">
-                                    <button className="btn primary" onClick={() => restoreArchive(a)}>
-                                        Restaurar
-                                    </button>
-
-                                    <button className="btn status3" onClick={() => generatePDF(a)}>
-                                        PDF
-                                    </button>
-
-                                    <button className="btn danger" onClick={() => deleteArchive(a.id)}>
-                                        Eliminar
-                                    </button>
-                                </div>
+                                <button onClick={() => restoreArchive(a)}>Restaurar</button>
+                                <button onClick={() => generatePDF(a)}>PDF</button>
+                                <button onClick={() => deleteArchive(a.id)}>Eliminar</button>
                             </div>
                         ))}
                     </div>
                 )}
 
-
+                {/* POPUP */}
                 {showMoreMath && (
                     <div className="modalOverlay">
                         <div className="modalContent">
+                            <h3>Funciones</h3>
 
-                            <h3>Funciones Matemáticas</h3>
-
-                            <div className="mathTools">
-                                {[
-                                    { label: "∞", syntax: "$\\infty$" },
-                                    { label: "∅", syntax: "$\\varnothing$" },
-                                    { label: "±", syntax: "$\\pm$" },
-                                    { label: "⋅", syntax: "$\\cdot$" },
-                                    { label: ":", syntax: "$:$" },
-                                    { label: "=", syntax: "$=$" },
-                                    { label: "≠", syntax: "$\\neq$" },
-                                    { label: "∩", syntax: "$\\cap$" },
-                                    { label: "∪", syntax: "$\\cup$" },
-                                    { label: "⊂", syntax: "$\\subset$" },
-                                    { label: "⊃", syntax: "$\\supset$" },
-                                    { label: "∨", syntax: "$\\vee$" },
-                                    { label: "∧", syntax: "$\\wedge$" },
-                                    { label: "⊻", syntax: "$\\veebar$" },
-                                    { label: "⊼", syntax: "$\\barwedge$" },
-                                    { label: "<", syntax: "$<$" },
-                                    { label: ">", syntax: "$>$" },
-                                    { label: "≤", syntax: "$\\leq$" },
-                                    { label: "≥", syntax: "$\\geq$" },
-                                    { label: "≈", syntax: "$\\approx$" },
-                                    { label: "⟶", syntax: "$\\longrightarrow$" },
-                                    { label: "⟹", syntax: "$\\Longrightarrow$" },
-                                    { label: "⟺", syntax: "$\\Longleftrightarrow$" },
-                                    { label: "∈", syntax: "$\\in$" },
-                                    { label: "∋", syntax: "$\\ni$" },
-                                    { label: "∉", syntax: "$\\notin$" },
-                                    { label: "∃", syntax: "$\\exists$" },
-                                    { label: "∄", syntax: "$\\nexists$" },
-                                    { label: "∀", syntax: "$\\forall$" },
-                                    { label: "(", syntax: "$($" },
-                                    { label: ")", syntax: "$)$" },
-                                    { label: "(a,b)", syntax: "$(a,b)$" },
-                                    { label: "[", syntax: "$[$" },
-                                    { label: "]", syntax: "$]$" },
-                                    { label: "[a,b]", syntax: "$[a,b]$" },
-                                    { label: "{", syntax: "$\\{$" },
-                                    { label: "}", syntax: "$\\}$" },
-                                    { label: "{a,b}", syntax: "$\{ a,b \}$" },
-                                    { label: "sen(a)", syntax: "$\\sin(a)$" },
-                                    { label: "cos(a)", syntax: "$\\cos(a)$" },
-                                    { label: "tan(a)", syntax: "$\\tan(a)$" },
-                                    { label: "arcsen(a)", syntax: "$\\arcsin(a)$" },
-                                    { label: "arccos(a)", syntax: "$\\arccos(a)$" },
-                                    { label: "arctan(a)", syntax: "$\\arctan(a)$" },
-                                    { label: "senh(a)", syntax: "$\\sinh(a)$" },
-                                    { label: "cosh(a)", syntax: "$\\cosh(a)$" },
-                                    { label: "tanh(a)", syntax: "$\\tanh(a)$" },
-                                    { label: "Logaritmo base 10", syntax: "$\\log(a)$" },
-                                    { label: "Logaritmo otra base", syntax: "$\\log_b(a)$" },
-                                    { label: "Logaritmo natural", syntax: "$\\ln(x)$" },
-                                    { label: "Exponencial", syntax: "$e^{x}$" },
-                                    { label: "Límite", syntax: "$\\lim_{x →a} f(x)$" },
-                                    { label: "Límite infinito", syntax: "$\\lim_{x → \\infty} f(x)$" },                             
-                                    { label: "Derivada", syntax: "$\\frac{d}{dx} f(x)$" },
-                                    { label: "Integral Indefinida", syntax: "$\\int f(x) dx$" },
-                                    { label: "Integral Definida", syntax: "$\\int_{a}^{b} f(x) dx$" },
-                                    { label: "Resolvente", syntax: "$x_0 = \\frac{-b \\pm \\sqrt{b^2-4 \\cdot a \\cdot c}}{2 \\cdot a}$ " },
-
-                                ].map((tool, i) => (
-                                    <button
-                                        key={i}
-                                        className="mathBtn"
-                                        onClick={() => setPreviewMath(tool.syntax)}
-                                    >
-                                        {tool.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* 👀 PREVIEW EN VIVO */}
-                            <div className="previewBox" style={{ marginTop: "15px" }}>
-                                <MathJax dynamic>
-                                    {previewMath || "Seleccioná una función..."}
-                                </MathJax>
-                            </div>
-
-                            {/* 🔘 ACCIONES */}
-                            <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-                                <button
-                                    className="btn primary"
-                                    style={{ flex: 1 }}
-                                    onClick={() => {
-                                        if (!previewMath) return;
-                                        insertSyntax(previewMath);
-                                        setShowMoreMath(false);
-                                        setPreviewMath("");
-                                    }}
-                                >
-                                    Insertar
+                            {[
+                                { label: "sin", syntax: "$\\sin(x)$" },
+                                { label: "cos", syntax: "$\\cos(x)$" },
+                                { label: "log", syntax: "$\\log(x)$" }
+                            ].map((tool, i) => (
+                                <button key={i} onClick={() => setPreviewMath(tool.syntax)}>
+                                    {tool.label}
                                 </button>
+                            ))}
 
-                                <button
-                                    className="btn danger"
-                                    style={{ flex: 1 }}
-                                    onClick={() => {
-                                        setShowMoreMath(false);
-                                        setPreviewMath("");
-                                    }}
-                                >
-                                    Cerrar
-                                </button>
+                            <div>
+                                <MathJax dynamic>{previewMath}</MathJax>
                             </div>
 
+                            <button onClick={() => insertAtCursor(previewMath)}>Insertar</button>
+                            <button onClick={() => setShowMoreMath(false)}>Cerrar</button>
                         </div>
                     </div>
                 )}
+
             </div>
         </MathJaxContext>
     );
