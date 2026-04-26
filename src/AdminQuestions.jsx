@@ -68,7 +68,7 @@ function AdminQuestions() {
         { label: "$\\times$", syntax: "$\\times$" },
         { label: "$\\div$", syntax: "$\\div$" },
         { label: "$\\mathbb{N}$", syntax: "$\\mathbb{N}$" },
-        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{Z}$" },
+        { label: "$\\mathbb{Z}$", syntax: "$\\mathbb{Z}$" },
         { label: "$\\mathbb{Q}$", syntax: "$\\mathbb{Q}$" },
         { label: "$\\mathbb{I}$", syntax: "$\\mathbb{I}$" },
         { label: "$\\mathbb{R}$", syntax: "$\\mathbb{R}$" },
