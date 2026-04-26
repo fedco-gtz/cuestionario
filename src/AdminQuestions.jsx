@@ -63,12 +63,26 @@ function AdminQuestions() {
     };
 
     const mathTools = [
-        { label: "Fracción", syntax: "$\\frac{a}{b}$" },
-        { label: "Raíz", syntax: "$\\sqrt{a}$" },
-        { label: "Potencia", syntax: "$x^{a}$" },
-        { label: "π", syntax: "$\\pi$" },
-        { label: "ℝ", syntax: "$\\mathbb{R}$" },
-        { label: "Más Funciones" }
+        { label: "$+$", syntax: "$+$" },
+        { label: "$-$", syntax: "$-$" },
+        { label: "$\\times$", syntax: "$\\times$" },
+        { label: "$\\div$", syntax: "$\\div$" },
+        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{N}$" },
+        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{Z}$" },
+        { label: "$\\mathbb{Q}$", syntax: "$\\mathbb{Q}$" },
+        { label: "$\\mathbb{I}$", syntax: "$\\mathbb{I}$" },
+        { label: "$\\mathbb{R}$", syntax: "$\\mathbb{R}$" },
+        { label: "$\\mathbb{C}$", syntax: "$\\mathbb{C}$" },
+        { label: "$\\mathbb{Im}$", syntax: "$\\z=a+bi$" },
+        { label: "$\\frac{a}{b}$", syntax: "$\\frac{a}{b}$" },
+        { label: "$\\sqrt{a}$", syntax: "$\\sqrt{a}$" },
+        { label: "$\\sqrt[3]{a}$", syntax: "$\\sqrt[3]{a}$" },
+        { label: "$\\sqrt[b]{a}$", syntax: "$\\sqrt[b]{a}$" },
+        { label: "$a^{2}$", syntax: "$a^{2}$" },
+        { label: "$a^{3}$", syntax: "$a^{3}$" },
+        { label: "$a^{b}$", syntax: "$a^{b}$" },
+        { label: "$\\pi$", syntax: "$\\pi$" },
+        { label: "Más Funciones" },
     ];
 
     useEffect(() => {
