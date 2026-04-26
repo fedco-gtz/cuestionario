@@ -386,6 +386,9 @@ function AdminQuestions() {
                                 {[
                                     { label: "±", syntax: "$\\pm$" },
                                     { label: "⋅", syntax: "$\\cdot$" },
+                                    { label: ":", syntax: "$\\:$" },
+                                    { label: "=", syntax: "$\\=$" },
+                                    { label: "≠", syntax: "$\\neq$" },
                                     { label: "∩", syntax: "$\\cap$" },
                                     { label: "∪", syntax: "$\\cup$" },
                                     { label: "⊂", syntax: "$\\subset$" },
@@ -394,6 +397,11 @@ function AdminQuestions() {
                                     { label: "∧", syntax: "$\\wedge$" },
                                     { label: "⊻", syntax: "$\\veebar$" },
                                     { label: "⊼", syntax: "$\\barwedge$" },
+                                    { label: "<", syntax: "$\\<$" },
+                                    { label: ">", syntax: "$\\>$" },
+                                    { label: "≤", syntax: "$\\leq$" },
+                                    { label: "≥", syntax: "$\\geq$" },
+                                    
 
 
 
