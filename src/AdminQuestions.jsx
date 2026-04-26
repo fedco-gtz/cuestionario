@@ -245,19 +245,6 @@ function AdminQuestions() {
                         onChange={(e) => setQuestion(e.target.value)}
                     />
 
-                    {/* PREVIEW */}
-                    <div className="card" style={{ marginTop: 10 }}>
-                        <MathJax dynamic>{question || "Vista previa..."}</MathJax>
-
-                        <ul>
-                            {options.map((opt, i) => (
-                                <li key={i} style={{ color: i === correct ? "#22c55e" : "white" }}>
-                                    <MathJax>{opt || `Opción ${i + 1}`}</MathJax>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
                     {options.map((opt, i) => (
                         <div key={i} className="optionRow">
                             <input
@@ -272,6 +259,18 @@ function AdminQuestions() {
                             <button className="btn" onClick={() => setCorrect(i)}>✔</button>
                         </div>
                     ))}
+
+                    <div className="card" style={{ marginTop: 10 }}>
+                        <MathJax dynamic>{question || "Vista previa..."}</MathJax>
+
+                        <ul>
+                            {options.map((opt, i) => (
+                                <li key={i} style={{ color: i === correct ? "#22c55e" : "white" }}>
+                                    <MathJax>{opt || `Opción ${i + 1}`}</MathJax>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
 
                     <button className="btn primary full" onClick={addQuestion}>
                         Agregar pregunta
