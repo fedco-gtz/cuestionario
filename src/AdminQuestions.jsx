@@ -41,11 +41,22 @@ function AdminQuestions() {
         { label: "$-$", syntax: "$-$" },
         { label: "$\\times$", syntax: "$\\times$" },
         { label: "$\\div$", syntax: "$\\div$" },
+        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{N}$" },
+        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{Z}$" },
+        { label: "$\\mathbb{Q}$", syntax: "$\\mathbb{Q}$" },
+        { label: "$\\mathbb{I}$", syntax: "$\\mathbb{I}$" },
+        { label: "$\\mathbb{R}$", syntax: "$\\mathbb{R}$" },
+        { label: "$\\mathbb{C}$", syntax: "$\\mathbb{C}$" },
+        { label: "$\\mathbb{Im}$", syntax: "$\\z=a+bi$" },
         { label: "$\\frac{a}{b}$", syntax: "$\\frac{a}{b}$" },
         { label: "$\\sqrt{a}$", syntax: "$\\sqrt{a}$" },
+        { label: "$\\sqrt[3]{a}$", syntax: "$\\sqrt[3]{a}$" },
+        { label: "$\\sqrt[b]{a}$", syntax: "$\\sqrt[b]{a}$" },
+        { label: "$a^{2}$", syntax: "$a^{2}$" },
+        { label: "$a^{3}$", syntax: "$a^{3}$" },
         { label: "$a^{b}$", syntax: "$a^{b}$" },
         { label: "$\\pi$", syntax: "$\\pi$" },
-        { label: "Más Funciones" }
+        { label: "Más Funciones" },
     ];
 
     useEffect(() => {
@@ -234,14 +245,13 @@ function AdminQuestions() {
                     </div>
 
                     <button className="btn primary full" onClick={addQuestion}>
-                        Agregar
+                        Agregar pregunta
                     </button>
 
                     <button className="btn warning full" onClick={archiveQuestions}>
-                        Archivar {questions.length}
+                        Archivar {questions.length} preguntas
                     </button>
 
-                    {/* TOGGLE */}
                     <div style={{ display: "flex", gap: "10px", marginTop: 10 }}>
                         <button className="btn status3" onClick={() => setView("questions")}>
                             Preguntas Cargadas
@@ -311,10 +321,63 @@ function AdminQuestions() {
                             <h3>Funciones</h3>
 
                             {[
-                                { label: "sen", syntax: "$\\sin(x)$" },
-                                { label: "cos", syntax: "$\\cos(x)$" },
-                                { label: "tan", syntax: "$\\tan(x)$" },
-                                { label: "log", syntax: "$\\log(x)$" }
+{ label: "∞", syntax: "$\\infty$" },
+                                    { label: "∅", syntax: "$\\varnothing$" },
+                                    { label: "±", syntax: "$\\pm$" },
+                                    { label: "⋅", syntax: "$\\cdot$" },
+                                    { label: ":", syntax: "$:$" },
+                                    { label: "=", syntax: "$=$" },
+                                    { label: "≠", syntax: "$\\neq$" },
+                                    { label: "∩", syntax: "$\\cap$" },
+                                    { label: "∪", syntax: "$\\cup$" },
+                                    { label: "⊂", syntax: "$\\subset$" },
+                                    { label: "⊃", syntax: "$\\supset$" },
+                                    { label: "∨", syntax: "$\\vee$" },
+                                    { label: "∧", syntax: "$\\wedge$" },
+                                    { label: "⊻", syntax: "$\\veebar$" },
+                                    { label: "⊼", syntax: "$\\barwedge$" },
+                                    { label: "<", syntax: "$<$" },
+                                    { label: ">", syntax: "$>$" },
+                                    { label: "≤", syntax: "$\\leq$" },
+                                    { label: "≥", syntax: "$\\geq$" },
+                                    { label: "≈", syntax: "$\\approx$" },
+                                    { label: "⟶", syntax: "$\\longrightarrow$" },
+                                    { label: "⟹", syntax: "$\\Longrightarrow$" },
+                                    { label: "⟺", syntax: "$\\Longleftrightarrow$" },
+                                    { label: "∈", syntax: "$\\in$" },
+                                    { label: "∋", syntax: "$\\ni$" },
+                                    { label: "∉", syntax: "$\\notin$" },
+                                    { label: "∃", syntax: "$\\exists$" },
+                                    { label: "∄", syntax: "$\\nexists$" },
+                                    { label: "∀", syntax: "$\\forall$" },
+                                    { label: "(", syntax: "$($" },
+                                    { label: ")", syntax: "$)$" },
+                                    { label: "(a,b)", syntax: "$(a,b)$" },
+                                    { label: "[", syntax: "$[$" },
+                                    { label: "]", syntax: "$]$" },
+                                    { label: "[a,b]", syntax: "$[a,b]$" },
+                                    { label: "{", syntax: "$\\{$" },
+                                    { label: "}", syntax: "$\\}$" },
+                                    { label: "{a,b}", syntax: "$\{ a,b \}$" },
+                                    { label: "sen(a)", syntax: "$\\sin(a)$" },
+                                    { label: "cos(a)", syntax: "$\\cos(a)$" },
+                                    { label: "tan(a)", syntax: "$\\tan(a)$" },
+                                    { label: "arcsen(a)", syntax: "$\\arcsin(a)$" },
+                                    { label: "arccos(a)", syntax: "$\\arccos(a)$" },
+                                    { label: "arctan(a)", syntax: "$\\arctan(a)$" },
+                                    { label: "senh(a)", syntax: "$\\sinh(a)$" },
+                                    { label: "cosh(a)", syntax: "$\\cosh(a)$" },
+                                    { label: "tanh(a)", syntax: "$\\tanh(a)$" },
+                                    { label: "Logaritmo base 10", syntax: "$\\log(a)$" },
+                                    { label: "Logaritmo otra base", syntax: "$\\log_b(a)$" },
+                                    { label: "Logaritmo natural", syntax: "$\\ln(x)$" },
+                                    { label: "Exponencial", syntax: "$e^{x}$" },
+                                    { label: "Límite", syntax: "$\\lim_{x →a} f(x)$" },
+                                    { label: "Límite infinito", syntax: "$\\lim_{x → \\infty} f(x)$" },
+                                    { label: "Derivada", syntax: "$\\frac{d}{dx} f(x)$" },
+                                    { label: "Integral Indefinida", syntax: "$\\int f(x) dx$" },
+                                    { label: "Integral Definida", syntax: "$\\int_{a}^{b} f(x) dx$" },
+                                    { label: "Resolvente", syntax: "$x_0 = \\frac{-b \\pm \\sqrt{b^2-4 \\cdot a \\cdot c}}{2 \\cdot a}$ " },
                             ].map((tool, i) => (
                                 <button key={i} className="mathBtn" onClick={() => setPreviewMath(tool.syntax)}>
                                     {tool.label}
