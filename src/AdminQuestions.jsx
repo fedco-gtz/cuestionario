@@ -436,14 +436,11 @@ function AdminQuestions() {
                                     { label: "Logaritmo natural", syntax: "$\\ln(x)$" },
                                     { label: "Exponencial", syntax: "$e^{x}$" },
                                     { label: "Límite", syntax: "$\\lim_{x →a} f(x)$" },
-                                    { label: "Límite infinito", syntax: "$\\lim_{x → \\infty} f(x)$" },
-                                    
+                                    { label: "Límite infinito", syntax: "$\\lim_{x → \\infty} f(x)$" },                             
+                                    { label: "Derivada", syntax: "$\\frac{d}{dx} f(x)$" },
+                                    { label: "Integral Indefinida", syntax: "$\\int f(x) dx$" },
+                                    { label: "Integral Definida", syntax: "$\\int_{a}^{b} f(x) dx$" },
 
-                                
-                                    { label: "Derivada", syntax: "$\\frac{d}{dx}(f)$" },
-                                    { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
-                                    { label: "Integral Def.", syntax: "$\\int_{a}^{b} (f) dx$" },
-                                    { label: "Valor Absoluto", syntax: "$|f|$" },
                                 ].map((tool, i) => (
                                     <button
                                         key={i}
