@@ -440,6 +440,7 @@ function AdminQuestions() {
                                     { label: "Derivada", syntax: "$\\frac{d}{dx} f(x)$" },
                                     { label: "Integral Indefinida", syntax: "$\\int f(x) dx$" },
                                     { label: "Integral Definida", syntax: "$\\int_{a}^{b} f(x) dx$" },
+                                    { label: "Resolvente", syntax: "$x_0 = \\frac{-b \\pm \\sqrt{b^2-4 \\cdot a \\cdot c}}{2 \\cdot a}$ " },
 
                                 ].map((tool, i) => (
                                     <button
