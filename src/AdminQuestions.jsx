@@ -431,12 +431,12 @@ function AdminQuestions() {
                                     { label: "senh(a)", syntax: "$\\sinh(a)$" },
                                     { label: "cosh(a)", syntax: "$\\cosh(a)$" },
                                     { label: "tanh(a)", syntax: "$\\tanh(a)$" },
-                                    { label: "Log(a)", syntax: "$\\log(a)$" },
-                                    { label: "$Log_b(a)$", syntax: "$\\log_b(a)$" },
+                                    { label: "Logaritmo base 10", syntax: "$\\log(a)$" },
+                                    { label: "Logaritmo otra base", syntax: "$\\log_b(a)$" },
                                     { label: "Ln", syntax: "$\\ln(x)$" },
+                                    { label: "Límite x → ∞", syntax: "$\\lim_{x → \\infty} f$" },
                                     { label: "Exponencial", syntax: "$e^{x}$" },
-                                    { label: "Sumatoria", syntax: "$\\sum_{i=1}^{n} x_i$" },
-                                    { label: "Productoria", syntax: "$\\prod_{i=1}^{n} x_i$" },
+
                                     { label: "Límite → ∞", syntax: "$\\lim_{x \\to \\infty} f(x)$" },
 
                                     { label: "Límite", syntax: "$\\lim_{x →a}(f)$" },
