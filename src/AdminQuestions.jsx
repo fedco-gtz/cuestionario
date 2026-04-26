@@ -384,6 +384,20 @@ function AdminQuestions() {
 
                             <div className="mathTools">
                                 {[
+                                    { label: "$\\pm$", syntax: "$\\pm$" },
+                                    { label: "$\\cdot$", syntax: "$\\cdot$" },
+                                    { label: "$\\cap$", syntax: "$\\cap$" },
+                                    { label: "$\\cup$", syntax: "$\\cup$" },
+                                    { label: "$\\subset$", syntax: "$\\subset$" },
+                                    { label: "$\\supset$", syntax: "$\\supset$" },
+                                    { label: "$\\vee$", syntax: "$\\vee$" },
+                                    { label: "$\\wedge$", syntax: "$\\wedge$" },
+                                    { label: "$\\veebar$", syntax: "$\\veebar$" },
+                                    { label: "$\\barwedge$", syntax: "$\\barwedge$" },
+
+
+
+
                                     { label: "Seno", syntax: "$\\sin(x)$" },
                                     { label: "Coseno", syntax: "$\\cos(x)$" },
                                     { label: "Tangente", syntax: "$\\tan(x)$" },
@@ -394,9 +408,6 @@ function AdminQuestions() {
                                     { label: "Productoria", syntax: "$\\prod_{i=1}^{n} x_i$" },
                                     { label: "Límite → ∞", syntax: "$\\lim_{x \\to \\infty} f(x)$" },
 
-
-
-                                    { label: "Punto (·)", syntax: "$\\cdot$" },
                                     { label: "Límite", syntax: "$\\lim_{x →a}(f)$" },
                                     { label: "Derivada", syntax: "$\\frac{d}{dx}(f)$" },
                                     { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
