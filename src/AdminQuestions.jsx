@@ -384,10 +384,12 @@ function AdminQuestions() {
 
                             <div className="mathTools">
                                 {[
+                                    { label: "∞", syntax: "$\\infty$" },
+                                    { label: "∅", syntax: "$\\varnothing$" },
                                     { label: "±", syntax: "$\\pm$" },
                                     { label: "⋅", syntax: "$\\cdot$" },
-                                    { label: ":", syntax: "$\\:$" },
-                                    { label: "=", syntax: "$\\=$" },
+                                    { label: ":", syntax: "$:$" },
+                                    { label: "=", syntax: "$=$" },
                                     { label: "≠", syntax: "$\\neq$" },
                                     { label: "∩", syntax: "$\\cap$" },
                                     { label: "∪", syntax: "$\\cup$" },
@@ -401,6 +403,10 @@ function AdminQuestions() {
                                     { label: ">", syntax: "$>$" },
                                     { label: "≤", syntax: "$\\leq$" },
                                     { label: "≥", syntax: "$\\geq$" },
+                                    { label: "≈", syntax: "$\\approx$" },
+                                    { label: "⟶", syntax: "$\\longrightarrow$" },
+                                    { label: "⟹", syntax: "$\\Longrightarrow$" },
+                                    { label: "⟺", syntax: "$\\Longleftrightarrow$" },
                                     
 
 
