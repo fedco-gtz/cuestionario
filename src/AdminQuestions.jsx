@@ -433,13 +433,13 @@ function AdminQuestions() {
                                     { label: "tanh(a)", syntax: "$\\tanh(a)$" },
                                     { label: "Logaritmo base 10", syntax: "$\\log(a)$" },
                                     { label: "Logaritmo otra base", syntax: "$\\log_b(a)$" },
-                                    { label: "Ln", syntax: "$\\ln(x)$" },
-                                    { label: "Límite x → ∞", syntax: "$\\lim_{x → \\infty} f$" },
+                                    { label: "Logaritmo natural", syntax: "$\\ln(x)$" },
                                     { label: "Exponencial", syntax: "$e^{x}$" },
+                                    { label: "Límite", syntax: "$\\lim_{x →a} f(x)$" },
+                                    { label: "Límite infinito", syntax: "$\\lim_{x → \\infty} f(x)$" },
+                                    
 
-                                    { label: "Límite → ∞", syntax: "$\\lim_{x \\to \\infty} f(x)$" },
-
-                                    { label: "Límite", syntax: "$\\lim_{x →a}(f)$" },
+                                
                                     { label: "Derivada", syntax: "$\\frac{d}{dx}(f)$" },
                                     { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
                                     { label: "Integral Def.", syntax: "$\\int_{a}^{b} (f) dx$" },
