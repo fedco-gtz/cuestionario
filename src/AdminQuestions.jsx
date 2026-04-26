@@ -63,17 +63,19 @@ function AdminQuestions() {
         setArchives(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     };
 
-    // 🚀 INSERTAR EN POSICIÓN DEL CURSOR (pregunta u opción)
+    // 🔥 INSERTAR EN CURSOR
     const insertSyntax = (syntax) => {
+        if (!syntax) return;
+
         if (activeInput === "question") {
             const input = inputRef.current;
             const start = input.selectionStart;
             const end = input.selectionEnd;
 
             const newText =
-                question.substring(0, start) +
+                question.slice(0, start) +
                 syntax +
-                question.substring(end);
+                question.slice(end);
 
             setQuestion(newText);
 
@@ -90,9 +92,9 @@ function AdminQuestions() {
 
             const newOptions = [...options];
             newOptions[activeInput] =
-                newOptions[activeInput].substring(0, start) +
+                newOptions[activeInput].slice(0, start) +
                 syntax +
-                newOptions[activeInput].substring(end);
+                newOptions[activeInput].slice(end);
 
             setOptions(newOptions);
 
@@ -105,7 +107,7 @@ function AdminQuestions() {
 
     const addQuestion = async () => {
         if (!question || options.some(o => o === "")) {
-            toast.error("Completá todos los campos");
+            toast.error("Completá todo");
             return;
         }
 
@@ -119,7 +121,6 @@ function AdminQuestions() {
         setOptions(["", "", "", ""]);
         setCorrect(0);
         loadQuestions();
-        toast.success("Pregunta agregada");
     };
 
     const deleteQuestion = async (id) => {
@@ -130,7 +131,7 @@ function AdminQuestions() {
     const archiveQuestions = async () => {
         if (questions.length === 0) return;
 
-        const name = prompt("Nombre del archivo:");
+        const name = prompt("Nombre:");
         if (!name) return;
 
         await addDoc(collection(db, "archives"), {
@@ -169,8 +170,9 @@ function AdminQuestions() {
             <div className="container">
 
                 <div className="card">
-                    <h2 className="title">Crear Preguntas</h2>
+                    <h2>Crear Preguntas</h2>
 
+                    {/* BOTONES */}
                     <div className="mathTools">
                         {mathTools.map((tool, i) => (
                             <button
@@ -187,6 +189,7 @@ function AdminQuestions() {
                         ))}
                     </div>
 
+                    {/* INPUT PREGUNTA */}
                     <input
                         ref={inputRef}
                         className="input input-full"
@@ -195,6 +198,7 @@ function AdminQuestions() {
                         onChange={(e) => setQuestion(e.target.value)}
                     />
 
+                    {/* OPCIONES */}
                     {options.map((opt, i) => (
                         <div key={i} className="optionRow">
                             <input
@@ -217,75 +221,102 @@ function AdminQuestions() {
                         </div>
                     ))}
 
+                    {/* PREVIEW */}
                     <div className="card">
                         <MathJax dynamic>{question || "Vista previa..."}</MathJax>
                         <ul>
                             {options.map((opt, i) => (
                                 <li key={i} style={{ color: i === correct ? "#22c55e" : "white" }}>
-                                    <MathJax>{opt}</MathJax>
+                                    <MathJax>{opt || `Opción ${i + 1}`}</MathJax>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
                     <button className="btn primary full" onClick={addQuestion}>
-                        Agregar pregunta
+                        Agregar
                     </button>
 
                     <button className="btn warning full" onClick={archiveQuestions}>
                         Archivar {questions.length}
                     </button>
 
-                    <div style={{ display: "flex", gap: "10px" }}>
+                    {/* TOGGLE */}
+                    <div style={{ display: "flex", gap: "10px", marginTop: 10 }}>
                         <button className="btn status3" onClick={() => setView("questions")}>
-                            Preguntas
+                            Preguntas Cargadas
                         </button>
+
                         <button className="btn status2" onClick={() => setView("archives")}>
-                            Archivos
+                            Archivos Guardados
                         </button>
                     </div>
                 </div>
 
+                {/* 👇 PREGUNTAS */}
                 {view === "questions" && (
                     <div className="card">
+                        <h3>Preguntas</h3>
+
                         {questions.map(q => (
-                            <div key={q.id}>
-                                <MathJax>{q.question}</MathJax>
+                            <div key={q.id} className="questionCard">
+                                <MathJax><h4>{q.question}</h4></MathJax>
+
+                                <ul>
+                                    {q.options.map((opt, i) => (
+                                        <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
+                                            <MathJax>{opt}</MathJax>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
+                                    Eliminar
+                                </button>
                             </div>
                         ))}
                     </div>
                 )}
 
+                {/* 👇 ARCHIVOS */}
                 {view === "archives" && (
                     <div className="card">
+                        <h3>Archivos</h3>
+
                         {archives.map(a => (
-                            <div key={a.id}>
-                                <h4>{a.name}</h4>
-                                <button onClick={() => restoreArchive(a)}>Restaurar</button>
-                                <button onClick={() => deleteArchive(a.id)}>Eliminar</button>
+                            <div key={a.id} className="studentRow">
+                                <div>
+                                    <h4>{a.name}</h4>
+                                    <p>{a.questions?.length} preguntas</p>
+                                </div>
+
+                                <div className="studentActions">
+                                    <button onClick={() => restoreArchive(a)} className="btn primary">
+                                        Restaurar
+                                    </button>
+
+                                    <button onClick={() => deleteArchive(a.id)} className="btn danger">
+                                        Eliminar
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
                 )}
 
+                {/* POPUP */}
                 {showMoreMath && (
                     <div className="modalOverlay">
                         <div className="modalContent">
-
                             <h3>Funciones</h3>
 
                             {[
                                 { label: "sen", syntax: "$\\sin(x)$" },
                                 { label: "cos", syntax: "$\\cos(x)$" },
                                 { label: "tan", syntax: "$\\tan(x)$" },
-                                { label: "log", syntax: "$\\log(x)$" },
-                                { label: "ln", syntax: "$\\ln(x)$" }
+                                { label: "log", syntax: "$\\log(x)$" }
                             ].map((tool, i) => (
-                                <button
-                                    key={i}
-                                    className="mathBtn"
-                                    onClick={() => setPreviewMath(tool.syntax)}
-                                >
+                                <button key={i} className="mathBtn" onClick={() => setPreviewMath(tool.syntax)}>
                                     {tool.label}
                                 </button>
                             ))}
@@ -294,16 +325,16 @@ function AdminQuestions() {
                                 <MathJax dynamic>{previewMath}</MathJax>
                             </div>
 
-                            <button
-                                className="btn primary"
-                                onClick={() => {
-                                    insertSyntax(previewMath);
-                                    setShowMoreMath(false);
-                                }}
-                            >
+                            <button className="btn primary" onClick={() => {
+                                insertSyntax(previewMath);
+                                setShowMoreMath(false);
+                            }}>
                                 Insertar
                             </button>
 
+                            <button className="btn danger" onClick={() => setShowMoreMath(false)}>
+                                Cerrar
+                            </button>
                         </div>
                     </div>
                 )}
