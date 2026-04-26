@@ -29,6 +29,8 @@ function AdminQuestions() {
     const [archives, setArchives] = useState([]);
     const [showMoreMath, setShowMoreMath] = useState(false);
     const [previewMath, setPreviewMath] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupPreview, setPopupPreview] = useState("");
 
     const [view, setView] = useState(null);
 
@@ -377,56 +379,56 @@ function AdminQuestions() {
 
 
                 {showPopup && (
-  <div className="popupOverlay">
-    <div className="popup">
+                    <div className="popupOverlay">
+                        <div className="popup">
 
-      <h3 style={{ marginBottom: "10px" }}>Funciones avanzadas</h3>
+                            <h3 style={{ marginBottom: "10px" }}>Funciones avanzadas</h3>
 
-      {extraMathTools.map((group, i) => (
-        <div key={i} style={{ marginBottom: "15px" }}>
-          
-          {/* 🔹 SUBTÍTULO */}
-          <h4 style={{
-            fontSize: "14px",
-            marginBottom: "6px",
-            color: "#94a3b8",
-            borderBottom: "1px solid #334155",
-            paddingBottom: "3px"
-          }}>
-            {group.category}
-          </h4>
+                            {extraMathTools.map((group, i) => (
+                                <div key={i} style={{ marginBottom: "15px" }}>
 
-          {/* 🔹 BOTONES */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-            {group.items.map((tool, j) => (
-              <button
-                key={j}
-                className="mathBtnSmall"
-                onClick={() => {
-                  insertSyntax(tool.syntax);
-                  setPopupPreview(tool.syntax);
-                }}
-              >
-                {tool.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
+                                    {/* 🔹 SUBTÍTULO */}
+                                    <h4 style={{
+                                        fontSize: "14px",
+                                        marginBottom: "6px",
+                                        color: "#94a3b8",
+                                        borderBottom: "1px solid #334155",
+                                        paddingBottom: "3px"
+                                    }}>
+                                        {group.category}
+                                    </h4>
 
-      {/* 👀 PREVIEW EN VIVO */}
-      <div className="card" style={{ marginTop: "10px" }}>
-        <MathJax dynamic>
-          {popupPreview || "Vista previa de la función..."}
-        </MathJax>
-      </div>
+                                    {/* 🔹 BOTONES */}
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                                        {group.items.map((tool, j) => (
+                                            <button
+                                                key={j}
+                                                className="mathBtnSmall"
+                                                onClick={() => {
+                                                    insertSyntax(tool.syntax);
+                                                    setPopupPreview(tool.syntax);
+                                                }}
+                                            >
+                                                {tool.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
 
-      <button className="btn danger full" onClick={() => setShowPopup(false)}>
-        Cerrar
-      </button>
-    </div>
-  </div>
-)}
+
+                            <div className="card" style={{ marginTop: "10px" }}>
+                                <MathJax dynamic>
+                                    {popupPreview || "Vista previa de la función..."}
+                                </MathJax>
+                            </div>
+
+                            <button className="btn danger full" onClick={() => setShowPopup(false)}>
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </MathJaxContext>
     );
