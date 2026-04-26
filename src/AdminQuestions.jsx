@@ -384,16 +384,16 @@ function AdminQuestions() {
 
                             <div className="mathTools">
                                 {[
-                                    { label: "$\\pm$", syntax: "$\\pm$" },
-                                    { label: "$\\cdot$", syntax: "$\\cdot$" },
-                                    { label: "$\\cap$", syntax: "$\\cap$" },
-                                    { label: "$\\cup$", syntax: "$\\cup$" },
-                                    { label: "$\\subset$", syntax: "$\\subset$" },
-                                    { label: "$\\supset$", syntax: "$\\supset$" },
-                                    { label: "$\\vee$", syntax: "$\\vee$" },
-                                    { label: "$\\wedge$", syntax: "$\\wedge$" },
-                                    { label: "$\\veebar$", syntax: "$\\veebar$" },
-                                    { label: "$\\barwedge$", syntax: "$\\barwedge$" },
+                                    { label: "±", syntax: "$\\pm$" },
+                                    { label: "⋅", syntax: "$\\cdot$" },
+                                    { label: "∩", syntax: "$\\cap$" },
+                                    { label: "∪", syntax: "$\\cup$" },
+                                    { label: "⊂", syntax: "$\\subset$" },
+                                    { label: "⊃", syntax: "$\\supset$" },
+                                    { label: "∨", syntax: "$\\vee$" },
+                                    { label: "∧", syntax: "$\\wedge$" },
+                                    { label: "⊻", syntax: "$\\veebar$" },
+                                    { label: "⊼", syntax: "$\\barwedge$" },
 
 
 
