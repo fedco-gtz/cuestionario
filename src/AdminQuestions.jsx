@@ -376,81 +376,57 @@ function AdminQuestions() {
                 )}
 
 
-                {showMoreMath && (
-                    <div className="modalOverlay">
-                        <div className="modalContent">
+                {showPopup && (
+  <div className="popupOverlay">
+    <div className="popup">
 
-                            <h3>Funciones Matemáticas</h3>
+      <h3 style={{ marginBottom: "10px" }}>Funciones avanzadas</h3>
 
-                            <div className="mathTools">
-                                {[
-                                    <h4>Fede</h4>,
-                                    { label: "Seno", syntax: "$\\sin(x)$" },
-                                    { label: "Coseno", syntax: "$\\cos(x)$" },
-                                    { label: "Tangente", syntax: "$\\tan(x)$" },
-                                    { label: "Log", syntax: "$\\log(x)$" },
-                                    { label: "Ln", syntax: "$\\ln(x)$" },
-                                    { label: "Exponencial", syntax: "$e^{x}$" },
-                                    { label: "Sumatoria", syntax: "$\\sum_{i=1}^{n} x_i$" },
-                                    { label: "Productoria", syntax: "$\\prod_{i=1}^{n} x_i$" },
-                                    { label: "Límite → ∞", syntax: "$\\lim_{x \\to \\infty} f(x)$" },
+      {extraMathTools.map((group, i) => (
+        <div key={i} style={{ marginBottom: "15px" }}>
+          
+          {/* 🔹 SUBTÍTULO */}
+          <h4 style={{
+            fontSize: "14px",
+            marginBottom: "6px",
+            color: "#94a3b8",
+            borderBottom: "1px solid #334155",
+            paddingBottom: "3px"
+          }}>
+            {group.category}
+          </h4>
 
+          {/* 🔹 BOTONES */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+            {group.items.map((tool, j) => (
+              <button
+                key={j}
+                className="mathBtnSmall"
+                onClick={() => {
+                  insertSyntax(tool.syntax);
+                  setPopupPreview(tool.syntax);
+                }}
+              >
+                {tool.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
+      {/* 👀 PREVIEW EN VIVO */}
+      <div className="card" style={{ marginTop: "10px" }}>
+        <MathJax dynamic>
+          {popupPreview || "Vista previa de la función..."}
+        </MathJax>
+      </div>
 
-                                    { label: "Punto (·)", syntax: "$\\cdot$" },
-                                    { label: "Límite", syntax: "$\\lim_{x →a}(f)$" },
-                                    { label: "Derivada", syntax: "$\\frac{d}{dx}(f)$" },
-                                    { label: "Integral Indef.", syntax: "$\\int (f) dx$" },
-                                    { label: "Integral Def.", syntax: "$\\int_{a}^{b} (f) dx$" },
-                                    { label: "Valor Absoluto", syntax: "$|f|$" },
-                                ].map((tool, i) => (
-                                    <button
-                                        key={i}
-                                        className="mathBtn"
-                                        onClick={() => setPreviewMath(tool.syntax)}
-                                    >
-                                        {tool.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* 👀 PREVIEW EN VIVO */}
-                            <div className="previewBox" style={{ marginTop: "15px" }}>
-                                <MathJax dynamic>
-                                    {previewMath || "Seleccioná una función..."}
-                                </MathJax>
-                            </div>
-
-                            {/* 🔘 ACCIONES */}
-                            <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
-                                <button
-                                    className="btn primary"
-                                    style={{ flex: 1 }}
-                                    onClick={() => {
-                                        if (!previewMath) return;
-                                        insertSyntax(previewMath);
-                                        setShowMoreMath(false);
-                                        setPreviewMath("");
-                                    }}
-                                >
-                                    Insertar
-                                </button>
-
-                                <button
-                                    className="btn danger"
-                                    style={{ flex: 1 }}
-                                    onClick={() => {
-                                        setShowMoreMath(false);
-                                        setPreviewMath("");
-                                    }}
-                                >
-                                    Cerrar
-                                </button>
-                            </div>
-
-                        </div>
-                    </div>
-                )}
+      <button className="btn danger full" onClick={() => setShowPopup(false)}>
+        Cerrar
+      </button>
+    </div>
+  </div>
+)}
             </div>
         </MathJaxContext>
     );
