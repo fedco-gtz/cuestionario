@@ -262,157 +262,157 @@ function AdminQuestions() {
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <div style={{ marginTop: "20px", borderTop: "1px solid #334155", paddingTop: "15px" }}>
-                <button className="btn status3" onClick={() => setView("questions")}>
-                    Preguntas Cargadas
-                </button>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                    <button className="btn status3" onClick={() => setView("questions")}>
+                        Preguntas Cargadas
+                    </button>
 
-                <button className="btn status2" onClick={() => setView("archives")}>
-                    Archivos Guardados
-                </button>
-            </div>
-
-            {/* 👇 PREGUNTAS */}
-            {view === "questions" && (
-                <div className="card">
-                    <h3>Preguntas</h3>
-
-                    {questions.map(q => (
-                        <div key={q.id} className="questionCard">
-                            <MathJax><h4>{q.question}</h4></MathJax>
-
-                            <ul>
-                                {q.options.map((opt, i) => (
-                                    <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
-                                        <MathJax>{opt}</MathJax>
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
-                                Eliminar
-                            </button>
-                        </div>
-                    ))}
+                    <button className="btn status2" onClick={() => setView("archives")}>
+                        Archivos Guardados
+                    </button>
                 </div>
-            )}
 
-            {/* 👇 ARCHIVOS */}
-            {view === "archives" && (
-                <div className="card">
-                    <h3>Archivos</h3>
 
-                    {archives.map(a => (
-                        <div key={a.id} className="studentRow">
-                            <div>
-                                <h4>{a.name}</h4>
-                                <p>{a.questions?.length} preguntas</p>
-                            </div>
+                {/* 👇 PREGUNTAS */}
+                {view === "questions" && (
+                    <div className="card">
+                        <h3>Preguntas</h3>
 
-                            <div className="studentActions">
-                                <button onClick={() => restoreArchive(a)} className="btn primary">
-                                    Restaurar
-                                </button>
+                        {questions.map(q => (
+                            <div key={q.id} className="questionCard">
+                                <MathJax><h4>{q.question}</h4></MathJax>
 
-                                <button onClick={() => deleteArchive(a.id)} className="btn danger">
+                                <ul>
+                                    {q.options.map((opt, i) => (
+                                        <li key={i} style={{ color: i === q.correct ? "#22c55e" : "white" }}>
+                                            <MathJax>{opt}</MathJax>
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                <button className="btn danger" onClick={() => deleteQuestion(q.id)}>
                                     Eliminar
                                 </button>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* POPUP */}
-            {showMoreMath && (
-                <div className="modalOverlay">
-                    <div className="modalContent">
-                        <h3>Funciones</h3>
-
-                        {[
-                            { label: "∞", syntax: "$\\infty$" },
-                            { label: "∅", syntax: "$\\varnothing$" },
-                            { label: "±", syntax: "$\\pm$" },
-                            { label: "⋅", syntax: "$\\cdot$" },
-                            { label: ":", syntax: "$:$" },
-                            { label: "=", syntax: "$=$" },
-                            { label: "≠", syntax: "$\\neq$" },
-                            { label: "∩", syntax: "$\\cap$" },
-                            { label: "∪", syntax: "$\\cup$" },
-                            { label: "⊂", syntax: "$\\subset$" },
-                            { label: "⊃", syntax: "$\\supset$" },
-                            { label: "∨", syntax: "$\\vee$" },
-                            { label: "∧", syntax: "$\\wedge$" },
-                            { label: "⊻", syntax: "$\\veebar$" },
-                            { label: "⊼", syntax: "$\\barwedge$" },
-                            { label: "<", syntax: "$<$" },
-                            { label: ">", syntax: "$>$" },
-                            { label: "≤", syntax: "$\\leq$" },
-                            { label: "≥", syntax: "$\\geq$" },
-                            { label: "≈", syntax: "$\\approx$" },
-                            { label: "⟶", syntax: "$\\longrightarrow$" },
-                            { label: "⟹", syntax: "$\\Longrightarrow$" },
-                            { label: "⟺", syntax: "$\\Longleftrightarrow$" },
-                            { label: "∈", syntax: "$\\in$" },
-                            { label: "∋", syntax: "$\\ni$" },
-                            { label: "∉", syntax: "$\\notin$" },
-                            { label: "∃", syntax: "$\\exists$" },
-                            { label: "∄", syntax: "$\\nexists$" },
-                            { label: "∀", syntax: "$\\forall$" },
-                            { label: "(", syntax: "$($" },
-                            { label: ")", syntax: "$)$" },
-                            { label: "(a,b)", syntax: "$(a,b)$" },
-                            { label: "[", syntax: "$[$" },
-                            { label: "]", syntax: "$]$" },
-                            { label: "[a,b]", syntax: "$[a,b]$" },
-                            { label: "{", syntax: "$\\{$" },
-                            { label: "}", syntax: "$\\}$" },
-                            { label: "{a,b}", syntax: "$\{ a,b \}$" },
-                            { label: "sen(a)", syntax: "$\\sin(a)$" },
-                            { label: "cos(a)", syntax: "$\\cos(a)$" },
-                            { label: "tan(a)", syntax: "$\\tan(a)$" },
-                            { label: "arcsen(a)", syntax: "$\\arcsin(a)$" },
-                            { label: "arccos(a)", syntax: "$\\arccos(a)$" },
-                            { label: "arctan(a)", syntax: "$\\arctan(a)$" },
-                            { label: "senh(a)", syntax: "$\\sinh(a)$" },
-                            { label: "cosh(a)", syntax: "$\\cosh(a)$" },
-                            { label: "tanh(a)", syntax: "$\\tanh(a)$" },
-                            { label: "Logaritmo base 10", syntax: "$\\log(a)$" },
-                            { label: "Logaritmo otra base", syntax: "$\\log_b(a)$" },
-                            { label: "Logaritmo natural", syntax: "$\\ln(x)$" },
-                            { label: "Exponencial", syntax: "$e^{x}$" },
-                            { label: "Límite", syntax: "$\\lim_{x →a} f(x)$" },
-                            { label: "Límite infinito", syntax: "$\\lim_{x → \\infty} f(x)$" },
-                            { label: "Derivada", syntax: "$\\frac{d}{dx} f(x)$" },
-                            { label: "Integral Indefinida", syntax: "$\\int f(x) dx$" },
-                            { label: "Integral Definida", syntax: "$\\int_{a}^{b} f(x) dx$" },
-                            { label: "Resolvente", syntax: "$x_0 = \\frac{-b \\pm \\sqrt{b^2-4 \\cdot a \\cdot c}}{2 \\cdot a}$ " },
-                        ].map((tool, i) => (
-                            <button key={i} className="mathBtn" onClick={() => setPreviewMath(tool.syntax)}>
-                                {tool.label}
-                            </button>
                         ))}
-
-                        <div className="previewBox">
-                            <MathJax dynamic>{previewMath}</MathJax>
-                        </div>
-
-                        <button className="btn primary" onClick={() => {
-                            insertSyntax(previewMath);
-                            setShowMoreMath(false);
-                        }}>
-                            Insertar
-                        </button>
-
-                        <button className="btn danger" onClick={() => setShowMoreMath(false)}>
-                            Cerrar
-                        </button>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+
+                {/* 👇 ARCHIVOS */}
+                {view === "archives" && (
+                    <div className="card">
+                        <h3>Archivos</h3>
+
+                        {archives.map(a => (
+                            <div key={a.id} className="studentRow">
+                                <div>
+                                    <h4>{a.name}</h4>
+                                    <p>{a.questions?.length} preguntas</p>
+                                </div>
+
+                                <div className="studentActions">
+                                    <button onClick={() => restoreArchive(a)} className="btn primary">
+                                        Restaurar
+                                    </button>
+
+                                    <button onClick={() => deleteArchive(a.id)} className="btn danger">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* POPUP */}
+                {showMoreMath && (
+                    <div className="modalOverlay">
+                        <div className="modalContent">
+                            <h3>Funciones</h3>
+
+                            {[
+                                { label: "∞", syntax: "$\\infty$" },
+                                { label: "∅", syntax: "$\\varnothing$" },
+                                { label: "±", syntax: "$\\pm$" },
+                                { label: "⋅", syntax: "$\\cdot$" },
+                                { label: ":", syntax: "$:$" },
+                                { label: "=", syntax: "$=$" },
+                                { label: "≠", syntax: "$\\neq$" },
+                                { label: "∩", syntax: "$\\cap$" },
+                                { label: "∪", syntax: "$\\cup$" },
+                                { label: "⊂", syntax: "$\\subset$" },
+                                { label: "⊃", syntax: "$\\supset$" },
+                                { label: "∨", syntax: "$\\vee$" },
+                                { label: "∧", syntax: "$\\wedge$" },
+                                { label: "⊻", syntax: "$\\veebar$" },
+                                { label: "⊼", syntax: "$\\barwedge$" },
+                                { label: "<", syntax: "$<$" },
+                                { label: ">", syntax: "$>$" },
+                                { label: "≤", syntax: "$\\leq$" },
+                                { label: "≥", syntax: "$\\geq$" },
+                                { label: "≈", syntax: "$\\approx$" },
+                                { label: "⟶", syntax: "$\\longrightarrow$" },
+                                { label: "⟹", syntax: "$\\Longrightarrow$" },
+                                { label: "⟺", syntax: "$\\Longleftrightarrow$" },
+                                { label: "∈", syntax: "$\\in$" },
+                                { label: "∋", syntax: "$\\ni$" },
+                                { label: "∉", syntax: "$\\notin$" },
+                                { label: "∃", syntax: "$\\exists$" },
+                                { label: "∄", syntax: "$\\nexists$" },
+                                { label: "∀", syntax: "$\\forall$" },
+                                { label: "(", syntax: "$($" },
+                                { label: ")", syntax: "$)$" },
+                                { label: "(a,b)", syntax: "$(a,b)$" },
+                                { label: "[", syntax: "$[$" },
+                                { label: "]", syntax: "$]$" },
+                                { label: "[a,b]", syntax: "$[a,b]$" },
+                                { label: "{", syntax: "$\\{$" },
+                                { label: "}", syntax: "$\\}$" },
+                                { label: "{a,b}", syntax: "$\{ a,b \}$" },
+                                { label: "sen(a)", syntax: "$\\sin(a)$" },
+                                { label: "cos(a)", syntax: "$\\cos(a)$" },
+                                { label: "tan(a)", syntax: "$\\tan(a)$" },
+                                { label: "arcsen(a)", syntax: "$\\arcsin(a)$" },
+                                { label: "arccos(a)", syntax: "$\\arccos(a)$" },
+                                { label: "arctan(a)", syntax: "$\\arctan(a)$" },
+                                { label: "senh(a)", syntax: "$\\sinh(a)$" },
+                                { label: "cosh(a)", syntax: "$\\cosh(a)$" },
+                                { label: "tanh(a)", syntax: "$\\tanh(a)$" },
+                                { label: "Logaritmo base 10", syntax: "$\\log(a)$" },
+                                { label: "Logaritmo otra base", syntax: "$\\log_b(a)$" },
+                                { label: "Logaritmo natural", syntax: "$\\ln(x)$" },
+                                { label: "Exponencial", syntax: "$e^{x}$" },
+                                { label: "Límite", syntax: "$\\lim_{x →a} f(x)$" },
+                                { label: "Límite infinito", syntax: "$\\lim_{x → \\infty} f(x)$" },
+                                { label: "Derivada", syntax: "$\\frac{d}{dx} f(x)$" },
+                                { label: "Integral Indefinida", syntax: "$\\int f(x) dx$" },
+                                { label: "Integral Definida", syntax: "$\\int_{a}^{b} f(x) dx$" },
+                                { label: "Resolvente", syntax: "$x_0 = \\frac{-b \\pm \\sqrt{b^2-4 \\cdot a \\cdot c}}{2 \\cdot a}$ " },
+                            ].map((tool, i) => (
+                                <button key={i} className="mathBtn" onClick={() => setPreviewMath(tool.syntax)}>
+                                    {tool.label}
+                                </button>
+                            ))}
+
+                            <div className="previewBox">
+                                <MathJax dynamic>{previewMath}</MathJax>
+                            </div>
+
+                            <button className="btn primary" onClick={() => {
+                                insertSyntax(previewMath);
+                                setShowMoreMath(false);
+                            }}>
+                                Insertar
+                            </button>
+
+                            <button className="btn danger" onClick={() => setShowMoreMath(false)}>
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </MathJaxContext >
     );
 }
