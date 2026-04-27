@@ -384,7 +384,6 @@ function AdminQuestions() {
                                 <MathJax dynamic>{previewMath}</MathJax>
                             </div>
 
-
                             <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: 10 }}>
                                 <button className="btn primary" style={{ flex: 1 }} onClick={() => {
                                     insertSyntax(previewMath);
@@ -392,23 +391,11 @@ function AdminQuestions() {
                                 }}>
                                     Insertar
                                 </button>
-                                
+
                                 <button className="btn danger" style={{ flex: 1 }} onClick={() => setShowMoreMath(false)}>
                                     Cerrar
                                 </button>
                             </div>
-
-
-                            <button className="btn primary" style={{ flex: 1 }} onClick={() => {
-                                insertSyntax(previewMath);
-                                setShowMoreMath(false);
-                            }}>
-                                Insertar
-                            </button>
-
-                            <button className="btn danger" style={{ flex: 1 }} onClick={() => setShowMoreMath(false)}>
-                                Cerrar
-                            </button>
                         </div>
                     </div>
                 )}
