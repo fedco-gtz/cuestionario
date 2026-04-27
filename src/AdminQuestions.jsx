@@ -183,7 +183,7 @@ function AdminQuestions() {
                     <h2>Crear Preguntas</h2>
 
                     <div>
-                    <h4 className="mathTools">Funciones predeterminadas</h4>
+                        <h4 className="mathTools">Funciones predeterminadas</h4>
                         {mathTools.map((tool, i) => (
                             <button
                                 key={i}
@@ -194,7 +194,7 @@ function AdminQuestions() {
                                         : insertSyntax(tool.syntax)
                                 }
                             ><MathJax dynamic>
-                                {tool.label}</MathJax>
+                                    {tool.label}</MathJax>
                             </button>
                         ))}
                     </div>
@@ -214,7 +214,7 @@ function AdminQuestions() {
                                 ref={(el) => (optionRefs.current[i] = el)}
                                 className="input"
                                 placeholder={`Opción ${i + 1}`}
-                                value={opt} 
+                                value={opt}
                                 onFocus={() => setActiveInput(i)}
                                 onChange={(e) => {
                                     const newOpts = [...options];
@@ -314,7 +314,7 @@ function AdminQuestions() {
                 {showMoreMath && (
                     <div className="modalOverlay">
                         <div className="modalContent">
-                            <h3>Más Funciones</h3>
+                            <h3>Otras Funciones</h3>
 
                             {[
                                 { label: "∞", syntax: "$\\infty$" },
@@ -384,14 +384,29 @@ function AdminQuestions() {
                                 <MathJax dynamic>{previewMath}</MathJax>
                             </div>
 
-                            <button className="btn primary" onClick={() => {
+
+                            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: 10 }}>
+                                <button className="btn primary" style={{ flex: 1 }} onClick={() => {
+                                    insertSyntax(previewMath);
+                                    setShowMoreMath(false);
+                                }}>
+                                    Insertar
+                                </button>
+                                
+                                <button className="btn danger" style={{ flex: 1 }} onClick={() => setShowMoreMath(false)}>
+                                    Cerrar
+                                </button>
+                            </div>
+
+
+                            <button className="btn primary" style={{ flex: 1 }} onClick={() => {
                                 insertSyntax(previewMath);
                                 setShowMoreMath(false);
                             }}>
                                 Insertar
                             </button>
 
-                            <button className="btn danger" onClick={() => setShowMoreMath(false)}>
+                            <button className="btn danger" style={{ flex: 1 }} onClick={() => setShowMoreMath(false)}>
                                 Cerrar
                             </button>
                         </div>
