@@ -185,7 +185,7 @@ function AdminQuestions() {
                     <div>
                     <h4 className="mathTools">Funciones predeterminadas</h4>
                         {mathTools.map((tool, i) => (
-                            <MathJax dynamic><button
+                            <button
                                 key={i}
                                 className="mathBtn"
                                 onClick={() =>
@@ -193,9 +193,9 @@ function AdminQuestions() {
                                         ? setShowMoreMath(true)
                                         : insertSyntax(tool.syntax)
                                 }
-                            >
-                                {tool.label}
-                            </button></MathJax>
+                            ><MathJax dynamic>
+                                {tool.label}</MathJax>
+                            </button>
                         ))}
                     </div>
 
