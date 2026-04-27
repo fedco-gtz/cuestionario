@@ -213,7 +213,7 @@ function AdminQuestions() {
                             <input
                                 ref={(el) => (optionRefs.current[i] = el)}
                                 className="input"
-                                placeholder="Opción"
+                                placeholder={`Opción ${i + 1}`}
                                 value={opt} 
                                 onFocus={() => setActiveInput(i)}
                                 onChange={(e) => {
