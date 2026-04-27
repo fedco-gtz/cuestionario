@@ -74,7 +74,6 @@ function AdminQuestions() {
         setArchives(snap.docs.map(d => ({ id: d.id, ...d.data() })));
     };
 
-    // 🔥 INSERTAR EN CURSOR
     const insertSyntax = (syntax) => {
         if (!syntax) return;
 
@@ -183,7 +182,6 @@ function AdminQuestions() {
                 <div className="card">
                     <h2>Crear Preguntas</h2>
 
-                    {/* BOTONES */}
                     <div className="mathTools">
                         {mathTools.map((tool, i) => (
                             <button
@@ -200,17 +198,15 @@ function AdminQuestions() {
                         ))}
                     </div>
 
-                    {/* INPUT PREGUNTA */}
                     <input
                         ref={inputRef}
                         placeholder="Escribi tu pregunta"
-                        className="input input-full"
+                        className="input input-full mathTools"
                         value={question}
                         onFocus={() => setActiveInput("question")}
                         onChange={(e) => setQuestion(e.target.value)}
                     />
 
-                    {/* OPCIONES */}
                     {options.map((opt, i) => (
                         <div key={i} className="optionRow">
                             <input
