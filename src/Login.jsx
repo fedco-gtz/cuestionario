@@ -71,7 +71,7 @@ function Login({ setStudent }) {
           value={name}
           onChange={(e) => {
             setName(e.target.value);
-            setError(""); // Limpia el error al escribir
+            setError("");
           }}
         />
 

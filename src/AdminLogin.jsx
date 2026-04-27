@@ -41,7 +41,7 @@ function AdminLogin({ setAdmin, setView }) {
           />
 
           <input
-            className="input input-full2"
+            className="input input-full"
             type="password"
             placeholder="Contraseña"
             onChange={(e) => setPassword(e.target.value)}

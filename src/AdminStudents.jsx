@@ -116,7 +116,7 @@ function AdminStudents() {
         <h3>Agregar estudiante</h3>
         <input
           className="input input-full"
-          placeholder="Nombre del estudiantes"
+          placeholder="Nombre del estudiante"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
