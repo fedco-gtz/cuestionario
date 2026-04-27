@@ -51,7 +51,7 @@ body {
 }
 
 .input-full2 {
-  width: 100%;
+  width: 90%;
   font-size: 20px;
   margin-top: 10px;
 }
@@ -59,6 +59,10 @@ body {
 .input-full3 {
   font-size: 20px;
   margin-top: 10px;
+}
+
+.input-full4 {
+  margin-bottom: 10px;
 }
 
 .btn {
