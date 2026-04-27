@@ -42,7 +42,7 @@ function AdminQuestions() {
         { label: "$\\times$", syntax: "$\\times$" },
         { label: "$\\div$", syntax: "$\\div$" },
         { label: "$\\mathbb{N}$", syntax: "$\\mathbb{N}$" },
-        { label: "$\\mathbb{N}$", syntax: "$\\mathbb{Z}$" },
+        { label: "$\\mathbb{Z}$", syntax: "$\\mathbb{Z}$" },
         { label: "$\\mathbb{Q}$", syntax: "$\\mathbb{Q}$" },
         { label: "$\\mathbb{I}$", syntax: "$\\mathbb{I}$" },
         { label: "$\\mathbb{R}$", syntax: "$\\mathbb{R}$" },
@@ -183,6 +183,7 @@ function AdminQuestions() {
                     <h2>Crear Preguntas</h2>
 
                     <div className="mathTools">
+                    <h4>Funciones predeterminadas</h4>
                         {mathTools.map((tool, i) => (
                             <button
                                 key={i}
@@ -285,7 +286,6 @@ function AdminQuestions() {
                     </div>
                 )}
 
-                {/* 👇 ARCHIVOS */}
                 {view === "archives" && (
                     <div className="card">
                         <h3>Archivos</h3>
@@ -311,11 +311,10 @@ function AdminQuestions() {
                     </div>
                 )}
 
-                {/* POPUP */}
                 {showMoreMath && (
                     <div className="modalOverlay">
                         <div className="modalContent">
-                            <h3>Funciones</h3>
+                            <h3>Más Funciones</h3>
 
                             {[
                                 { label: "∞", syntax: "$\\infty$" },
