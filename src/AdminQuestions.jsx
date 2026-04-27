@@ -203,6 +203,7 @@ function AdminQuestions() {
                     {/* INPUT PREGUNTA */}
                     <input
                         ref={inputRef}
+                        placeholder="Escribi tu pregunta"
                         className="input input-full"
                         value={question}
                         onFocus={() => setActiveInput("question")}
