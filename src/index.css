@@ -692,7 +692,7 @@ body {
   border: none;
   cursor: pointer;
   transition: 0.2s;
-  margin-left: 5px;
+  margin-left: 6px;
 }
 
 .mathBtn:hover {

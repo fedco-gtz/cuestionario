@@ -182,8 +182,8 @@ function AdminQuestions() {
                 <div className="card">
                     <h2>Crear Preguntas</h2>
 
-                    <div className="mathTools">
-                    <h4>Funciones predeterminadas</h4>
+                    <div>
+                    <h4 className="mathTools">Funciones predeterminadas</h4>
                         {mathTools.map((tool, i) => (
                             <button
                                 key={i}
