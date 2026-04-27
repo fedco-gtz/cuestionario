@@ -213,6 +213,7 @@ function AdminQuestions() {
                             <input
                                 ref={(el) => (optionRefs.current[i] = el)}
                                 className="input"
+                                placeholder="Opción"
                                 value={opt} 
                                 onFocus={() => setActiveInput(i)}
                                 onChange={(e) => {
@@ -231,8 +232,8 @@ function AdminQuestions() {
                     ))}
 
                     <div className="card">
-                        <h3>Vista previa de tu pregunta</h3>
-                        <MathJax dynamic>{question || "Vista previa..."}</MathJax>
+                        <h4>Vista previa de tu pregunta</h4>
+                        <MathJax dynamic>{question || "Pregunta..."}</MathJax>
                         <ul>
                             {options.map((opt, i) => (
                                 <li key={i} style={{ color: i === correct ? "#22c55e" : "white" }}>
@@ -261,7 +262,6 @@ function AdminQuestions() {
                     </div>
                 </div>
 
-                {/* 👇 PREGUNTAS */}
                 {view === "questions" && (
                     <div className="card">
                         <h3>Preguntas</h3>
