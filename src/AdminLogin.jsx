@@ -35,7 +35,7 @@ function AdminLogin({ setAdmin, setView }) {
           <p className="subtitle">Acceso restringido</p>
 
           <input
-            className="input input-full2"
+            className="input input-full"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
           />
