@@ -201,7 +201,7 @@ function AdminQuestions() {
                     <input
                         ref={inputRef}
                         placeholder="Escribi tu pregunta"
-                        className="input input-full mathTools"
+                        className="input input-full"
                         value={question}
                         onFocus={() => setActiveInput("question")}
                         onChange={(e) => setQuestion(e.target.value)}
@@ -229,13 +229,13 @@ function AdminQuestions() {
                         </div>
                     ))}
 
-                    {/* PREVIEW */}
                     <div className="card">
+                        <h3>Vista previa de tu pregunta</h3>
                         <MathJax dynamic>{question || "Vista previa..."}</MathJax>
                         <ul>
                             {options.map((opt, i) => (
                                 <li key={i} style={{ color: i === correct ? "#22c55e" : "white" }}>
-                                    <MathJax>{opt || `Opción ${i + 1}`}</MathJax>
+                                    <MathJax dynamic>{opt || `Opción ${i + 1}`}</MathJax>
                                 </li>
                             ))}
                         </ul>
