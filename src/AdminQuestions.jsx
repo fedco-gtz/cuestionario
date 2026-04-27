@@ -252,7 +252,7 @@ function AdminQuestions() {
                         Archivar {questions.length} preguntas
                     </button>
 
-                    <div style={{ display: "flex", gap: "10px", marginTop: 10 }}>
+                    <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: 10 }}>
                         <button className="btn status3" onClick={() => setView("questions")}>
                             Preguntas Cargadas
                         </button>
