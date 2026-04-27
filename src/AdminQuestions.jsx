@@ -216,7 +216,7 @@ function AdminQuestions() {
                             <input
                                 ref={(el) => (optionRefs.current[i] = el)}
                                 className="input"
-                                value={opt}
+                                value={opt} 
                                 onFocus={() => setActiveInput(i)}
                                 onChange={(e) => {
                                     const newOpts = [...options];
