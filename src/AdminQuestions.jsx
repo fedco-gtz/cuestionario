@@ -252,6 +252,14 @@ function AdminQuestions() {
                         Archivar {questions.length} preguntas
                     </button>
 
+                    <button className="btn status3" onClick={() => setView("questions")}>
+                        Preguntas Cargadas
+                    </button>
+
+                    <button className="btn status2" onClick={() => setView("archives")}>
+                        Archivos Guardados
+                    </button>
+
                     <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: 10 }}>
                         <button className="btn status3" onClick={() => setView("questions")}>
                             Preguntas Cargadas
@@ -262,17 +270,6 @@ function AdminQuestions() {
                         </button>
                     </div>
                 </div>
-
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                    <button className="btn status3" onClick={() => setView("questions")}>
-                        Preguntas Cargadas
-                    </button>
-
-                    <button className="btn status2" onClick={() => setView("archives")}>
-                        Archivos Guardados
-                    </button>
-                </div>
-
 
                 {/* 👇 PREGUNTAS */}
                 {view === "questions" && (
