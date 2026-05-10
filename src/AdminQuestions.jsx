@@ -134,28 +134,75 @@ function AdminQuestions() {
     };
 
     const deleteQuestion = async (id) => {
-        await deleteDoc(doc(db, "questions", id));
-        setQuestions(prev => prev.filter(q => q.id !== id));
+        try {
+
+            const questionRef = doc(db, "questions", id);
+
+            await deleteDoc(questionRef);
+
+            setQuestions(prev =>
+                prev.filter(q => q.id !== id)
+            );
+
+            toast.success("Pregunta eliminada");
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Error al eliminar");
+        }
     };
 
     const archiveQuestions = async () => {
-        if (questions.length === 0) return;
 
-        const name = prompt("Nombre:");
-        if (!name) return;
+        try {
 
-        await addDoc(collection(db, "archives"), {
-            name,
-            questions,
-            createdAt: new Date().toISOString()
-        });
+            if (questions.length === 0) {
+                toast.error("No hay preguntas");
+                return;
+            }
 
-        const batch = writeBatch(db);
-        questions.forEach(q => batch.delete(doc(db, "questions", q.id)));
-        await batch.commit();
+            const name = prompt("Nombre:");
 
-        setQuestions([]);
-        loadArchives();
+            if (!name) return;
+
+            // 🔥 Guardar archivo
+            await addDoc(collection(db, "archives"), {
+                name,
+                questions,
+                createdAt: new Date().toISOString()
+            });
+
+            // 🔥 Eliminar preguntas
+            const batch = writeBatch(db);
+
+            questions.forEach((q) => {
+
+                if (q.id) {
+
+                    const questionRef = doc(
+                        db,
+                        "questions",
+                        q.id
+                    );
+
+                    batch.delete(questionRef);
+                }
+            });
+
+            await batch.commit();
+
+            setQuestions([]);
+
+            await loadQuestions();
+            await loadArchives();
+
+            toast.success("Preguntas archivadas");
+
+        } catch (error) {
+
+            console.error(error); batch.set(ref, q);
+            toast.error("Error al archivar");
+        }
     };
 
     const restoreArchive = async (archive) => {
@@ -163,7 +210,11 @@ function AdminQuestions() {
 
         archive.questions.forEach(q => {
             const ref = doc(collection(db, "questions"));
-            batch.set(ref, q);
+            batch.set(ref, {
+                question: q.question,
+                options: q.options,
+                correct: q.correct
+            });
         });
 
         await batch.commit();

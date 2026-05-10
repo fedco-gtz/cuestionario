@@ -38,7 +38,7 @@ function AdminReviews() {
             <div className="container">
 
                 <div className="card">
-                    <h2>📋 Revisiones de Estudiantes</h2>
+                    <h2>Revisiones de Cuestionarios</h2>
 
                     {reviews.length === 0 ? (
                         <p>No hay revisiones todavía.</p>
@@ -63,7 +63,7 @@ function AdminReviews() {
                                     className="btn primary"
                                     onClick={() => setSelectedReview(review)}
                                 >
-                                    Ver revisión
+                                    Ver cuestionario
                                 </button>
                             </div>
                         ))
@@ -82,7 +82,7 @@ function AdminReviews() {
                             }}
                         >
                             <h2>
-                                👨‍🎓 {selectedReview.student}
+                                {selectedReview.student}
                             </h2>
 
                             <button
@@ -93,9 +93,9 @@ function AdminReviews() {
                             </button>
                         </div>
 
-                        <p>
-                            ✅ {selectedReview.score} correctas de {selectedReview.total}
-                        </p>
+                        <h3>
+                            ✅ {selectedReview.score} correctas de {selectedReview.total} preguntas
+                        </h3>
 
                         <div style={{ marginTop: "20px" }}>
                             {selectedReview.answers?.map((answer, index) => (
