@@ -4,7 +4,7 @@ import {
     getDocs
 } from "firebase/firestore";
 import { MathJaxContext, MathJax } from "better-react-mathjax";
-import { db } from "../firebase";
+import { db } from "./firebase";
 
 const config = {
     loader: { load: ["input/tex", "output/chtml"] },
