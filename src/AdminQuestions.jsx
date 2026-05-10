@@ -134,76 +134,76 @@ function AdminQuestions() {
     };
 
     const deleteQuestion = async (id) => {
-        try {
 
-            const questionRef = doc(db, "questions", id);
+    try {
 
-            await deleteDoc(questionRef);
+        const ref = doc(db, "questions", id);
 
-            setQuestions(prev =>
-                prev.filter(q => q.id !== id)
-            );
+        await deleteDoc(ref);
 
-            toast.success("Pregunta eliminada");
+        setQuestions(prev =>
+            prev.filter(q => q.id !== id)
+        );
 
-        } catch (error) {
-            console.error(error);
-            toast.error("Error al eliminar");
-        }
-    };
+        toast.success("Pregunta eliminada");
+
+    } catch (error) {
+
+        console.error(error);
+        toast.error("Error al eliminar");
+    }
+};
 
     const archiveQuestions = async () => {
 
-        try {
+    try {
 
-            if (questions.length === 0) {
-                toast.error("No hay preguntas");
-                return;
-            }
+        const snapshot = await getDocs(collection(db, "questions"));
 
-            const name = prompt("Nombre:");
-
-            if (!name) return;
-
-            // 🔥 Guardar archivo
-            await addDoc(collection(db, "archives"), {
-                name,
-                questions,
-                createdAt: new Date().toISOString()
-            });
-
-            // 🔥 Eliminar preguntas
-            const batch = writeBatch(db);
-
-            questions.forEach((q) => {
-
-                if (q.id) {
-
-                    const questionRef = doc(
-                        db,
-                        "questions",
-                        q.id
-                    );
-
-                    batch.delete(questionRef);
-                }
-            });
-
-            await batch.commit();
-
-            setQuestions([]);
-
-            await loadQuestions();
-            await loadArchives();
-
-            toast.success("Preguntas archivadas");
-
-        } catch (error) {
-
-            console.error(error); batch.set(ref, q);
-            toast.error("Error al archivar");
+        if (snapshot.empty) {
+            toast.error("No hay preguntas");
+            return;
         }
-    };
+
+        const name = prompt("Nombre:");
+
+        if (!name) return;
+
+        // 🔥 Obtener preguntas reales desde Firebase
+        const questionsData = snapshot.docs.map(docItem => ({
+            id: docItem.id,
+            ...docItem.data()
+        }));
+
+        // 🔥 Guardar archivo
+        await addDoc(collection(db, "archives"), {
+            name,
+            questions: questionsData,
+            createdAt: new Date().toISOString()
+        });
+
+        // 🔥 Eliminar preguntas reales
+        const batch = writeBatch(db);
+
+        snapshot.docs.forEach((documento) => {
+            batch.delete(documento.ref);
+        });
+
+        await batch.commit();
+
+        setQuestions([]);
+
+        await loadQuestions();
+        await loadArchives();
+
+        toast.success("Preguntas archivadas");
+
+    } catch (error) {
+
+        console.error(error);
+        toast.error("Error al archivar");
+    }
+};
 
     const restoreArchive = async (archive) => {
         const batch = writeBatch(db);
