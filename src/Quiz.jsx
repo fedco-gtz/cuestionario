@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, getDoc, addDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { MathJaxContext, MathJax } from "better-react-mathjax";
 
@@ -140,7 +140,6 @@ function Quiz({ student }) {
 
     const totalCoins = currentCoins + earnedCoins;
 
-    // ✅ ACTUALIZAR ESTUDIANTE
     await updateDoc(studentRef, {
       completed: true,
       score: result,
@@ -149,15 +148,12 @@ function Quiz({ student }) {
       coins: totalCoins,
     });
 
-    // 📝 GUARDAR REVISIÓN
     await addDoc(collection(db, "reviews"), {
       student: student.name,
       studentId: student.id,
 
       score: result,
       total: questions.length,
-
-      coinsEarned: earnedCoins,
 
       createdAt: new Date().toISOString(),
 
