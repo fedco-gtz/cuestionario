@@ -13,13 +13,10 @@ function Ranking() {
         data.push({ id: docSnap.id, ...docSnap.data() });
       });
 
-      // solo los que terminaron
       data = data.filter((s) => s.completed);
 
-      // ordenar por puntaje
       data.sort((a, b) => (b.score || 0) - (a.score || 0));
 
-      // asignar coins automáticamente
       for (let i = 0; i < data.length; i++) {
         let coins = 2;
 
@@ -27,7 +24,6 @@ function Ranking() {
         else if (i === 1) coins = 7;
         else if (i === 2) coins = 5;
 
-        // actualizar en Firebase
         await updateDoc(doc(db, "students", data[i].id), {
           coins: coins
         });

@@ -15,11 +15,10 @@ function App() {
 
   let content;
 
-  // 🎬 Pantalla inicial
   if (!started) {
     content = <Welcome onStart={() => setStarted(true)} />;
   }
-  // 👨‍🏫 Panel admin
+
   else if (view === "admin") {
     if (!admin) {
       content = <AdminLogin setAdmin={setAdmin} setView={setView} />;
@@ -27,7 +26,7 @@ function App() {
       content = <AdminPanel />;
     }
   }
-  // 🎓 Flujo estudiante
+
   else {
     content = (
       <div>
@@ -50,7 +49,6 @@ function App() {
     <>
       {content}
 
-      {/* 🔥 Toast GLOBAL (una sola vez, como debe ser) */}
       <ToastContainer
         position="top-right"
         autoClose={2000}

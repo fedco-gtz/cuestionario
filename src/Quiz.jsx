@@ -85,7 +85,6 @@ function Quiz({ student }) {
     };
   }, []);
 
-  // 📦 CARGA + RANDOM 10
   useEffect(() => {
     loadQuestions();
   }, []);
@@ -98,7 +97,6 @@ function Quiz({ student }) {
       data.push({ id: doc.id, ...doc.data() });
     });
 
-    // 🎲 Mezclar y tomar 10
     const shuffled = data.sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, 10);
 
@@ -117,7 +115,7 @@ function Quiz({ student }) {
     }
   };
 
-  // 🧠 CORRECCIÓN + MONEDAS
+  // 🧠 CORRECCIÓN + MONEDAS + REVISIÓN
   const handleSubmit = async () => {
     let result = 0;
 
@@ -135,18 +133,45 @@ function Quiz({ student }) {
     const studentSnap = await getDoc(studentRef);
 
     let currentCoins = 0;
+
     if (studentSnap.exists()) {
       currentCoins = studentSnap.data().coins || 0;
     }
 
     const totalCoins = currentCoins + earnedCoins;
 
+    // ✅ ACTUALIZAR ESTUDIANTE
     await updateDoc(studentRef, {
       completed: true,
       score: result,
       total: questions.length,
       date: dateBA,
       coins: totalCoins,
+    });
+
+    // 📝 GUARDAR REVISIÓN
+    await addDoc(collection(db, "reviews"), {
+      student: student.name,
+      studentId: student.id,
+
+      score: result,
+      total: questions.length,
+
+      coinsEarned: earnedCoins,
+
+      createdAt: new Date().toISOString(),
+
+      answers: questions.map((q, index) => ({
+        question: q.question,
+        options: q.options,
+
+        correct: q.correct,
+
+        selected:
+          answers[index] !== undefined
+            ? answers[index]
+            : null,
+      })),
     });
 
     setScore(result);
@@ -226,9 +251,8 @@ function Quiz({ student }) {
             {q.options.map((opt, i) => (
               <button
                 key={i}
-                className={`option ${
-                  answers[current] === i ? "selected" : ""
-                }`}
+                className={`option ${answers[current] === i ? "selected" : ""
+                  }`}
                 onClick={() => handleAnswer(i)}
               >
                 <MathJax dynamic>{opt}</MathJax>

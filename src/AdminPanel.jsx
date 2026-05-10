@@ -2,6 +2,7 @@ import { useState } from "react";
 import AdminQuestions from "./AdminQuestions";
 import Ranking from "./Ranking";
 import AdminStudents from "./AdminStudents";
+import AdminReviews from "./AdminReviews";
 
 function AdminPanel() {
   const [view, setView] = useState("students");
