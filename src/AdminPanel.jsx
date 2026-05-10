@@ -40,7 +40,7 @@ function AdminPanel() {
 
       <div className="tabContent">
         {view === "students" && <AdminStudents />}
-        {view === "ranking" && <Ranking />}
+        {/* {view === "ranking" && <Ranking />} */}
         {view === "reviews" && <AdminReviews />}
         {view === "questions" && <AdminQuestions />}
       </div>
