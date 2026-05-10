@@ -25,6 +25,13 @@ function AdminPanel() {
         </button>
 
         <button
+          className={`tab ${view === "reviews" ? "active" : ""}`}
+          onClick={() => setView("reviews")}
+        >
+          Ver Revisiones
+        </button>
+
+        <button
           className={`tab ${view === "questions" ? "active" : ""}`}
           onClick={() => setView("questions")}
         >Agregar Pregunta
@@ -34,6 +41,7 @@ function AdminPanel() {
       <div className="tabContent">
         {view === "students" && <AdminStudents />}
         {view === "ranking" && <Ranking />}
+        {view === "reviews" && <AdminReviews />}
         {view === "questions" && <AdminQuestions />}
       </div>
     </div>
