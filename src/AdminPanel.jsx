@@ -18,11 +18,11 @@ function AdminPanel() {
         >Agregar Estudiante
         </button>
 
-        <button
+        {/* <button
           className={`tab ${view === "ranking" ? "active" : ""}`}
           onClick={() => setView("ranking")}
         >Ver Ranking
-        </button>
+        </button> */}
 
         <button
           className={`tab ${view === "reviews" ? "active" : ""}`}
