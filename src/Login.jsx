@@ -85,7 +85,7 @@ function Login({ setStudent }) {
 
         <input 
           className="input input-full"
-          placeholder="TU NOMBRE Y APELLIDO"
+          placeholder="Tu nombre exacto"
           value={name}
           onChange={handleInputChange}
         />
