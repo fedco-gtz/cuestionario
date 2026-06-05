@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; // 🔥 Importamos updateDoc y doc
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore"; 
 import { db } from "./firebase";
 import AnimatedBackgroundAlt from "./AnimatedBackgroundAlt";
 
@@ -8,14 +8,19 @@ function Login({ setStudent }) {
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    if (!name.trim()) return;
+    // Limpiamos espacios al inicio, al final y pasamos a mayúsculas para comparar
+    const cleanInputName = name.trim().toUpperCase();
+
+    if (!cleanInputName) return;
 
     const querySnapshot = await getDocs(collection(db, "students"));
     let found = null;
 
     querySnapshot.forEach((doc) => {
-      // Normalizamos a minúsculas para evitar errores de tipeo
-      if (doc.data().name.toLowerCase() === name.toLowerCase()) {
+      const dbName = doc.data().name ? doc.data().name.trim().toUpperCase() : "";
+      
+      // Comparación exacta en mayúsculas y sin espacios extras
+      if (dbName === cleanInputName) {
         found = { id: doc.id, ...doc.data() };
       }
     });
@@ -38,13 +43,14 @@ function Login({ setStudent }) {
       return;
     }
 
+    // 4. Validar si ya hay una sesión activa
     if (found.status === true) {
       setError("Ya iniciaste sesión con este nombre");
       return;
     }
 
     try {
-      // 5. 🔥 REGISTRAR INGRESO: Cambiamos status a true en Firebase antes de entrar
+      // 5. REGISTRAR INGRESO: Cambiamos status a true en Firebase antes de entrar
       const studentRef = doc(db, "students", found.id);
       await updateDoc(studentRef, {
         status: true
@@ -59,6 +65,18 @@ function Login({ setStudent }) {
     }
   };
 
+  // Función para normalizar el texto mientras escriben
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    
+    // Reemplaza múltiples espacios seguidos por uno solo y pasa a mayúsculas
+    // Evita que el input rebote si intentan poner un espacio al final para escribir el apellido
+    const formattedValue = inputValue.replace(/\s+/g, " ").toUpperCase();
+    
+    setName(formattedValue);
+    setError("");
+  };
+
   return (
     <AnimatedBackgroundAlt>
       <div className="card loginCard">
@@ -67,12 +85,9 @@ function Login({ setStudent }) {
 
         <input 
           className="input input-full"
-          placeholder="Tu nombre exacto"
+          placeholder="TU NOMBRE Y APELLIDO"
           value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-            setError("");
-          }}
+          onChange={handleInputChange}
         />
 
         {error && <p className="error">{error}</p>}
